@@ -7,8 +7,6 @@ import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Rotate;
 
 public class NukleosomVase extends Pane{
 	
@@ -26,18 +24,18 @@ public class NukleosomVase extends Pane{
 		Group axisGroup = new Group(), 
 				rectGroup = new Group();
 				
-		double angle = 180;
-		
+                int gap = 2;
+                
 		double maxX = getPrefWidth();
 		double maxY = getPrefHeight();
 		
 		Paint color = null;
 			
 		if(horizontal) {
-			axisLine = new Line(0, maxY, maxX+5, maxY);
+			axisLine = new Line(0, maxY, maxX, maxY);
 		}
 		else {
-			axisLine = new Line(0, 0, 0, maxY+5);
+			axisLine = new Line(0, 0, 0, maxY);
 		}
 			
 			axisLine.setStrokeWidth(0.5);
@@ -45,53 +43,51 @@ public class NukleosomVase extends Pane{
 			AttributeRectangle rect = null; 
 			
 			if(value == 0) {
-//				color = Color.web("#FF9933");
 				color = ChromosomProject.color0;
 			}
 			else if(value == 1) {
-//				color = Color.web("#3333FF");
 				color = ChromosomProject.color1;
 			}
 			else if(value == 2) {
-//				color = Color.web("#3333FF");
 				color = ChromosomProject.color2;
 			}
 			else if(value == 3) {
-//				color = Color.web("#FF9933");
 				color = ChromosomProject.color3;
 			}
 			else if(value == 4) {
-//				color = Color.web("#E84C3C");
 				color = ChromosomProject.color4;
 			}
-			
-//			if(value > 0.5) {
-//				color = Color.web("#3333FF");
-//				
-//			}
-//			else if(value <= 0.5) {
-//				color = Color.web("#FF9933");//#FF9933
-//			}
 			
 			double doub = 0.0;
 			
 			if(value > 0)
 				doub = (value/5.0);
 			else
-				doub = (0.15);
+				doub = (0.10);
+                        
+//                        System.err.println(value + " -> " + doub);
 			
 			if(horizontal) {
-				rect = new AttributeRectangle(0,0,maxX-1, maxY * doub);
+//				rect = new AttributeRectangle(gap,0,maxX-gap, maxY * doub);
+                                rect = new AttributeRectangle();
+                                rect.setX(Math.ceil(gap));
+                                rect.setY((int)Math.ceil(maxY - (maxY * doub)));
+                                rect.setWidth(Math.ceil(maxX-gap));
+                                rect.setHeight((int)Math.ceil(maxY * doub));
 			}
 			else {
-				rect = new AttributeRectangle(0,0,maxX * doub, maxY-1);
+				rect = new AttributeRectangle();
+                                rect.setX(0);
+                                rect.setY(Math.ceil(gap));
+                                rect.setWidth((int)Math.ceil(maxX * doub));
+                                rect.setHeight(Math.ceil(maxY-gap));
 			}
 				rect.setFill(color);
 		
-			if(horizontal) {
-//				axisLine.getTransforms().add(new Rotate(angle, maxX/2, maxY/2));
-				rect.getTransforms().add(new Rotate(angle, maxX/2, maxY/2));
-			}
+//			if(horizontal) {
+////				axisLine.getTransforms().add(new Rotate(angle, maxX/2, maxY/2));
+//				rect.getTransforms().add(new Rotate(angle, maxX/2, maxY/2));
+//			}
 			
 			rectGroup.getChildren().add(rect);
 			axisGroup.getChildren().add(axisLine);

@@ -74,9 +74,7 @@ public class BigNukleosomNew extends Pane {
                     
                     Bounds bounds = rect.localToScene(rect.getBoundsInLocal());
                     
-                    System.err.println(Math.ceil(bounds.getMinX()) + " " + Math.ceil(bounds.getMinY()));
-                    
-                     x++;
+                    x++;
                     if((x) % maxX == 0) {
                             y++;
                             x = 0;

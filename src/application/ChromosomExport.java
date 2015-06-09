@@ -6,8 +6,9 @@
 package application;
 
 import Nukleosom.AttributeRectangle;
-import java.awt.Panel;
-import java.io.File;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -20,7 +21,6 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Screen;
 
 
-import org.freehep.util.export.ExportDialog;
 
 /**
  *
@@ -55,7 +55,13 @@ public class ChromosomExport {
             addX = Math.ceil(woop.getMinX());
             addY = Math.ceil(woop.getMinY());
             first = true;
-//            System.err.println("lol: " + addX + " " + addY);
+           
+            Bounds bounds = pane.getBoundsInLocal();
+            
+            int width = (int)(bounds.getMaxX() - bounds.getMinX());
+            int height = (int)(bounds.getMaxY() - bounds.getMinY());
+            
+            setExportSize(width,height);
     }
             
             for(Node nod : inPane.getChildren()) {
@@ -201,7 +207,6 @@ public class ChromosomExport {
     }
        
     public static void setExportSize(int width, int height) {
-        System.err.println("SETTET: " + width + " " + height);
         svgString = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n" +
                         "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"\n" +
                         "    viewBox=\"0 0 " + width + " " + height + "\" width=\"" + width + "\" height=\"" + height + "\" id=\"starter_svg\">";
@@ -209,23 +214,22 @@ public class ChromosomExport {
     
     public static void writeToFile(String fileName) {
 
-//        svgString = svgString + "</svg>";
-//        
-//        try{
-//            FileWriter fstream = new FileWriter(fileName);
-//            BufferedWriter out = new BufferedWriter(fstream);
-//            out.write(svgString);
-//            //Close the output stream
-//            out.close();
-////            System.err.println(svgString);
-//            System.err.println("FERTIG");
-//            svgString = svgBeginString;
-//            
-//
-//      
-//        }catch (IOException e){//Catch exception if any
-//         System.err.println("Error: " + e.getMessage());
-//        }
+        svgString = svgString + "</svg>";
+        
+        try{
+            FileWriter fstream = new FileWriter(fileName);
+            BufferedWriter out = new BufferedWriter(fstream);
+            out.write(svgString);
+            //Close the output stream
+            out.close();
+//            System.err.println(svgString);
+            System.err.println("FERTIG");
+            
+            first = false;
+      
+        }catch (IOException e){//Catch exception if any
+         System.err.println("Error: " + e.getMessage());
+        }
     }
     
     

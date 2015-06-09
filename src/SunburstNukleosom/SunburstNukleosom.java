@@ -98,7 +98,7 @@ public class SunburstNukleosom extends Pane {
 				axisLine = new Line();
                                 
 				axisLine.setSmooth(true);
-				axisLine.setStrokeWidth(0.7);
+				axisLine.setStrokeWidth(0.5);
 				
 				axisHelperRect.getTransforms().add(new Rotate(angleOffset + angle * nextDim, midX, midY));
                                 
@@ -205,8 +205,9 @@ public class SunburstNukleosom extends Pane {
 //					polygon.setOpacity(1.0);
 //				}
 				
-				polygon.setStroke(new Color(0.13,0.13,0.13,0.7));
-				polygon.setStrokeWidth(0.5);
+//				polygon.setStroke(new Color(0.13,0.13,0.13,0.7));
+                                polygon.setStroke(Color.BLACK);
+				polygon.setStrokeWidth(0.2);
                                 polygon.setSmooth(true);
                                 String tipString = Integer.toString(array[dimCounter]);
                                 Tooltip t = new Tooltip(tipString);

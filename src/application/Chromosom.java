@@ -14,7 +14,6 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -26,8 +25,10 @@ import SunburstNukleosom.SunburstNukleosom;
 import SunburstNukleosom.SunburstNukleosomRow;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 
 public class Chromosom extends Application {
@@ -40,7 +41,10 @@ public class Chromosom extends Application {
 	 private int maxY = 0;
 	 private BigNukleosomRow row;
 	 private SunburstNukleosomRow sun;
-	 NukleosomVaseGrid vase;
+	 private NukleosomVaseGrid vase;
+         private NukleosomVaseGrid vase2;
+         private NukleosomVaseGrid vase3;
+         private NukleosomVaseGrid vase4;
 	 private TabPane tabPane;
          private Stage newStage;
 	 
@@ -63,7 +67,7 @@ public class Chromosom extends Application {
 		
 		row = new BigNukleosomRow(project,10,10,project.getNukleosomWidth(), project.getNukleosomHeight());
 //                row = new BigNukleosomRow(project,maxX + 10, maxY + 10,project.getNukleosomWidth(), project.getNukleosomHeight());
-		
+		System.err.println();
 		ScrollPane sb = new ScrollPane();
 		sb.setContent(row);
 		
@@ -89,42 +93,43 @@ public class Chromosom extends Application {
 		Tab vaseTab = new Tab();
 		vaseTab.setText("Nukleosom Vase ROW");
 		ScrollPane sb3 = new ScrollPane();
-		vase = new NukleosomVaseGrid(project,"ROW",5,5,4,9);
+		vase = new NukleosomVaseGrid(project,"ROW",5,5,6,10);
 		sb3.setContent(vase);
 		vaseTab.setContent(sb3);
 		vaseTab.setClosable(false);
 		tabPane.getTabs().add(vaseTab);
-//		
-//		Tab vaseTab1 = new Tab();
-//		vaseTab1.setText("Nukleosom Vase BLOCK");
-//		ScrollPane sb4 = new ScrollPane();
-//		vase = new NukleosomVaseGrid(project,"BLOCK",200,5,4,9);
-//		sb4.setContent(vase);
-//		vaseTab1.setContent(sb4);
-//		vaseTab1.setClosable(false);
-//		tabPane.getTabs().add(vaseTab1);
-//		
-//		Tab vaseTab2 = new Tab();
-//		vaseTab2.setText("Nukleosom Vase Zeit");
-//		ScrollPane sb5 = new ScrollPane();
-//		vase = new NukleosomVaseGrid(project,"ZEIT",20,60,4,9);
-//		sb5.setContent(vase);
-//		vaseTab2.setContent(sb5);
-//		vaseTab2.setClosable(false);
-//		tabPane.getTabs().add(vaseTab2);
-//		
-//		Tab vaseTab3 = new Tab();
-//		vaseTab3.setText("Nukleosom Vase ZUSTAND");
-//		ScrollPane sb6 = new ScrollPane();
-//		vase = new NukleosomVaseGrid(project,"ZUSTAND",20,60,4,9);
-//		sb6.setContent(vase);
-//		vaseTab3.setContent(sb6);
-//		vaseTab3.setClosable(false);
-//		tabPane.getTabs().add(vaseTab3);
+		
+		Tab vaseTab1 = new Tab();
+		vaseTab1.setText("Nukleosom Vase BLOCK");
+		ScrollPane sb4 = new ScrollPane();
+		vase2 = new NukleosomVaseGrid(project,"BLOCK",5,5,6,10);
+		sb4.setContent(vase2);
+		vaseTab1.setContent(sb4);
+		vaseTab1.setClosable(false);
+		tabPane.getTabs().add(vaseTab1);
+		
+		Tab vaseTab2 = new Tab();
+		vaseTab2.setText("Nukleosom Vase Zeit");
+		ScrollPane sb5 = new ScrollPane();
+		vase3 = new NukleosomVaseGrid(project,"ZEIT",5,5,6,10);
+		sb5.setContent(vase3);
+		vaseTab2.setContent(sb5);
+		vaseTab2.setClosable(false);
+		tabPane.getTabs().add(vaseTab2);
+		
+		Tab vaseTab3 = new Tab();
+		vaseTab3.setText("Nukleosom Vase ZUSTAND");
+		ScrollPane sb6 = new ScrollPane();
+		vase4 = new NukleosomVaseGrid(project,"ZUSTAND",5,5,6,10);
+		sb6.setContent(vase4);
+		vaseTab3.setContent(sb6);
+		vaseTab3.setClosable(false);
+		tabPane.getTabs().add(vaseTab3);
 		
 		rootLayout.setCenter(tabPane);
                 
-                
+                OptionsPanel options = new OptionsPanel();
+                rootLayout.setLeft(options);
 		
 		Scene scene = new Scene(rootLayout,1920,1680);
 		
@@ -179,23 +184,36 @@ public class Chromosom extends Application {
                  Logger.getLogger(Chromosom.class.getName()).log(Level.SEVERE, null, ex);
              }
 		
+             
+                Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+                
+                Node nod = selectedTab.getContent();
+                GridPane grid = new GridPane();
+                if(nod instanceof javafx.scene.control.ScrollPane) {
+                    ScrollPane scroll = (ScrollPane)nod;
+                    if(scroll.getContent() instanceof javafx.scene.layout.GridPane) {
+                        grid = (GridPane)scroll.getContent();
+                    }
+                }
+                
 		String selectedTabName = tabPane.getSelectionModel().getSelectedItem().getText();
-		Pane pan = new Pane();
+                
+                ChromosomExport.exportNodeToSVG(grid);
 		
-		switch(selectedTabName) {
-			case "Nukleosoms":
-                                ChromosomExport.setExportSize((int)row.getExportWidth(), (int)row.getExportHeight());
-                                ChromosomExport.exportNodeToSVG(row);
-				break;
-			case "Sunburst Nukleosom":
-                                ChromosomExport.setExportSize((int)sun.getExportWidth(), (int)sun.getExportHeight());
-                                ChromosomExport.exportNodeToSVG(sun);
-				break;
-			case "Nukleosom Vase ROW":
-                                ChromosomExport.setExportSize((int)vase.getExportWidth(), (int)vase.getExportHeight());
-                                ChromosomExport.exportNodeToSVG(vase);
-				break;
-		}
+//		switch(selectedTabName) {
+//			case "Nukleosoms":
+////                                ChromosomExport.setExportSize((int)row.getExportWidth(), (int)row.getExportHeight());
+//                                ChromosomExport.exportNodeToSVG(row);
+//				break;
+//			case "Sunburst Nukleosom":
+////                                ChromosomExport.setExportSize((int)sun.getExportWidth(), (int)sun.getExportHeight());
+//                                ChromosomExport.exportNodeToSVG(sun);
+//				break;
+//			case "Nukleosom Vase ROW":
+////                                ChromosomExport.setExportSize((int)vase.getExportWidth(), (int)vase.getExportHeight());
+//                                ChromosomExport.exportNodeToSVG(vase);
+//				break;
+//		}
 				
                 ChromosomExport.writeToFile(selectedTabName + ".svg");
                 

@@ -17,10 +17,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import application.ChromosomProject;
-import java.awt.Color;
 import javafx.scene.control.Tooltip;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 /**
  *
  * @author jakob
@@ -68,7 +65,8 @@ public class ChromosomTesting extends Application {
 //        int valueArray[] = {0,1,0,4,0,0,4,0,1,0,2,0,3,0,1,0,4,0,0,0};
 //        Nukleosom nukl = new Nukleosom(valueArray,8,8);
         
-        Rectangle rect = new Rectangle(20,20,10,10);
+//        Rectangle rect = new Rectangle(20,20,10,10);
+        NukleosomVase  vase = new NukleosomVase(4,true,100,100);
         
        ChromosomProject project = new ChromosomProject();
         
@@ -116,7 +114,7 @@ public class ChromosomTesting extends Application {
         
 //        pan.getChildren().add(vase);
 //       pan.setCenter(vase);
-       pan.setCenter(rect);
+       pan.setCenter(vase);
         
         Button btn = new Button();
         btn.setText("Say 'Hello World'");

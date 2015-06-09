@@ -30,11 +30,9 @@ public class NukleosomVaseGrid extends GridPane {
 		this.width = width;
 		this.height = height;
 		this.auswahl = auswahl;
-//		setStyle("-fx-border: 2px solid; -fx-border-color: red;");
-                this.setPadding(new Insets(0,10,10,0));
+                this.setPadding(new Insets(10,10,10,10));
                 
 		Vector<ArrayList<ArrayList<int[]>>> timeVector = NukleosomGenerator.getGeneratedData();
-		int number = 8;
 		int zeitSchritt = 0;
 
 		
@@ -52,7 +50,6 @@ public class NukleosomVaseGrid extends GridPane {
 			setVgap(0);
 		}
 		
-		number = 8;
 		innerX = 0;
 		innerY = 0;
 		
@@ -62,13 +59,10 @@ public class NukleosomVaseGrid extends GridPane {
 		
 		for(zeitSchritt = 0; zeitSchritt < X; zeitSchritt++) {
 		
-//			List<String> returnList = project.readNukleosoms(project.getDefaultFileName(), zeitSchritt * number + 2, number);
-			
 			for(int spalte = 0; spalte < Y; spalte++) {
 				
 				GridPane innerGrid = new GridPane();
 				
-//				int valueArray[] = Double.va(NukleosomReader.getValueArray(returnList.get(spalte)));
 				int valueArray[] = timeVector.get(zeitSchritt).get(spalte).get(0);
 				
 				for(int mod = 0; mod < valueArray.length; mod++) {
@@ -134,7 +128,7 @@ public class NukleosomVaseGrid extends GridPane {
 						innerX = nukleosom;
 						innerY = 0;
 					}
-					innerGrid.add(new NukleosomVase(valueArray[mod], horizontal, 5, 9), innerX, innerY);
+					innerGrid.add(new NukleosomVase(valueArray[mod], horizontal, width, height), innerX, innerY);
 				}
 				
 				if(horizontal) {
@@ -164,13 +158,10 @@ public class NukleosomVaseGrid extends GridPane {
 			setVgap(0);
 		}
 		
-		number = 10;
 		zeitSchritt = 0;
 		
 		innerX = 0;
 		innerY = 0;
-		
-		int savX = 0, savY = 0;
 		
 		setAlignment(Pos.CENTER);
 //		grid.setGridLinesVisible(true);
@@ -193,7 +184,7 @@ public class NukleosomVaseGrid extends GridPane {
 						innerX = mod;
 						innerY = 0;
 					}
-					innerGrid.add(new NukleosomVase(valueArray[mod], !horizontal, 5, 9), innerX, innerY);
+					innerGrid.add(new NukleosomVase(valueArray[mod], !horizontal, width, height), innerX, innerY);
 				}
 				
 				if(horizontal) {
@@ -205,117 +196,9 @@ public class NukleosomVaseGrid extends GridPane {
 					innerY = zeitSchritt;
 				}
 				add(innerGrid, innerX, innerY);
-				savX = innerX;
-				savY = innerY;
 			}       
 		}
 		break;
-		
-/*Zeit2	
-		boolean horizontal = false;
-		
-		if(horizontal) {
-			grid.setHgap(0);
-			grid.setVgap(10);	
-		}
-		else {
-			grid.setHgap(0);
-			grid.setVgap(0);
-		}
-		
-		int number = 10;
-		int zeitSchrittMax = 6;
-		
-		int innerX = 0, innerY = 0;
-		
-		int savX = 0, savY = 0;
-		
-		grid.setAlignment(Pos.CENTER);
-//		grid.setGridLinesVisible(true);
-		
-		for(int zeitSchritt = 0; zeitSchritt < zeitSchrittMax; zeitSchritt++) {
-		
-			List<String> returnList = NukleosomReader.readNukleosoms(zeitSchritt * number + 2, number);	
-			
-			for(int nukleosom = 0; nukleosom < number; nukleosom++) {
-				
-				double valueArray[] = NukleosomReader.getValueArray(returnList.get(nukleosom));
-				
-				GridPane innerGrid = new GridPane();
-				
-				for(int mod = 0; mod < valueArray.length; mod++) {
-					
-					if(horizontal) {
-						innerX = 0;
-						innerY = mod;
-					}
-					else {
-						innerX = mod;
-						innerY = 0;
-					}
-					System.err.println(mod);
-					innerGrid.add(new NukleosomVase(valueArray[mod], !horizontal, 5, 9), innerX, innerY);
-				}
-				
-				if(horizontal) {
-					innerX = zeitSchritt;
-					innerY = nukleosom;
-				}
-				else {
-					innerX = nukleosom;
-					innerY = zeitSchritt;
-				}
-				grid.add(innerGrid, innerX, innerY);
-//				savX = innerX;
-//				savY = innerY;
-			}       
-		}
-		
-		int anzahl = 2;
-		
-//		for(int zeitSchritt = 0; zeitSchritt < zeitSchrittMax; zeitSchritt++) {
-//			
-//			List<String> returnList = NukleosomReader.readNukleosoms(zeitSchritt * number + 2, number);	
-//			int off = 0;
-//			
-//			for(int nukleosom = 0; nukleosom < number/anzahl; nukleosom++) {
-//				
-//				List<double[]> arrayList = new ArrayList<double[]>();
-//				
-//				for(int zahl = 0; zahl < anzahl; zahl++) {
-//					arrayList.add(NukleosomReader.getValueArray(returnList.get(off)));
-//					off++;
-//				}
-//				
-//				double valueArray[] = NukleosomReader.mergeRoundValues(arrayList);
-//				
-//				GridPane innerGrid = new GridPane();
-//				
-//				for(int mod = 0; mod < valueArray.length; mod++) {
-//					
-//					if(horizontal) {
-//						innerX = 0;
-//						innerY = mod;
-//					}
-//					else {
-//						innerX = mod;
-//						innerY = 0;
-//					}
-//					innerGrid.add(new NukleosomVase(valueArray[mod], !horizontal, 5, 9), innerX, innerY);
-//				}
-//				
-//				if(horizontal) {
-//					innerX = zeitSchritt + savX +1;
-//					innerY = nukleosom;
-//				}
-//				else {
-//					innerX = nukleosom;
-//					innerY = zeitSchritt + savY + 1;
-//				}
-//				grid.add(innerGrid, innerX, innerY);
-//			}       
-//		}
-Zeit2*/
 		
 		case ("ROW"):
 		horizontal = false;
@@ -329,7 +212,6 @@ Zeit2*/
 			setVgap(0);  
 		}
 		
-		number = 250;
 		zeitSchritt = 0;
 		
 		innerX = 0;
@@ -356,7 +238,7 @@ Zeit2*/
 						innerX = mod;
 						innerY = 0;
 					}
-                                        NukleosomVase nuklVase = new NukleosomVase(valueArray[mod], horizontal, 5, 9);
+                                        NukleosomVase nuklVase = new NukleosomVase(valueArray[mod], horizontal, width, height);
 					innerGrid.add(nuklVase, innerX, innerY);
                                         nuklWidth = (nuklVase.getPrefWidth() * innerX);
                                         nuklHeight = (nuklVase.getPrefHeight());
@@ -376,24 +258,16 @@ Zeit2*/
 			}       
 		}
 		break;
-	}
-		
-		
-
+            }
 	}
         
         public double getExportWidth() {
             
             NukleosomVase nukl = new NukleosomVase(1, horizontal, width, height);
            
-            System.err.println("JOOOO: " + nukl.getPrefWidth() + " " + nukl.getPrefHeight());
-            
             Bounds bounds = this.getBoundsInLocal();
             
-            
-//            return (nuklWidth + this.getHgap()) * X + this.getPadding().getLeft() + this.getPadding().getRight();
             return bounds.getMaxX() - bounds.getMinX();
-//            return 50000;
         }
         
         public double getExportHeight() {
@@ -403,12 +277,7 @@ Zeit2*/
             Bounds bounds = this.getBoundsInLocal();
             
             return bounds.getMaxY() - bounds.getMinY();
-//                return 50000;
-//            return (nuklHeight + this.getVgap()) * Y + this.getPadding().getBottom() + this.getPadding().getTop();
         }
 
-	public NukleosomVaseGrid getScaledPic(int scale) {
-		return new NukleosomVaseGrid(project, auswahl, X, Y, width * 4, height * 4);
-	}
 }
 

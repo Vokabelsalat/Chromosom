@@ -20,6 +20,10 @@ public class AttributeRectangle extends Rectangle{
         super(width, height, color);
     }
     
+    public AttributeRectangle() {
+        super();
+    }
+    
         
     public AttributeRectangle(int x, int y, double width, double height) {
         super(x, y, width, height);
