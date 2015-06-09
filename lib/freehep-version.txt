@@ -1,0 +1,7 @@
+#
+# This file is generated, version number is in config/freehep.properties
+#
+TITLE=FreeHEP Demo
+VERSION=current
+DATE=December 11 2003
+TIME=0057
