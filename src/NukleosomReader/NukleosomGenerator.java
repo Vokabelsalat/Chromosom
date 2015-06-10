@@ -9,7 +9,7 @@ public class NukleosomGenerator {
 	static int attr = 5;
 	static int attributeNumber = 20;
 	static int histoneNumber = 1;
-	static int nukleosomNumber = 80;
+	static int nukleosomNumber = 101;
 	static int timeNumber = 1000;
 	
 	static int attributeArray[];
