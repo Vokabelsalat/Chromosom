@@ -15,6 +15,8 @@ public class ChromosomProject {
 	List<String> dataList;
 	private int sunburstHeight = 50;
 	private int sunburstWidth = 50;
+        
+        public String selectedTabName = "";
 	
 	public static Color color0 = Color.rgb(237, 124, 36);
 	public static Color color1 = Color.rgb(60, 58, 245);
@@ -87,4 +89,12 @@ public class ChromosomProject {
 	public void setScale(int scale) {
 		this.scale = scale;
 	}
+        
+        public void setSelectedTabName(String selectedTabName) {
+            this.selectedTabName = selectedTabName;
+        }
+        
+        public String getSelectedTabName() {
+            return selectedTabName;
+        }
 }

@@ -23,6 +23,10 @@ import Nukleosom.BigNukleosomRow;
 import NukleosomVase.NukleosomVaseGrid;
 import SunburstNukleosom.SunburstNukleosom;
 import SunburstNukleosom.SunburstNukleosomRow;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.Node;
@@ -76,7 +80,7 @@ public class Chromosom extends Application {
 		tabPane.getTabs().add(nukleosomTab);
 		
 		Tab sunburstTab = new Tab();
-		sunburstTab.setText("Sunburst Nukleosom");
+		sunburstTab.setText("SunburstNukleosom");
 		
 		findNukleosomResulution(sunburstTab.getText());
 		
@@ -131,20 +135,19 @@ public class Chromosom extends Application {
                 OptionsPanel options = new OptionsPanel();
                 rootLayout.setLeft(options);
 		
-		Scene scene = new Scene(rootLayout,1920,1680);
+		Scene scene = new Scene(rootLayout,screenWidth, screenHeight);
 		
         MenuBar menuBar = new MenuBar();
         
         Menu menu = new Menu("File");
-        MenuItem export = new MenuItem("Export");
-        export.setOnAction(actionEvent -> {
         
-
+        MenuItem exportToSVG = new MenuItem("Export to SVG");
+        exportToSVG.setOnAction(actionEvent -> {
             
             Label label = new Label("Die Darstellung wird exportiert ...");
             Button but = new Button("Wollen Sie die Darstellung exportieren?");
             but.setOnAction(actionEvent2 -> { 
-                export();
+                exportToSVG("");
             });
             
             BorderPane pane = new BorderPane();
@@ -159,67 +162,127 @@ public class Chromosom extends Application {
             newStage.show();
             
         });
-        menu.getItems().add(export); 
+        menu.getItems().add(exportToSVG); 
+        
+        MenuItem exportToPNG = new MenuItem("Export to PNG");
+        exportToPNG.setOnAction(actionEvent -> {
+            
+            Label label = new Label("Die Darstellung wird exportiert ...");
+            Button but = new Button("Wollen Sie die Darstellung exportieren?");
+            but.setOnAction(actionEvent2 -> { 
+                exportToPNG();
+            });
+            
+            BorderPane pane = new BorderPane();
+            pane.setCenter(but);
+            Scene scene2 = new Scene(pane,200,200);
+            newStage = new Stage();
+            newStage.setScene(scene2);
+            //tell stage it is meannt to pop-up (Modal)
+            newStage.initModality(Modality.APPLICATION_MODAL);
+            newStage.setTitle("Export");
+            
+            newStage.show();
+            
+        });
+        menu.getItems().add(exportToPNG); 
+        
+        MenuItem exportToPDF = new MenuItem("Export to PDF");
+        exportToPDF.setOnAction(actionEvent -> {
+            
+            Label label = new Label("Die Darstellung wird exportiert ...");
+            Button but = new Button("Wollen Sie die Darstellung exportieren?");
+            but.setOnAction(actionEvent2 -> { 
+                exportToPDF();
+            });
+            
+            BorderPane pane = new BorderPane();
+            pane.setCenter(but);
+            Scene scene2 = new Scene(pane,200,200);
+            newStage = new Stage();
+            newStage.setScene(scene2);
+            //tell stage it is meannt to pop-up (Modal)
+            newStage.initModality(Modality.APPLICATION_MODAL);
+            newStage.setTitle("Export");
+            
+            newStage.show();
+            
+        });
+        menu.getItems().add(exportToPDF);      
+        
         menu.getItems().add(new SeparatorMenuItem());
         MenuItem exit = new MenuItem("Exit");
         exit.setOnAction(actionEvent -> Platform.exit());
         menu.getItems().add(exit); 
         
-        menuBar.setUseSystemMenuBar(true);
+//        menuBar.setUseSystemMenuBar(true);
         menuBar.getMenus().add(menu);
         
         menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
         
-        rootLayout.getChildren().add(menuBar); 
+        rootLayout.setTop(menuBar); 
 		primaryStage.setScene(scene);
 		primaryStage.setResizable(false);
 		primaryStage.show();
 	}
 	
-	public void export() {
+	public void exportToSVG(String fileName) {
             
+            Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
+            Node nod = selectedTab.getContent();
+            GridPane grid = new GridPane();
+            if(nod instanceof javafx.scene.control.ScrollPane) {
+                ScrollPane scroll = (ScrollPane)nod;
+                if(scroll.getContent() instanceof javafx.scene.layout.GridPane) {
+                    grid = (GridPane)scroll.getContent();
+                    String selectedTabName = tabPane.getSelectionModel().getSelectedItem().getText();
+                    project.setSelectedTabName(selectedTabName);
+                    ChromosomExport.exportNodeToSVG(grid);
+                    if(fileName.equals("")) {
+                        fileName = selectedTabName + ".svg";newStage.close();
+                    }
+                    ChromosomExport.writeToFile(fileName);
+                    newStage.close();
+                }
+            }
+            
+            
+	}
+        
+        public void exportToPDF() {
+            
+            String exportHelper = "exportHelper.svg";
+            
+            exportToSVG(exportHelper);
              try {
-                 Thread.sleep(1000);
+                Process proc = Runtime.getRuntime().exec("java -jar \"batik-1.7\\batik-rasterizer.jar\" -d " + (project.selectedTabName + ".pdf") +  " -m application/pdf -scripts text/ecmascript -onload " + exportHelper);
+                System.err.println(project.selectedTabName);
+                proc.waitFor();
+//                Files.deleteIfExists(FileSystems.getDefault().getPath(exportHelper));  
+                newStage.close();
+             } catch (IOException ex) {
+                 Logger.getLogger(Chromosom.class.getName()).log(Level.SEVERE, null, ex);
              } catch (InterruptedException ex) {
                  Logger.getLogger(Chromosom.class.getName()).log(Level.SEVERE, null, ex);
              }
-		
-             
-                Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-                
-                Node nod = selectedTab.getContent();
-                GridPane grid = new GridPane();
-                if(nod instanceof javafx.scene.control.ScrollPane) {
-                    ScrollPane scroll = (ScrollPane)nod;
-                    if(scroll.getContent() instanceof javafx.scene.layout.GridPane) {
-                        grid = (GridPane)scroll.getContent();
-                    }
-                }
-                
-		String selectedTabName = tabPane.getSelectionModel().getSelectedItem().getText();
-                
-                ChromosomExport.exportNodeToSVG(grid);
-		
-//		switch(selectedTabName) {
-//			case "Nukleosoms":
-////                                ChromosomExport.setExportSize((int)row.getExportWidth(), (int)row.getExportHeight());
-//                                ChromosomExport.exportNodeToSVG(row);
-//				break;
-//			case "Sunburst Nukleosom":
-////                                ChromosomExport.setExportSize((int)sun.getExportWidth(), (int)sun.getExportHeight());
-//                                ChromosomExport.exportNodeToSVG(sun);
-//				break;
-//			case "Nukleosom Vase ROW":
-////                                ChromosomExport.setExportSize((int)vase.getExportWidth(), (int)vase.getExportHeight());
-//                                ChromosomExport.exportNodeToSVG(vase);
-//				break;
-//		}
-				
-                ChromosomExport.writeToFile(selectedTabName + ".svg");
-                
-                newStage.close();
+        }
+        
+        public void exportToPNG() {
             
-	}
+            String exportHelper = "exportHelper.svg";
+            
+            exportToSVG(exportHelper);
+            try {
+               Process proc = Runtime.getRuntime().exec("java -jar \"batik-1.7\\batik-rasterizer.jar\" -d " + (project.selectedTabName + ".png") +  " -m image/png -scripts text/ecmascript -onload " + exportHelper);
+               proc.waitFor();
+//               Files.delete(FileSystems.getDefault().getPath(exportHelper));  
+               newStage.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Chromosom.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InterruptedException ex) {
+                 Logger.getLogger(Chromosom.class.getName()).log(Level.SEVERE, null, ex);
+             }
+        }
 	
 	public void findNukleosomResulution(String visName) {
 		
