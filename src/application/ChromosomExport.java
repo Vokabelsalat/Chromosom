@@ -6,6 +6,8 @@
 package application;
 
 import Nukleosom.AttributeRectangle;
+import Nukleosom.BigNukleosomNew;
+import Nukleosom.BigNukleosomRow;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -45,6 +47,23 @@ public class ChromosomExport {
     public static double posX = .0;
     public static double posY = .0;
     public static Pane pane;
+    
+    public static void exportBigNukleosomRow(BigNukleosomRow row) {
+        Bounds bounds = row.getBoundsInLocal();
+
+        int width = (int)(bounds.getMaxX() - bounds.getMinX());
+        int height = (int)(bounds.getMaxY() - bounds.getMinY());
+
+        setExportSize(width,height);
+        
+        for(BigNukleosomNew nukl : row.getNuklList()) {
+            Bounds nuklBounds = nukl.getBoundsInParent();
+            
+            String editedExportString = nukl.getSVGExportString().replaceAll("%X", Double.toString(nuklBounds.getMinX()));
+                    editedExportString = editedExportString.replaceAll("%Y", Double.toString(nuklBounds.getMinY()));
+            svgString += editedExportString;
+        }
+    }
     
     public static void exportNodeToSVG(Pane inPane) {
         pane = inPane;

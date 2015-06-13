@@ -5,6 +5,9 @@
  */
 package Nukleosom;
 
+import static application.ChromosomExport.pane;
+import static application.ChromosomExport.posX;
+import static application.ChromosomExport.posY;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
@@ -21,6 +24,7 @@ public class BigNukleosomNew extends Pane {
 	int[] valueArray;
 	int width, height;
 	double angleWidth;
+        private String svgExportString = "<g transform=\"translate(%X,%Y)\">\n";
 	
 	public BigNukleosomNew(ChromosomProject project, int[] valueArray, int width, int height) {
 	
@@ -70,6 +74,26 @@ public class BigNukleosomNew extends Pane {
                     rect.setStrokeWidth(0.3);
                     rect.setAttributeValue(valueArray[i]);
                     
+                    Color col  = Color.BLACK;
+                    Color strokeCol = Color.BLACK;
+
+                    if(rect.getFill()!=null) {
+                        col = Color.web(rect.getFill().toString());
+                    }
+
+                    String colString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
+
+                    if(rect.getStroke()!=null) {
+                        col = Color.web(rect.getStroke().toString());
+                    }
+
+                    String strokeColString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
+
+                    String pointString = "";
+
+                    svgExportString += "<rect x=\"" + rect.getX() + "\" y=\"" + rect.getY() + "\" width=\"" + width + "\" height=\"" + height + "\" style=\"fill:rgb(" + colString + ");stroke:rgb(" + strokeColString + ");stroke-width:" + rect.getStrokeWidth() + ";\" />";
+                    svgExportString += "\n";
+                    
                     getChildren().add(rect);
                     
                     Bounds bounds = rect.localToScene(rect.getBoundsInLocal());
@@ -81,6 +105,11 @@ public class BigNukleosomNew extends Pane {
                     }
                     
                 }
+                svgExportString += "</g>";
+        }
+        
+        public String getSVGExportString() {
+            return svgExportString;
         }
         
 }

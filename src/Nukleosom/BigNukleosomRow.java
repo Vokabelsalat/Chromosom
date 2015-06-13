@@ -17,6 +17,7 @@ public class BigNukleosomRow extends GridPane {
 	ChromosomProject project;
 	int X, Y, height, width;
 	BigNukleosomRow scaledRow;
+        ArrayList<BigNukleosomNew> nuklList;
 	
 	public BigNukleosomRow(ChromosomProject project, int X, int Y, int width, int height) {
 		
@@ -25,6 +26,7 @@ public class BigNukleosomRow extends GridPane {
 		this.Y = Y;
 		this.height = height;
 		this.width = width;
+                this.nuklList = new ArrayList<BigNukleosomNew>();
 		
 		setAlignment(Pos.CENTER);
 		setHgap(width / (7./4.));
@@ -58,6 +60,7 @@ public class BigNukleosomRow extends GridPane {
                     
                         BigNukleosomNew nukl = new BigNukleosomNew(project,timeVector.get(y).get(x).get(0), width, height);
 			add(nukl, x,y);
+                        nuklList.add(nukl);
                     
 		}
                 
@@ -94,6 +97,10 @@ public class BigNukleosomRow extends GridPane {
 //		this.setGridLinesVisible(true);
 	}
         
+        public ArrayList<BigNukleosomNew> getNuklList() {
+            return nuklList;
+        }
+        
         public double getExportWidth() {
 
             Bounds bounds = this.getBoundsInLocal();
@@ -107,7 +114,6 @@ public class BigNukleosomRow extends GridPane {
             
             return bounds.getMaxY() - bounds.getMinY();
         }
-	
 }
 //	public class BigNukleosomRow extends JPanel {
 //	
