@@ -8,6 +8,8 @@ package application;
 import Nukleosom.AttributeRectangle;
 import Nukleosom.BigNukleosomNew;
 import Nukleosom.BigNukleosomRow;
+import SunburstNukleosom.SunburstNukleosom;
+import SunburstNukleosom.SunburstNukleosomRow;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -57,6 +59,23 @@ public class ChromosomExport {
         setExportSize(width,height);
         
         for(BigNukleosomNew nukl : row.getNuklList()) {
+            Bounds nuklBounds = nukl.getBoundsInParent();
+            
+            String editedExportString = nukl.getSVGExportString().replaceAll("%X", Double.toString(nuklBounds.getMinX()));
+                    editedExportString = editedExportString.replaceAll("%Y", Double.toString(nuklBounds.getMinY()));
+            svgString += editedExportString;
+        }
+    }
+    
+    public static void exportSunburstNukleosomRow(SunburstNukleosomRow row) {
+        Bounds bounds = row.getBoundsInLocal();
+
+        int width = (int)(bounds.getMaxX() - bounds.getMinX());
+        int height = (int)(bounds.getMaxY() - bounds.getMinY());
+
+        setExportSize(width,height);
+        
+        for(SunburstNukleosom nukl : row.getNuklList()) {
             Bounds nuklBounds = nukl.getBoundsInParent();
             
             String editedExportString = nukl.getSVGExportString().replaceAll("%X", Double.toString(nuklBounds.getMinX()));

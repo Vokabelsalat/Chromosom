@@ -1,5 +1,8 @@
 package SunburstNukleosom;
 
+import static application.ChromosomExport.pane;
+import static application.ChromosomExport.posX;
+import static application.ChromosomExport.posY;
 import java.util.List;
 
 import javafx.geometry.Bounds;
@@ -17,6 +20,7 @@ import javafx.scene.transform.Translate;
 
 
 import application.ChromosomProject;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Tooltip;
 
 public class SunburstNukleosom extends Pane {
@@ -24,9 +28,11 @@ public class SunburstNukleosom extends Pane {
 	List<int[]> valueList;
 	int width, height;
 	double angleWidth;
+         String exportString = "<g transform=\"translate(%X,%Y)\">\n";
 	
 	public SunburstNukleosom(ChromosomProject project, List<int[]> valueList, int width, int height) {
 		
+                String axisString = "";
 		this.valueList = valueList;
 		this.width = width;
 		this.height = height;
@@ -84,6 +90,8 @@ public class SunburstNukleosom extends Pane {
 			Bounds bounds = null, nextBounds = null;
 			
 			Group axisGroup = new Group(), outLineGroup = new Group(), polygonGroup = new Group(), netGroup = new Group(), rectGroup = new Group();
+                        
+                        
 			
 			Polygon polygon = null;
 			
@@ -240,6 +248,19 @@ public class SunburstNukleosom extends Pane {
 				polygonGroup.getChildren().add(polygon);
 				outLineGroup.getChildren().add(outLine);
 				axisGroup.getChildren().add(axisLine);
+                                
+                                Color strokeCol = Color.web(axisLine.getStroke().toString());
+            
+                                if(axisLine.getStroke()!=null) {
+                                   strokeCol = Color.web(axisLine.getStroke().toString());
+                                }
+
+                                String strokeColString = (int)(strokeCol.getRed() * 255) + "," + (int)(strokeCol.getGreen() * 255) + "," + (int)(strokeCol.getBlue() * 255);
+
+                                axisString += "<line x1=\"" + axisLine.getStartX() + "\" y1=\"" + axisLine.getStartY() + "\" x2=\"";
+
+                                axisString += axisLine.getEndX() + "\" y2=\""+ axisLine.getEndY() + "\" style=\"stroke:rgb(" + strokeColString + ");stroke-width:" + axisLine.getStrokeWidth() + "\" />";
+                                axisString += "\n";
 			}	
 			
 			Translate trans = new Translate(transX, transY);
@@ -258,9 +279,16 @@ public class SunburstNukleosom extends Pane {
 			
 //			getChildren().add(rectGroup);
 			
-//			getChildren().add(axisGroup);	
+			getChildren().add(axisGroup);	
+                        exportString += axisString;
 //		}
             }
+                        exportString += "</g>";
 	}
+        
+        public String getSVGExportString() {
+            return exportString;
+        }
+        
 }
 

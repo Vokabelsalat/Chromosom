@@ -14,6 +14,7 @@ public class SunburstNukleosomRow extends GridPane {
 	
 	ChromosomProject project;
 	int width, height, X, Y;
+        ArrayList<SunburstNukleosom> nuklList = new ArrayList<SunburstNukleosom>();
 	
 	public SunburstNukleosomRow(ChromosomProject project, int X, int Y, int width, int height) {
 		
@@ -62,6 +63,7 @@ public class SunburstNukleosomRow extends GridPane {
 //                        nukl.setLayoutX((nukl.getPrefWidth()) * (x) + this.getHgap() * (x));
 //                        nukl.setLayoutY((nukl.getPrefHeight() ) * (y) + this.getVgap() * (y));
 			add(nukl, x,y);
+                        nuklList.add(nukl);
 		}
 	}
         
@@ -94,4 +96,8 @@ public class SunburstNukleosomRow extends GridPane {
 	public SunburstNukleosomRow getScaledPic(int scale) {
 		return new SunburstNukleosomRow(project, X, Y, width * scale, height * scale);
 	}
+        
+        public ArrayList<SunburstNukleosom> getNuklList() {
+            return nuklList;
+        }
 }
