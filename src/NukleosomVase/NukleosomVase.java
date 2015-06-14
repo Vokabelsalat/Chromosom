@@ -1,10 +1,16 @@
 package NukleosomVase;
 
 import Nukleosom.AttributeRectangle;
+import static application.ChromosomExport.pane;
+import static application.ChromosomExport.posX;
+import static application.ChromosomExport.posY;
 
 import application.ChromosomProject;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 
@@ -12,6 +18,10 @@ public class NukleosomVase extends Pane{
 	
 	public NukleosomVase(int value, boolean horizontal, int width, int height) {
 		
+                String exportString = "<g transform=\"translate(%X,%Y) rotate(%W " + width/2.0 + " " + height/2.0 + ")\">\n";
+                String axisString = "";
+                String rectString = "";
+            
 		if(horizontal) {
 			setPrefSize(width,height);
 		}
@@ -91,10 +101,28 @@ public class NukleosomVase extends Pane{
 			
 			rectGroup.getChildren().add(rect);
 			axisGroup.getChildren().add(axisLine);
+                        
+                        Color strokeCol = Color.web(axisLine.getStroke().toString());
+
+                         if(axisLine.getStroke()!=null) {
+                            strokeCol = Color.web(axisLine.getStroke().toString());
+                         }
+
+                        String strokeColString = (int)(strokeCol.getRed() * 255) + "," + (int)(strokeCol.getGreen() * 255) + "," + (int)(strokeCol.getBlue() * 255);
+
+                        axisString += "<line x1=\"" + axisLine.getStartX() + "\" y1=\"" + axisLine.getStartY() + "\" x2=\"";
+
+                        axisString += axisLine.getEndX() + "\" y2=\""+ axisLine.getEndY() + "\" style=\"stroke:rgb(" + strokeColString + ");stroke-width:" + axisLine.getStrokeWidth() + "\" />";
+                        axisString += "\n";
 		
 		getChildren().add(rectGroup);
 		
 		getChildren().add(axisGroup);	
+                
+                
+                exportString += "</g>";
+                
+
 	}
 	
 }

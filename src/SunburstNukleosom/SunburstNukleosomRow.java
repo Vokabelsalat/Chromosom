@@ -32,7 +32,7 @@ public class SunburstNukleosomRow extends GridPane {
 		setAlignment(Pos.CENTER);
 		setHgap(3);
 		setVgap(3);
-//		this.setGridLinesVisible(true);
+//	 +	this.setGridLinesVisible(true);
 		
 		int 	number = X * Y,
 				y = 0,  x = 0;

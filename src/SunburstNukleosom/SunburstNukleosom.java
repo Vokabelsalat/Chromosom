@@ -33,6 +33,7 @@ public class SunburstNukleosom extends Pane {
 	public SunburstNukleosom(ChromosomProject project, List<int[]> valueList, int width, int height) {
 		
                 String axisString = "";
+                String polygonString = "";
 		this.valueList = valueList;
 		this.width = width;
 		this.height = height;
@@ -246,16 +247,69 @@ public class SunburstNukleosom extends Pane {
 				
 				rectGroup.getChildren().add(rect);
 				polygonGroup.getChildren().add(polygon);
+                                
+                                
+                                Color col  = Color.BLACK;
+                                Color strokeCol = Color.BLACK;
+
+                                if(polygon.getFill()!=null) {
+                                   col = Color.web(polygon.getFill().toString());
+                                }
+
+                                String colString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
+
+                                if(polygon.getStroke()!=null) {
+                                   strokeCol = Color.web(polygon.getStroke().toString());
+                                }
+
+                                String strokeColString = (int)(strokeCol.getRed() * 255) + "," + (int)(strokeCol.getGreen() * 255) + "," + (int)(strokeCol.getBlue() * 255);
+
+                                polygonString += "<polygon points=\"";
+
+//                                for(int i = 0; i < polygon.getPoints().size(); i++) {
+//                                    double doub = polygon.getPoints().get(i);
+//
+//                                    if(i%2 == 0) {
+//                    //                    doub += addX - minX;
+//                                    }
+//                                    else {
+//                    //                    doub += addY - minY;
+//
+//                                        Point2D parent = pane.localToScene(polygon.getPoints().get(i-1), doub);
+//
+//                                        posX = parent.getX();
+//                                        posY = parent.getY();
+//
+//                    //                Rand zur linken oberen Ecke draufaddieren
+//                    //                doub += 5;
+//
+//                    //            System.err.println("ADD: " + addX);
+//                    //            System.err.println("MIN: " + minX + " " + (addX - minX));
+//                                        pointString += (posX - addX);
+//                                        pointString += ",";
+//                                        pointString += (posY - addY);
+//                                        if(i != polygon.getPoints().size()-1) {
+//                                            pointString += ",";
+//                                        }
+//                                    }
+//                                }
+                                
+                                polygonString += midX + "," + midY + "," + bounds.getMinX() + "," + bounds.getMinY() + "," + nextBounds.getMinX() + "," + nextBounds.getMinY();
+
+                                polygonString += "\" style=\"fill:rgb(" + colString + ");stroke:rgb(" + strokeColString + ");stroke-width:" + polygon.getStrokeWidth() + "\" />";
+                                polygonString += "\n";
+                                
+                                
 				outLineGroup.getChildren().add(outLine);
 				axisGroup.getChildren().add(axisLine);
                                 
-                                Color strokeCol = Color.web(axisLine.getStroke().toString());
+                               strokeCol = Color.web(axisLine.getStroke().toString());
             
                                 if(axisLine.getStroke()!=null) {
                                    strokeCol = Color.web(axisLine.getStroke().toString());
                                 }
 
-                                String strokeColString = (int)(strokeCol.getRed() * 255) + "," + (int)(strokeCol.getGreen() * 255) + "," + (int)(strokeCol.getBlue() * 255);
+                                strokeColString = (int)(strokeCol.getRed() * 255) + "," + (int)(strokeCol.getGreen() * 255) + "," + (int)(strokeCol.getBlue() * 255);
 
                                 axisString += "<line x1=\"" + axisLine.getStartX() + "\" y1=\"" + axisLine.getStartY() + "\" x2=\"";
 
@@ -263,8 +317,7 @@ public class SunburstNukleosom extends Pane {
                                 axisString += "\n";
 			}	
 			
-			Translate trans = new Translate(transX, transY);
-			
+//			Translate trans = new Translate(transX, transY);
 //			polygonGroup.getTransforms().add(trans);
 //			axisGroup.getTransforms().add(trans);
 //			outLineGroup.getTransforms().add(trans);
@@ -274,13 +327,14 @@ public class SunburstNukleosom extends Pane {
 //			getChildren().add(netGroup);
 			
 			getChildren().add(polygonGroup);
+                        exportString += polygonString;
 			
 //			getChildren().add(outLineGroup);
 			
 //			getChildren().add(rectGroup);
 			
-			getChildren().add(axisGroup);	
-                        exportString += axisString;
+//			getChildren().add(axisGroup);	
+//                        exportString += axisString;
 //		}
             }
                         exportString += "</g>";
