@@ -7,6 +7,7 @@ import java.util.Vector;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import NukleosomReader.NukleosomGenerator;
+import SunburstNukleosom.SunburstNukleosom;
 import application.ChromosomProject;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -21,6 +22,9 @@ public class NukleosomVaseGrid extends GridPane {
         int innerY = 0;
         double nuklWidth = 0;
         double nuklHeight = 0;
+        String exportString = "";
+        ArrayList<BigNukleosomVase> bigNuklList = new ArrayList<BigNukleosomVase>();
+        ArrayList<NukleosomVase> nuklList = new ArrayList<NukleosomVase>();
 	
 	public NukleosomVaseGrid(ChromosomProject project, String auswahl, int X, int Y, int width, int height) {
 		
@@ -74,7 +78,10 @@ public class NukleosomVaseGrid extends GridPane {
 						innerX = mod;
 						innerY = 0;
 					}
-					innerGrid.add(new NukleosomVase(valueArray[mod], horizontal, width, height), innerX, innerY);
+                                        
+                                        NukleosomVase nukl = new NukleosomVase(valueArray[mod], horizontal, width, height);
+					innerGrid.add(nukl, innerX, innerY);
+                                        nuklList.add(nukl);
 				}
 				
 				if(horizontal) {
@@ -128,7 +135,9 @@ public class NukleosomVaseGrid extends GridPane {
 						innerX = nukleosom;
 						innerY = 0;
 					}
-					innerGrid.add(new NukleosomVase(valueArray[mod], horizontal, width, height), innerX, innerY);
+                                        NukleosomVase nukl = new NukleosomVase(valueArray[mod], horizontal, width, height);
+					innerGrid.add(nukl, innerX, innerY);
+                                        nuklList.add(nukl);
 				}
 				
 				if(horizontal) {
@@ -184,7 +193,9 @@ public class NukleosomVaseGrid extends GridPane {
 						innerX = mod;
 						innerY = 0;
 					}
-					innerGrid.add(new NukleosomVase(valueArray[mod], !horizontal, width, height), innerX, innerY);
+                                        NukleosomVase nukl = new NukleosomVase(valueArray[mod], !horizontal, width, height);
+					innerGrid.add(nukl, innerX, innerY);
+                                        nuklList.add(nukl);
 				}
 				
 				if(horizontal) {
@@ -226,23 +237,26 @@ public class NukleosomVaseGrid extends GridPane {
 				
 				int valueArray[] = timeVector.get(zeitSchritt).get(nukleosom).get(0);
 				
-				GridPane innerGrid = new GridPane();
+				BigNukleosomVase innerGrid = new BigNukleosomVase(valueArray, horizontal, "", width, height);
 				
-				for(int mod = 0; mod < valueArray.length; mod++) {
-					
-					if(horizontal) {
-						innerX = 0;
-						innerY = mod;
-					}
-					else {
-						innerX = mod;
-						innerY = 0;
-					}
-                                        NukleosomVase nuklVase = new NukleosomVase(valueArray[mod], horizontal, width, height);
-					innerGrid.add(nuklVase, innerX, innerY);
-                                        nuklWidth = (nuklVase.getPrefWidth() * innerX);
-                                        nuklHeight = (nuklVase.getPrefHeight());
-				}
+                                
+                                
+//				for(int mod = 0; mod < valueArray.length; mod++) {
+//					
+//					if(horizontal) {
+//						innerX = 0;
+//						innerY = mod;
+//					}
+//					else {
+//						innerX = mod;
+//						innerY = 0;
+//					}
+//                                        NukleosomVase nuklVase = new NukleosomVase(valueArray[mod], horizontal, width, height);
+//					innerGrid.add(nuklVase, innerX, innerY);
+//                                        nuklWidth = (nuklVase.getPrefWidth() * innerX);
+//                                        nuklHeight = (nuklVase.getPrefHeight());
+//                                        nuklList.add(nuklVase);
+//				}
 				
 				if(horizontal) {
 					innerX = nukleosom;
@@ -255,6 +269,7 @@ public class NukleosomVaseGrid extends GridPane {
                                 
                                 
 				add(innerGrid, innerX, innerY);
+                                bigNuklList.add(innerGrid);
 			}       
 		}
 		break;
@@ -278,6 +293,14 @@ public class NukleosomVaseGrid extends GridPane {
             
             return bounds.getMaxY() - bounds.getMinY();
         }
+
+    public ArrayList<NukleosomVase> getNuklList() {
+        return nuklList;
+    }
+    
+   public ArrayList<BigNukleosomVase> getBigNuklList() {
+        return bigNuklList;
+    }
 
 }
 

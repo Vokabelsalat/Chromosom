@@ -20,20 +20,20 @@ import javafx.stage.Stage;
 
 import Nukleosom.BigNukleosomNew;
 import Nukleosom.BigNukleosomRow;
+import NukleosomReader.NukleosomReader;
 import NukleosomVase.NukleosomVaseGrid;
 import SunburstNukleosom.SunburstNukleosom;
 import SunburstNukleosom.SunburstNukleosomRow;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
-import javafx.stage.StageStyle;
 
 public class Chromosom extends Application {
 	
@@ -59,7 +59,10 @@ public class Chromosom extends Application {
 		primaryStage.setTitle("Chromosom");
 	
 		project = new ChromosomProject();
-		
+//                
+                NukleosomReader.openFile(project, "run2_state.txt");
+		NukleosomReader.fillDataVectors(project);
+                
 		screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
 		screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
 		
@@ -70,7 +73,7 @@ public class Chromosom extends Application {
 		findNukleosomResulution(nukleosomTab.getText());
 		
 //		row = new BigNukleosomRow(project,10,10,project.getNukleosomWidth(), project.getNukleosomHeight());
-                row = new BigNukleosomRow(project, 63, 30, project.getNukleosomWidth(), project.getNukleosomHeight());
+                row = new BigNukleosomRow(project, project.getTimeVector().get(0).size(), project.getTimeVector().size()-1, project.getNukleosomWidth(), project.getNukleosomHeight());
 		ScrollPane sb = new ScrollPane();
 		sb.setContent(row);
 		
@@ -78,7 +81,7 @@ public class Chromosom extends Application {
 		nukleosomTab.setClosable(false);
 		tabPane.getTabs().add(nukleosomTab);
 		
-		Tab sunburstTab = new Tab();
+/*		Tab sunburstTab = new Tab();
 		sunburstTab.setText("SunburstNukleosom");
 		
 		findNukleosomResulution(sunburstTab.getText());
@@ -96,8 +99,8 @@ public class Chromosom extends Application {
 		Tab vaseTab = new Tab();
 		vaseTab.setText("Nukleosom Vase ROW");
 		ScrollPane sb3 = new ScrollPane();
-//		vase = new NukleosomVaseGrid(project,"ROW",10,100,6,10);
-                vase = new NukleosomVaseGrid(project,"ROW",5,5,6,10);
+		vase = new NukleosomVaseGrid(project,"ROW",10,100,6,10);
+//                vase = new NukleosomVaseGrid(project,"ROW",1,1,6,10);
 		sb3.setContent(vase);
 		vaseTab.setContent(sb3);
 		vaseTab.setClosable(false);
@@ -107,7 +110,7 @@ public class Chromosom extends Application {
 		vaseTab1.setText("Nukleosom Vase BLOCK");
 		ScrollPane sb4 = new ScrollPane();
 //		vase2 = new NukleosomVaseGrid(project,"BLOCK",100,20,6,10);
-                vase2 = new NukleosomVaseGrid(project,"BLOCK",5,5,6,10);
+                vase2 = new NukleosomVaseGrid(project,"BLOCK",1,1,6,10);
 		sb4.setContent(vase2);
 		vaseTab1.setContent(sb4);
 		vaseTab1.setClosable(false);
@@ -117,7 +120,7 @@ public class Chromosom extends Application {
 		vaseTab2.setText("Nukleosom Vase Zeit");
 		ScrollPane sb5 = new ScrollPane();
 //		vase3 = new NukleosomVaseGrid(project,"ZEIT",15,80,6,10);
-                vase3 = new NukleosomVaseGrid(project,"ZEIT",5,5,6,10);
+                vase3 = new NukleosomVaseGrid(project,"ZEIT",1,1,6,10);
 		sb5.setContent(vase3);
 		vaseTab2.setContent(sb5);
 		vaseTab2.setClosable(false);
@@ -127,11 +130,11 @@ public class Chromosom extends Application {
 		vaseTab3.setText("Nukleosom Vase ZUSTAND");
 		ScrollPane sb6 = new ScrollPane();
 //		vase4 = new NukleosomVaseGrid(project,"ZUSTAND",15,80,6,10);
-                vase4 = new NukleosomVaseGrid(project,"ZUSTAND",5,5,6,10);
+                vase4 = new NukleosomVaseGrid(project,"ZUSTAND",1,1,6,10);
 		sb6.setContent(vase4);
 		vaseTab3.setContent(sb6);
 		vaseTab3.setClosable(false);
-		tabPane.getTabs().add(vaseTab3);
+		tabPane.getTabs().add(vaseTab3);*/
 		
 		rootLayout.setCenter(tabPane);
                 
@@ -144,6 +147,19 @@ public class Chromosom extends Application {
         
         Menu menu = new Menu("File");
         
+
+        
+        MenuItem openFile = new MenuItem("Open File");
+        openFile.setOnAction(actionEvent -> {
+            
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open Resource File");
+            fileChooser.showOpenDialog(primaryStage);
+            
+        });
+        menu.getItems().add(openFile); 
+
+
         MenuItem exportToSVG = new MenuItem("Export to SVG");
         exportToSVG.setOnAction(actionEvent -> {
             
@@ -251,8 +267,7 @@ public class Chromosom extends Application {
                                     ChromosomExport.exportSunburstNukleosomRow(sun);
                                     break;
                             case "Nukleosom Vase ROW":
-    //                                ChromosomExport.setExportSize((int)vase.getExportWidth(), (int)vase.getExportHeight());
-    //                                ChromosomExport.exportNodeToSVG(vase);
+                                    ChromosomExport.exportNukleosomVaseGrid(vase);
                                     break;
                     }
 //                }
@@ -293,7 +308,9 @@ public class Chromosom extends Application {
 		switch(visName) {
 			case "Nukleosoms" : {
 		
-                                int valueArray[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+                                HashMap<String,Integer> valueArray = new HashMap<String,Integer>();
+                                valueArray.put("0", 0);
+                                valueArray.put("1", 0);
 				      
 				BigNukleosomNew nukl = new BigNukleosomNew(project, valueArray, project.getNukleosomWidth(), project.getNukleosomHeight());
 

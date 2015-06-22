@@ -8,6 +8,8 @@ package application;
 import Nukleosom.AttributeRectangle;
 import Nukleosom.BigNukleosomNew;
 import Nukleosom.BigNukleosomRow;
+import NukleosomVase.BigNukleosomVase;
+import NukleosomVase.NukleosomVaseGrid;
 import SunburstNukleosom.SunburstNukleosom;
 import SunburstNukleosom.SunburstNukleosomRow;
 import java.io.BufferedWriter;
@@ -82,6 +84,29 @@ public class ChromosomExport {
                     editedExportString = editedExportString.replaceAll("%Y", Double.toString(nuklBounds.getMinY()));
             svgString += editedExportString;
         }
+    }
+    
+    public static void exportNukleosomVaseGrid(NukleosomVaseGrid vase) {
+        Bounds bounds = vase.getBoundsInLocal();
+
+        int width = (int)(bounds.getMaxX() - bounds.getMinX());
+        int height = (int)(bounds.getMaxY() - bounds.getMinY());
+
+        setExportSize(width,height);
+        
+        double diffX = vase.localToScene(vase.getBoundsInLocal()).getMinX();
+        double diffY = vase.localToScene(vase.getBoundsInLocal()).getMinY();
+        
+        for(BigNukleosomVase nukl : vase.getBigNuklList()) {
+            Bounds nuklBounds = nukl.localToScene(nukl.getBoundsInLocal());
+//            Bounds nuklBounds = nukl.sceneToLocal(vase.getBoundsInLocal());
+           
+            
+            String editedExportString = nukl.getExportString().replaceAll("%X", Double.toString(nuklBounds.getMinX() - diffX));
+                    editedExportString = editedExportString.replaceAll("%Y", Double.toString(nuklBounds.getMinY() - diffY));
+                    editedExportString = editedExportString.replaceAll("%W", "0");
+            svgString += editedExportString;
+        }        
     }
     
     public static void exportNodeToSVG(Pane inPane) {

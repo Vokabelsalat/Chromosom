@@ -14,6 +14,7 @@ import javafx.scene.shape.Rectangle;
 
 
 import application.ChromosomProject;
+import java.util.HashMap;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.input.MouseEvent;
@@ -21,47 +22,49 @@ import javafx.scene.layout.Pane;
 
 public class BigNukleosomNew extends Pane {
 	
-	int[] valueArray;
+	HashMap<String,Integer> attributeMap;
 	int width, height;
 	double angleWidth;
         private String svgExportString = "<g transform=\"translate(%X,%Y)\">\n";
 	
-	public BigNukleosomNew(ChromosomProject project, int[] valueArray, int width, int height) {
+	public BigNukleosomNew(ChromosomProject project, HashMap<String,Integer> attributeMap, int width, int height) {
 	
-		this.valueArray = valueArray;
+		this.attributeMap = attributeMap;
 		this.width = width;
 		this.height = height;
 		
-                int maxX = 4;
-                int maxY = 5;
+                int maxX = 1;
+                int maxY = 1;
                 
                 setPrefSize(width * maxX, height * maxY);
                 
                 int x = 0;
                 int y = 0;
            
-                for(int i = 0; i < valueArray.length; i++) {
-                    int value = valueArray[i];
+                for(int value : attributeMap.values()) {
+                   
                     
                     Paint color = Color.BLACK;
 
-                    if(valueArray[i] == 0) {
+                    System.err.println(value);
+                    
+                    if(value == 0) {
 //					color = Color.web("#FF9933");
                             color = ChromosomProject.color0;
                     }
-                    else if(valueArray[i] == 1) {
+                    else if(value == 1) {
 //					color = Color.web("#3333FF");
                             color = ChromosomProject.color1;
                     }
-                    else if(valueArray[i] == 2) {
+                    else if(value == 2) {
 //					color = Color.web("#3333FF");
                             color = ChromosomProject.color2;
                     }
-                    else if(valueArray[i] == 3) {
+                    else if(value == 3) {
 //					color = Color.web("#FF9933");
                             color = ChromosomProject.color3;
                     }
-                    else if(valueArray[i] == 4) {
+                    else if(value == 4) {
 //					color = Color.web("#E84C3C");
                             color = ChromosomProject.color4;
                     }
@@ -72,7 +75,7 @@ public class BigNukleosomNew extends Pane {
                     rect.setY(y * height);
                     rect.setStroke(Color.BLACK);
                     rect.setStrokeWidth(0.3);
-                    rect.setAttributeValue(valueArray[i]);
+                    rect.setAttributeValue(value);
                     
                     Color col  = Color.BLACK;
                     Color strokeCol = Color.BLACK;

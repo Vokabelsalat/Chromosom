@@ -15,10 +15,13 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 
 public class NukleosomVase extends Pane{
+    
+        String exportString = "";
+               
 	
 	public NukleosomVase(int value, boolean horizontal, int width, int height) {
 		
-                String exportString = "<g transform=\"translate(%X,%Y) rotate(%W " + width/2.0 + " " + height/2.0 + ")\">\n";
+                exportString = "<g transform=\"translate(%X,%Y) rotate(%W " + width/2.0 + " " + height/2.0 + ")\">\n";
                 String axisString = "";
                 String rectString = "";
             
@@ -99,16 +102,35 @@ public class NukleosomVase extends Pane{
 //				rect.getTransforms().add(new Rotate(angle, maxX/2, maxY/2));
 //			}
 			
-			rectGroup.getChildren().add(rect);
-			axisGroup.getChildren().add(axisLine);
+		rectGroup.getChildren().add(rect);
                         
-                        Color strokeCol = Color.web(axisLine.getStroke().toString());
+                        Color col  = Color.BLACK;
+                        Color strokeCol = Color.BLACK;
+
+                        if(rect.getFill()!=null) {
+                            col = Color.web(rect.getFill().toString());
+                        }
+
+                        String colString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
+
+                        if(rect.getStroke()!=null) {
+                            col = Color.web(rect.getStroke().toString());
+                        }
+
+                        String strokeColString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
+
+                        rectString += "<rect x=\"" + rect.getX() + "\" y=\"" + rect.getY() + "\" width=\"" + rect.getWidth() + "\" height=\"" + rect.getHeight() + "\" style=\"fill:rgb(" + colString + ");stroke:rgb(" + strokeColString + ");stroke-width:" + rect.getStrokeWidth() + ";\" />";
+                        rectString += "\n";
+                        
+            axisGroup.getChildren().add(axisLine);
+                        
+                        strokeCol = Color.web(axisLine.getStroke().toString());
 
                          if(axisLine.getStroke()!=null) {
                             strokeCol = Color.web(axisLine.getStroke().toString());
                          }
 
-                        String strokeColString = (int)(strokeCol.getRed() * 255) + "," + (int)(strokeCol.getGreen() * 255) + "," + (int)(strokeCol.getBlue() * 255);
+                        strokeColString = (int)(strokeCol.getRed() * 255) + "," + (int)(strokeCol.getGreen() * 255) + "," + (int)(strokeCol.getBlue() * 255);
 
                         axisString += "<line x1=\"" + axisLine.getStartX() + "\" y1=\"" + axisLine.getStartY() + "\" x2=\"";
 
@@ -116,13 +138,17 @@ public class NukleosomVase extends Pane{
                         axisString += "\n";
 		
 		getChildren().add(rectGroup);
-		
-		getChildren().add(axisGroup);	
+		exportString += rectString;
                 
+		getChildren().add(axisGroup);	
+                exportString += axisString;
                 
                 exportString += "</g>";
-                
 
 	}
+
+    public String getSVGExportString() {
+        return exportString;
+    }
 	
 }

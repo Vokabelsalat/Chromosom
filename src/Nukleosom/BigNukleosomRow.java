@@ -9,6 +9,7 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import NukleosomReader.NukleosomGenerator;
 import application.ChromosomProject;
+import java.util.HashMap;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 
@@ -36,13 +37,12 @@ public class BigNukleosomRow extends GridPane {
 
 		
 		int 	maxX = X,
-				number = maxX * Y,
-				y = 0,  x = 0;		
+                        y = 0,  x = 0;		
 		
 //		List<String> returnList = project.getReadedNukleosoms();
-		Vector<ArrayList<ArrayList<int[]>>> timeVector = NukleosomGenerator.getGeneratedData();
+		Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
 		
-                for(int i = 0; i < number; i++) {
+                for(int i = 0; i < X*Y; i++) {
 			
 //			List<int[]> valueList = new ArrayList<int[]>();
 //			
@@ -50,17 +50,19 @@ public class BigNukleosomRow extends GridPane {
 //				valueList.add(timeVector.get(y).get(x).get(u));
 //			}
 			
-                    
-                      
-			if((x) % X == 0) {
+                        if((x) % X == 0) {
 				y++;
 				x = 0;
 			}
-                        x++;
                     
-                        BigNukleosomNew nukl = new BigNukleosomNew(project,timeVector.get(y).get(x).get(0), width, height);
+                        BigNukleosomNew nukl = new BigNukleosomNew(project,timeVector.get(y).get(x).get("3"), width, height);
+        
+                        
 			add(nukl, x,y);
                         nuklList.add(nukl);
+                        
+
+                        x++;
                     
 		}
                 

@@ -4,6 +4,9 @@ import java.util.List;
 
 import javafx.scene.paint.Color;
 import NukleosomReader.NukleosomReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
 
 public class ChromosomProject {
 
@@ -15,10 +18,13 @@ public class ChromosomProject {
 	List<String> dataList;
 	private int sunburstHeight = 50;
 	private int sunburstWidth = 50;
+        private ArrayList fileLines;
+        public  Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector;
         
         public String selectedTabName = "";
 	
-	public static Color color0 = Color.rgb(237, 124, 36);
+//	public static Color color0 = Color.rgb(237, 124, 36);
+        public static Color color0 = Color.rgb(255, 255, 255);
 	public static Color color1 = Color.rgb(60, 58, 245);
 	public static Color color2 = Color.rgb(165, 164, 249);
 	public static Color color3 = Color.rgb(255, 184, 122);
@@ -28,17 +34,17 @@ public class ChromosomProject {
 		//readNukleosoms(defaultFileName, offset, number);
 	}
 	
-	public List<String> getReadedNukleosoms() {
-		if(dataList == null) { 
-			dataList = NukleosomReader.readNukleosoms(defaultFileName, offset, number);
-		}
-		return dataList;
-	}
-	
-	public List<String> readNukleosoms(String fileName, int offset,int number) {
-			dataList = NukleosomReader.readNukleosoms(fileName, offset, number);
-			return dataList;
-	}
+//	public List<String> getReadedNukleosoms() {
+//		if(dataList == null) { 
+//			dataList = NukleosomReader.readNukleosoms(defaultFileName, offset, number);
+//		}
+//		return dataList;
+//	}
+//	
+//	public List<String> readNukleosoms(String fileName, int offset,int number) {
+//			dataList = NukleosomReader.readNukleosoms(fileName, offset, number);
+//			return dataList;
+//	}
 	
 	public String getDefaultFileName() {
 		return defaultFileName;
@@ -96,5 +102,21 @@ public class ChromosomProject {
         
         public String getSelectedTabName() {
             return selectedTabName;
+        }
+        
+        public Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> getTimeVector(){
+            return timeVector;
+        } 
+        
+        public void setTimeVector( Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector) {
+            this.timeVector = timeVector;
+        } 
+        
+        public ArrayList<String> getFileLines() {
+            return fileLines;
+        }
+        
+        public void setFileLines(ArrayList<String> fileLines) {
+            this.fileLines = fileLines;
         }
 }

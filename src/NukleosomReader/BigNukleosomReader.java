@@ -16,7 +16,7 @@ public class BigNukleosomReader {
 	
 	public static List<String> readNukleosoms(int offset, int number) {
 		String line = "";
-		String fileName = "1.txt";
+		String fileName = "run2_state.txt";
 		int lineNr = 0;
 		int lineCounter = 0;
 		
