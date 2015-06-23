@@ -16,7 +16,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-import org.apache.tools.bzip2.CBZip2InputStream;
 
 public class NukleosomReader {
     
@@ -100,7 +99,6 @@ public class NukleosomReader {
                      ArrayList<String> linesList = new ArrayList<String>();
                      
                      while((line = br.readLine()) != null) {
-                         System.err.println(line);
                          linesList.add(line);
                      }
                      
@@ -125,8 +123,7 @@ public class NukleosomReader {
 			BufferedReader fileReader = new BufferedReader(new InputStreamReader(in));
 			//Solange noch Eintraege vorhanden sind, sollen diese in die Liste aufgenommen werden
 			while((line = fileReader.readLine()) != null){
-					returnList.add(line);
-                                        System.err.println(line);
+                            returnList.add(line);
 			}
 			
 			fileReader.close();
@@ -145,8 +142,11 @@ public class NukleosomReader {
                 HashMap<String,HashMap<String,Integer>> histonMap;// = new HashMap<String, HashMap<String,Integer>>();
                 ArrayList <HashMap<String,HashMap<String,Integer>>> nukleosomList = new ArrayList<HashMap<String,HashMap<String,Integer>>>();
                 Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = new Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>>();
-                
+                int count = 0;
                 for(String line : project.getFileLines()) {
+                    
+//                    count++;
+//                    System.err.println(count);
                     //Den Beginn einen neuen Zeitschritts einleiten
                     if(line.contains(">")) {
                         if(nukleosomList.size() != 0)
@@ -158,7 +158,7 @@ public class NukleosomReader {
                     if(line.equals("")) {
                         continue;
                     }
-                    
+//                    System.err.println(line);
                     histonMap = new HashMap<String, HashMap<String,Integer>>();
                     
                     line = line.replaceAll("\\}", "");
@@ -211,13 +211,13 @@ public class NukleosomReader {
                 
                 project.setTimeVector(timeVector);
                 
-                for(ArrayList <HashMap<String,HashMap<String,Integer>>> nuklList : timeVector) {
-                    System.out.print("JOP:");
-                    for(HashMap<String,HashMap<String,Integer>> histMap : nuklList) {
-                        System.out.print(histMap);
-                    }
-                    System.out.println("");
-                }
+//                for(ArrayList <HashMap<String,HashMap<String,Integer>>> nuklList : timeVector) {
+//                    System.out.print("JOP:");
+//                    for(HashMap<String,HashMap<String,Integer>> histMap : nuklList) {
+//                        System.out.print(histMap);
+//                    }
+//                    System.out.println("");
+//                }
                 
 //                System.err.print(timeVector.toString());
                 
@@ -226,7 +226,7 @@ public class NukleosomReader {
         public static void main(String args[]) {
             ChromosomProject project = new ChromosomProject();
             NukleosomReader.fillDataVectors(project);
-            System.err.println("LOL: " + project.getTimeVector().get(1).get(1).get("3"));
+//            System.err.println("LOL: " + project.getTimeVector().get(1).get(1).get("3"));
            
         }
         

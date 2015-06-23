@@ -36,33 +36,29 @@ public class BigNukleosomRow extends GridPane {
 //                setStyle("-fx-border: 2px solid; -fx-border-color: red;");
 
 		
-		int 	maxX = X,
-                        y = 0,  x = 0;		
+		int 	maxX = X;
 		
 //		List<String> returnList = project.getReadedNukleosoms();
 		Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
 		
-                for(int i = 0; i < X*Y; i++) {
+                for(int y = 0; y < timeVector.size(); y++) {
+                    for(int x = 0; x < timeVector.get(y).size();x++) {
+                        
+                    
 			
 //			List<int[]> valueList = new ArrayList<int[]>();
 //			
 //			for(int u = 0; u < project.getHistoneNumber(); u++) {
 //				valueList.add(timeVector.get(y).get(x).get(u));
 //			}
-			
-                        if((x) % X == 0) {
-				y++;
-				x = 0;
-			}
                     
+//                        System.err.println(timeVector.size() + " " + timeVector.get(0).size());
+//                        System.err.println("Y: " + y);
                         BigNukleosomNew nukl = new BigNukleosomNew(project,timeVector.get(y).get(x).get("3"), width, height);
         
-                        
 			add(nukl, x,y);
                         nuklList.add(nukl);
-                        
-
-                        x++;
+                      }  
                     
 		}
                 

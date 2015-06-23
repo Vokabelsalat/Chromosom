@@ -60,7 +60,7 @@ public class Chromosom extends Application {
 	
 		project = new ChromosomProject();
 //                
-                NukleosomReader.openFile(project, "run2_state.txt");
+                NukleosomReader.openFile(project, "run3_state.txt.bz2");
 		NukleosomReader.fillDataVectors(project);
                 
 		screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
@@ -73,7 +73,7 @@ public class Chromosom extends Application {
 		findNukleosomResulution(nukleosomTab.getText());
 		
 //		row = new BigNukleosomRow(project,10,10,project.getNukleosomWidth(), project.getNukleosomHeight());
-                row = new BigNukleosomRow(project, project.getTimeVector().get(0).size(), project.getTimeVector().size()-1, project.getNukleosomWidth(), project.getNukleosomHeight());
+                row = new BigNukleosomRow(project, project.getTimeVector().get(0).size(), project.getTimeVector().size(), project.getNukleosomWidth(), project.getNukleosomHeight());
 		ScrollPane sb = new ScrollPane();
 		sb.setContent(row);
 		

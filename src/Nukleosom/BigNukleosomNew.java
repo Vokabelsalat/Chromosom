@@ -46,7 +46,7 @@ public class BigNukleosomNew extends Pane {
                     
                     Paint color = Color.BLACK;
 
-                    System.err.println(value);
+//                    System.err.println(value);
                     
                     if(value == 0) {
 //					color = Color.web("#FF9933");
