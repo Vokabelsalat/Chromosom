@@ -60,8 +60,10 @@ public class Chromosom extends Application {
 	
 		project = new ChromosomProject();
 //                
-                NukleosomReader.openFile(project, "run3_state.txt.bz2");
-		NukleosomReader.fillDataVectors(project);
+                NukleosomReader nukleosomReader = new NukleosomReader(project);
+                
+                nukleosomReader.openFile("run2_state.txt");
+//		NukleosomReader.fillDataVectors(project);
                 
 		screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
 		screenHeight = Screen.getPrimary().getVisualBounds().getHeight();

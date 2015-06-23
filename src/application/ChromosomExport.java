@@ -284,7 +284,12 @@ public class ChromosomExport {
             BufferedWriter out = new BufferedWriter(fstream);
             out.write(svgString);
             //Close the output stream
-            out.close();
+            
+//in runde klammern zwiscne try und geschweifter klammer
+// Stringbuffer verwenden anstatt string
+            
+            fstream.close();
+            out.close();fstream.close();
 //            System.err.println(svgString);
             System.err.println("FERTIG");
             

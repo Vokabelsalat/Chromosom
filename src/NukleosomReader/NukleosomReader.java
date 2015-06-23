@@ -5,6 +5,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -21,213 +24,166 @@ public class NukleosomReader {
     
     public static int zaehler = 0;
     
+        ChromosomProject project;
     
-        public static void openFile(ChromosomProject project, String fileName) {
-//		InputStream decodeStream = null;
-//		ZipInputStream zis = null;
-//                File file = new File(fileName);
-//
-//		try {
-//
-//			decodeStream = new FileInputStream(file);
-//			zis = new ZipInputStream(decodeStream);
-//			ZipEntry zipEntry = null;
-//
-//			while (null != (zipEntry = zis.getNextEntry())) {
-//
-//				String curTableName = zipEntry.getName();
-//                                        
-//                                System.err.println(curTableName);
-//                                
-//                                project.setFileLines(readFileInLines(zis));
-//			}
-//
-////			zis.close();
-////			decodeStream.close();
-//		} catch (FileNotFoundException e) {
-//		} catch (Exception e) {
-//		} 
-//                finally {
-//			try {
-//				zis.close();
-//			} catch (Exception e) {
-//			}
-//			try {
-//				decodeStream.close();
-//			} catch (Exception e) {
-//			}
-//		}
+        public NukleosomReader(ChromosomProject project) {
+            this.project = project;
+        }
+    
+        public void openFile(String fileName) {
             
-            
-                try {
-                     // Open the compressed file
-//                     String source = "sourcename.gzip";
+//            Die weiche nach dme Format in diese Methode. Der eigentlich Export in andere einzelne Methoden. Dabei die Streams alle in der Try öffnen, damit sie auch wieder geschlossen werden. 
+//                    StringBuffer benutzen anstatt von Strings.
+//            SPLIT FÜR DAS EINLESEN VERWENDEN; DA DIEs besonders schnell ist.
                     
-                    String format = fileName.substring(fileName.lastIndexOf(".")+1);
-                    
-                    InputStreamReader inst = new InputStreamReader(System.in);
-                    
-                    if(format.equals("gz")) {
-                        GZIPInputStream in = new GZIPInputStream(new FileInputStream(new File(fileName)));
-                        inst = new InputStreamReader(in);
-                    }
-                    else if(format.equals("zip")) {
-                        
-			ZipInputStream zipStream = new ZipInputStream(new FileInputStream(new File(fileName)));
-                        inst = new InputStreamReader(zipStream);
-                        
+            String format = fileName.substring(fileName.lastIndexOf(".")+1);
+
+            if(format.equals("gz")) {
+                readGZip(new File(fileName));
+            }
+            else if(format.equals("zip")) {
+                readZip(new File(fileName));
+            }
+            else if(format.equals("bz2")) {
+                readBZip2(new File(fileName));
+            }
+            else if(format.equals("txt")) {
+                readTxt(new File(fileName));
+            }
+        }
+        
+        public void readZip(File inFile) {
+            try(ZipInputStream zipStream = new ZipInputStream(new FileInputStream(inFile));
+                BufferedReader fileReader = new BufferedReader(new InputStreamReader(zipStream))   ){
+                
                         ZipEntry zipEntry = null;
                         
                         if(null == (zipEntry = zipStream.getNextEntry())) {
                             
                         }
-                    }
-                    else if(format.equals("bz2")) {
-                        FileInputStream fin = new FileInputStream(fileName);
-                        BufferedInputStream in = new BufferedInputStream(fin);
-                        BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
-                        inst = new InputStreamReader(bzIn);
-                    }
-                    else if(format.equals("txt")) {
-                        FileInputStream fin = new FileInputStream(fileName);
-                        inst = new InputStreamReader(fin);
-                    }
-                     
-                     BufferedReader br = new BufferedReader(inst);
-                     String line = "";
-                     
-                     ArrayList<String> linesList = new ArrayList<String>();
-                     
-                     while((line = br.readLine()) != null) {
-                         linesList.add(line);
-                     }
-                     
-                     project.setFileLines(linesList);
-
-                     // Close the file and stream
-                     inst.close();
-//                     out.close();
-                 } catch (IOException e) {
-                 }
-        }
-	
-	public static ArrayList<String> readFileInLines(InputStream in) {
-		String line = "";
-//		String fileName = "ES_segmentation_wholedata.data";
-		
-		//Die ArrayList die zurückgegeben werden soll
-		ArrayList<String> returnList = new ArrayList<String>();
-	
-		try {
-			//Filereader um aus der Datei lesen zu können
-			BufferedReader fileReader = new BufferedReader(new InputStreamReader(in));
-			//Solange noch Eintraege vorhanden sind, sollen diese in die Liste aufgenommen werden
-			while((line = fileReader.readLine()) != null){
-                            returnList.add(line);
-			}
-			
-			fileReader.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
                 
-		return returnList;
+                        fillDataVectors(fileReader);
+                        
+            } catch (IOException ex) {
+                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
+            }
         }
         
-        public static void fillDataVectors(ChromosomProject project) {
+        public void readGZip(File inFile) {
+            try( GZIPInputStream in = new GZIPInputStream(new FileInputStream(new File("hallo")));
+                 BufferedReader fileReader = new BufferedReader(new InputStreamReader(in))){
                 
-                //Hier muss die vordefinierte Attributmenge eingelesen werden
-            	HashMap<String,Integer> attributeMap;// = new HashMap<String, Integer>();
-                HashMap<String,HashMap<String,Integer>> histonMap;// = new HashMap<String, HashMap<String,Integer>>();
-                ArrayList <HashMap<String,HashMap<String,Integer>>> nukleosomList = new ArrayList<HashMap<String,HashMap<String,Integer>>>();
-                Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = new Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>>();
-                int count = 0;
-                for(String line : project.getFileLines()) {
-                    
-//                    count++;
-//                    System.err.println(count);
-                    //Den Beginn einen neuen Zeitschritts einleiten
-                    if(line.contains(">")) {
-                        if(nukleosomList.size() != 0)
-                            timeVector.add(nukleosomList);
-                        nukleosomList = new ArrayList< HashMap<String,HashMap<String,Integer>>>();
-                        continue;
-                    }
-                    //Leere Zeilen abfangen
-                    if(line.equals("")) {
-                        continue;
-                    }
-//                    System.err.println(line);
-                    histonMap = new HashMap<String, HashMap<String,Integer>>();
-                    
-                    line = line.replaceAll("\\}", "");
-                    line = line.replaceAll("\\{", "");
-                    
-                    String[] modArray = line.split("H");
-                    
-                    if(line.equals("")) {
+                fillDataVectors(fileReader);
+                
+            } catch (IOException ex) {
+                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
+            }
+        }
         
-                            attributeMap = new HashMap<String, Integer>();
-                            
-                            attributeMap.put("0", 0);
-                            
-                            histonMap.put("3",attributeMap);
-                            
-                            nukleosomList.add(histonMap);
-                    } 
-                    else {
-                    
-                        for(String nuklString : modArray) {
-
-                            if(!nuklString.equals("")) {
-                                String histoneNumber = nuklString.substring(0, 1);
-
-                                if(histonMap.containsKey(histoneNumber)) {
-                                    attributeMap = histonMap.get(histoneNumber);
-                                }
-                                else {
-                                    attributeMap = new HashMap<String, Integer>();
-                                }
-
-                                String attributeString = nuklString.substring(nuklString.indexOf("[")+1, nuklString.lastIndexOf("]"));
-
-                                String splittedAttribute[] = attributeString.split("\\.");
-
-    //                            attributeArray[Integer.parseInt(splittedAttribute[0])-1] = Integer.parseInt(splittedAttribute[1]);
-
-                                attributeMap.put(splittedAttribute[0], Integer.parseInt(splittedAttribute[1]));
-
-    //                            histonList.add(histoneNumber, attributeArray);
-                                histonMap.put(histoneNumber,attributeMap);
-
-                                nukleosomList.add(histonMap);
-                            }
-
-                        }
-                    }
-                    
+        public void readBZip2(File inFile) {
+            try( 
+                BufferedInputStream in = new BufferedInputStream(new FileInputStream(inFile));
+                BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
+                BufferedReader fileReader = new BufferedReader(new InputStreamReader(bzIn))){
+                
+                fillDataVectors(fileReader);
+                
+            } catch (IOException ex) {
+                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
+            }           
+        }
+        
+        public void readTxt(File inFile) {
+            try(    
+                FileInputStream fin = new FileInputStream(inFile);
+                BufferedReader fileReader = new BufferedReader(new InputStreamReader(fin))){  
+                
+                fillDataVectors(fileReader);
+                
+            } catch (IOException ex) {  
+                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
+            }  
+        }
+        
+        public void fillDataVectors(BufferedReader br) {
+                
+        try {
+            //Hier muss die vordefinierte Attributmenge eingelesen werden
+            HashMap<String,Integer> attributeMap;// = new HashMap<String, Integer>();
+            HashMap<String,HashMap<String,Integer>> histonMap;// = new HashMap<String, HashMap<String,Integer>>();
+            ArrayList <HashMap<String,HashMap<String,Integer>>> nukleosomList = new ArrayList<HashMap<String,HashMap<String,Integer>>>();
+            Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = new Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>>();
+            
+            String line = "";
+            
+            while((line = br.readLine()) != null){
+                
+                //Den Beginn einen neuen Zeitschritts einleiten
+                if(line.contains(">")) {
+                    if(nukleosomList.size() != 0)
+                        timeVector.add(nukleosomList);
+                    nukleosomList = new ArrayList< HashMap<String,HashMap<String,Integer>>>();
+                    continue;
                 }
+                //Leere Zeilen abfangen
+                if(line.equals("")) {
+                    continue;
+                }
+
+                histonMap = new HashMap<String, HashMap<String,Integer>>();
                 
-                project.setTimeVector(timeVector);
-                
-//                for(ArrayList <HashMap<String,HashMap<String,Integer>>> nuklList : timeVector) {
-//                    System.out.print("JOP:");
-//                    for(HashMap<String,HashMap<String,Integer>> histMap : nuklList) {
-//                        System.out.print(histMap);
-//                    }
-//                    System.out.println("");
-//                }
-                
-//                System.err.print(timeVector.toString());
+                if(line.contains("H")) {
+                    String splitArray[] = line.split("H");
+
+                    for(int i = 1; i < splitArray.length; i++) {
+
+                        String histoneNumber = "3";
+                        String attributeString = "0";
+                        int value = 0;
+
+                        if(splitArray[i].contains("\\[")); {
+                            String split[] = splitArray[i].split("\\[");
+                            histoneNumber = split[0];
+                            String splitAttribute[] = split[1].split("\\.");
+                            attributeString = splitAttribute[0];
+                            String splitValue[] = splitAttribute[1].split("\\]");
+                            value = Integer.parseInt(splitValue[0]);
+                        }
+
+                        attributeMap = new HashMap<String, Integer>();
+
+                        attributeMap.put(attributeString, value);
+
+                        histonMap.put(histoneNumber, attributeMap);
+
+                        nukleosomList.add(histonMap);                    
+
+                    }
+                }
+                else {
+                        attributeMap = new HashMap<String, Integer>();
+
+                        attributeMap.put("0", 0);
+
+                        histonMap.put("3",attributeMap);
+
+                        nukleosomList.add(histonMap);
+                }
+            }
+            
+            project.setTimeVector(timeVector);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(NukleosomReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
                 
         }
         
         public static void main(String args[]) {
-            ChromosomProject project = new ChromosomProject();
-            NukleosomReader.fillDataVectors(project);
-//            System.err.println("LOL: " + project.getTimeVector().get(1).get(1).get("3"));
-           
+//            ChromosomProject project = new ChromosomProject();
+//            NukleosomReader.fillDataVectors(project);
+////            System.err.println("LOL: " + project.getTimeVector().get(1).get(1).get("3"));
+//           
         }
         
         
