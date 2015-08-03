@@ -62,7 +62,7 @@ public class Chromosom extends Application {
 //                
                 NukleosomReader nukleosomReader = new NukleosomReader(project);
                 
-                nukleosomReader.openFile("run2_state.txt");
+                nukleosomReader.openFile("outfile.txt");
 //		NukleosomReader.fillDataVectors(project);
                 
 		screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
@@ -314,16 +314,16 @@ public class Chromosom extends Application {
                                 valueArray.put("0", 0);
                                 valueArray.put("1", 0);
 				      
-				BigNukleosomNew nukl = new BigNukleosomNew(project, valueArray, project.getNukleosomWidth(), project.getNukleosomHeight());
+//				BigNukleosomNew nukl = new BigNukleosomNew(project, valueArray, project.getNukleosomWidth(), project.getNukleosomHeight());
 
-				double actWidth = Math.ceil(nukl.getPrefWidth() + project.getNukleosomWidth() / (7./4.));
-				double actHeight = Math.ceil(nukl.getPrefHeight() + project.getNukleosomHeight() / (7./6.));
+//				double actWidth = Math.ceil(nukl.getPrefWidth() + project.getNukleosomWidth() / (7./4.));
+//				double actHeight = Math.ceil(nukl.getPrefHeight() + project.getNukleosomHeight() / (7./6.));
 				
 //                                maxX = (int)(1124 / actWidth);
-				maxX = (int)(screenWidth / actWidth);
-				maxY = (int)(((screenHeight) / actHeight));
+//				maxX = (int)(screenWidth / actWidth);
+//				maxY = (int)(((screenHeight) / actHeight));
 				
-				System.err.println("Nukleosoms: " + maxX + " " + maxY);
+//				System.err.println("Nukleosoms: " + maxX + " " + maxY);
 				
 				break;
 			}

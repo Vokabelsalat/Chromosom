@@ -85,9 +85,9 @@ public class BigNukleosomReader {
 	public static void main(String args[]) {
 		
 		List<String> 	h2A = new ArrayList<String>(),
-						h2B = new ArrayList<String>(),
-						h3 = new ArrayList<String>(),
-						h4 = new ArrayList<String>();
+                                h2B = new ArrayList<String>(),
+                                h3 = new ArrayList<String>(),
+                                h4 = new ArrayList<String>();
 		
 		Map<String, List<String>> proteinMap = new HashMap<String, List<String>>();
 		

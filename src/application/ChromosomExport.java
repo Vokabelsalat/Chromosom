@@ -101,7 +101,6 @@ public class ChromosomExport {
             Bounds nuklBounds = nukl.localToScene(nukl.getBoundsInLocal());
 //            Bounds nuklBounds = nukl.sceneToLocal(vase.getBoundsInLocal());
            
-            
             String editedExportString = nukl.getExportString().replaceAll("%X", Double.toString(nuklBounds.getMinX() - diffX));
                     editedExportString = editedExportString.replaceAll("%Y", Double.toString(nuklBounds.getMinY() - diffY));
                     editedExportString = editedExportString.replaceAll("%W", "0");

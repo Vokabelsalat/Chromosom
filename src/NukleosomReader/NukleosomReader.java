@@ -10,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
@@ -38,73 +40,198 @@ public class NukleosomReader {
                     
             String format = fileName.substring(fileName.lastIndexOf(".")+1);
 
-            if(format.equals("gz")) {
-                readGZip(new File(fileName));
-            }
-            else if(format.equals("zip")) {
-                readZip(new File(fileName));
-            }
-            else if(format.equals("bz2")) {
-                readBZip2(new File(fileName));
-            }
-            else if(format.equals("txt")) {
+//            if(format.equals("gz")) {
+//                readGZip(new File(fileName));
+//            }
+//            else if(format.equals("zip")) {
+//                readZip(new File(fileName));
+//            }
+//            else if(format.equals("bz2")) {
+//                readBZip2(new File(fileName));
+//            }
+//            else if ...
+            if(format.equals("txt")) {
                 readTxt(new File(fileName));
             }
         }
         
-        public void readZip(File inFile) {
-            try(ZipInputStream zipStream = new ZipInputStream(new FileInputStream(inFile));
-                BufferedReader fileReader = new BufferedReader(new InputStreamReader(zipStream))   ){
-                
-                        ZipEntry zipEntry = null;
-                        
-                        if(null == (zipEntry = zipStream.getNextEntry())) {
-                            
-                        }
-                
-                        fillDataVectors(fileReader);
-                        
-            } catch (IOException ex) {
-                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
-            }
-        }
-        
-        public void readGZip(File inFile) {
-            try( GZIPInputStream in = new GZIPInputStream(new FileInputStream(new File("hallo")));
-                 BufferedReader fileReader = new BufferedReader(new InputStreamReader(in))){
-                
-                fillDataVectors(fileReader);
-                
-            } catch (IOException ex) {
-                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
-            }
-        }
-        
-        public void readBZip2(File inFile) {
-            try( 
-                BufferedInputStream in = new BufferedInputStream(new FileInputStream(inFile));
-                BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
-                BufferedReader fileReader = new BufferedReader(new InputStreamReader(bzIn))){
-                
-                fillDataVectors(fileReader);
-                
-            } catch (IOException ex) {
-                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
-            }           
-        }
+//        public void readZip(File inFile) {
+//            try(ZipInputStream zipStream = new ZipInputStream(new FileInputStream(inFile));
+//                BufferedReader fileReader = new BufferedReader(new InputStreamReader(zipStream))   ){
+//                
+//                        ZipEntry zipEntry = null;
+//                        
+//                        if(null == (zipEntry = zipStream.getNextEntry())) {
+//                            
+//                        }
+//                
+//                        fillDataVectors(fileReader);
+//                        
+//            } catch (IOException ex) {
+//                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
+//            }
+//        }
+//        
+//        public void readGZip(File inFile) {
+//            try( GZIPInputStream in = new GZIPInputStream(new FileInputStream(new File("hallo")));
+//                 BufferedReader fileReader = new BufferedReader(new InputStreamReader(in))){
+//                
+//                fillDataVectors(fileReader);
+//                
+//            } catch (IOException ex) {
+//                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
+//            }
+//        }
+//        
+//        public void readBZip2(File inFile) {
+//            try( 
+//                BufferedInputStream in = new BufferedInputStream(new FileInputStream(inFile));
+//                BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(in);
+//                BufferedReader fileReader = new BufferedReader(new InputStreamReader(bzIn))){
+//                
+//                fillDataVectors(fileReader);
+//                
+//            } catch (IOException ex) {
+//                System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
+//            }           
+//        }
         
         public void readTxt(File inFile) {
             try(    
                 FileInputStream fin = new FileInputStream(inFile);
-                BufferedReader fileReader = new BufferedReader(new InputStreamReader(fin))){  
+                BufferedReader br = new BufferedReader(new InputStreamReader(fin));){
                 
-                fillDataVectors(fileReader);
+                fillDataVectors(br);
                 
             } catch (IOException ex) {  
                 System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
             }  
         }
         
+        public void fillDataVectors(FileInputStream f) {
+        try {  
+            
+//        FileInputStream f = new FileInputStream("run2_state.txt");
+            FileChannel ch = f.getChannel( );
+            ByteBuffer bb = ByteBuffer.allocateDirect(1024);
+            byte[] barray = new byte[1024];
+            int nRead, nGet;
+
+            String str = "";
+            String strArray[] = {"",""};
+            String line = "";
+            
+            //Hier muss die vordefinierte Attributmenge eingelesen werden
+            HashMap<String,Integer> attributeMap;// = new HashMap<String, Integer>();
+            HashMap<String,HashMap<String,Integer>> histonMap;// = new HashMap<String, HashMap<String,Integer>>();
+            ArrayList <HashMap<String,HashMap<String,Integer>>> nukleosomList = new ArrayList<HashMap<String,HashMap<String,Integer>>>();
+            Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = new Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>>();
+            
+            while ( (nRead=ch.read( bb )) != -1 ) {
+                if ( nRead == 0 )
+                    continue;
+                bb.position( 0 );
+                bb.limit( nRead );
+                while(bb.hasRemaining( )) {
+                    nGet = Math.min( bb.remaining( ), 1024 );
+                    bb.get( barray, 0, nGet );
+                    str += new String(barray,0 , nGet);
+                    
+                    strArray = str.split("\n");
+              
+                    for(int lineNumber = 0; lineNumber < strArray.length-1; lineNumber++) {
+                       
+                        line = strArray[lineNumber];
+//                        System.err.println(line);
+                        //Den Beginn einen neuen Zeitschritts einleiten
+                        if(line.contains(">")) {
+                            if(nukleosomList.size() != 0)
+                                timeVector.add(nukleosomList);
+                            nukleosomList = new ArrayList<HashMap<String,HashMap<String,Integer>>>();
+                            continue;
+                        }
+                        //Leere Zeilen abfangen
+                        if(line.equals("")) {
+                            continue;
+                        }
+
+                        histonMap = new HashMap<String, HashMap<String,Integer>>();
+
+                        if(line.contains("H")) {
+                            String splitArray[] = line.split("H");
+
+                            attributeMap = null;
+
+                            for(int i = 1; i < splitArray.length; i++) {
+
+                                String histoneNumber = "3";
+                                String attributeString = "0";
+                                int value = 0;
+
+                                if(splitArray[i].contains("\\[")); {
+                                    String split[] = splitArray[i].split("\\[");
+                                    histoneNumber = split[0];
+
+                                    if(histonMap.containsKey(histoneNumber)) {
+                                       attributeMap = histonMap.get(histoneNumber);
+                                    }
+                                    else {
+                                       attributeMap = new HashMap<String, Integer>(); 
+                                    }
+
+                                    String splitAttribute[] = split[1].split("\\.");
+                                    attributeString = splitAttribute[0];
+                                    String splitValue[] = splitAttribute[1].split("\\]");
+                                    value = Integer.parseInt(splitValue[0]);
+                                }
+
+                                attributeMap.put(attributeString, value);
+
+                                histonMap.put(histoneNumber, attributeMap);
+                            } 
+                        }
+                        else {
+                                attributeMap = new HashMap<String, Integer>();
+
+                                attributeMap.put("0", 0);
+
+                                histonMap.put("3",attributeMap);
+
+
+                        }
+
+                        nukleosomList.add(histonMap); 
+                        
+                     }//FORSCHLEIFE(LINENUMBER)                        
+                        
+                        //Um Zeilenbrüche die durch den split verloren gehen, wieder einzufügen
+                        if(str.endsWith("\n"))
+                            str = strArray[strArray.length-1] + "\n";
+                        else
+                            str = strArray[strArray.length-1];
+                        
+                        if(!nukleosomList.isEmpty())
+                             timeVector.add(nukleosomList);
+                    }//WHILESCHLEIFE
+                    
+                    bb.clear();                
+                }
+                
+                //Um den letzten Zeitschritt noch hinzuzufügen
+                if(nukleosomList.size() != 0)
+                    timeVector.add(nukleosomList);
+
+                project.setTimeVector(timeVector);
+                
+                bb.clear();
+                ch.close();
+          
+        } catch (IOException ex) {
+            Logger.getLogger(NukleosomReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
+                
+        }
+///*
         public void fillDataVectors(BufferedReader br) {
                 
         try {
@@ -122,7 +249,7 @@ public class NukleosomReader {
                 if(line.contains(">")) {
                     if(nukleosomList.size() != 0)
                         timeVector.add(nukleosomList);
-                    nukleosomList = new ArrayList< HashMap<String,HashMap<String,Integer>>>();
+                    nukleosomList = new ArrayList<HashMap<String,HashMap<String,Integer>>>();
                     continue;
                 }
                 //Leere Zeilen abfangen
@@ -134,9 +261,11 @@ public class NukleosomReader {
                 
                 if(line.contains("H")) {
                     String splitArray[] = line.split("H");
-
+                    
+                    attributeMap = null;
+                    
                     for(int i = 1; i < splitArray.length; i++) {
-
+                        
                         String histoneNumber = "3";
                         String attributeString = "0";
                         int value = 0;
@@ -144,21 +273,24 @@ public class NukleosomReader {
                         if(splitArray[i].contains("\\[")); {
                             String split[] = splitArray[i].split("\\[");
                             histoneNumber = split[0];
+                            
+                            if(histonMap.containsKey(histoneNumber)) {
+                               attributeMap = histonMap.get(histoneNumber);
+                            }
+                            else {
+                               attributeMap = new HashMap<String, Integer>(); 
+                            }
+                            
                             String splitAttribute[] = split[1].split("\\.");
                             attributeString = splitAttribute[0];
                             String splitValue[] = splitAttribute[1].split("\\]");
                             value = Integer.parseInt(splitValue[0]);
                         }
 
-                        attributeMap = new HashMap<String, Integer>();
-
                         attributeMap.put(attributeString, value);
 
                         histonMap.put(histoneNumber, attributeMap);
-
-                        nukleosomList.add(histonMap);                    
-
-                    }
+                    } 
                 }
                 else {
                         attributeMap = new HashMap<String, Integer>();
@@ -167,9 +299,15 @@ public class NukleosomReader {
 
                         histonMap.put("3",attributeMap);
 
-                        nukleosomList.add(histonMap);
+                        
                 }
+                
+                nukleosomList.add(histonMap);
             }
+            
+            //Um den letzten Zeitschritt noch hinzuzufügen
+            if(nukleosomList.size() != 0)
+                timeVector.add(nukleosomList);
             
             project.setTimeVector(timeVector);
             
@@ -178,6 +316,7 @@ public class NukleosomReader {
         }
                 
         }
+//*/
         
         public static void main(String args[]) {
 //            ChromosomProject project = new ChromosomProject();
@@ -189,3 +328,4 @@ public class NukleosomReader {
         
 	
 }	
+

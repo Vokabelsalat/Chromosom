@@ -5,115 +5,153 @@
  */
 package Nukleosom;
 
-import static application.ChromosomExport.pane;
-import static application.ChromosomExport.posX;
-import static application.ChromosomExport.posY;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 
 
 import application.ChromosomProject;
 import java.util.HashMap;
-import javafx.event.EventHandler;
+import java.util.Map;
 import javafx.geometry.Bounds;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
-public class BigNukleosomNew extends Pane {
+public class BigNukleosomNew extends GridPane {
 	
 	HashMap<String,Integer> attributeMap;
-	int width, height;
+//	int width, height;
 	double angleWidth;
-        private String svgExportString = "<g transform=\"translate(%X,%Y)\">\n";
+//        private String svgExportString = "<g transform=\"translate(%X,%Y)\">\n";
 	
-	public BigNukleosomNew(ChromosomProject project, HashMap<String,Integer> attributeMap, int width, int height) {
-	
-		this.attributeMap = attributeMap;
-		this.width = width;
-		this.height = height;
-		
-                int maxX = 1;
-                int maxY = 1;
+	public BigNukleosomNew(ChromosomProject project, HashMap<String,HashMap<String,Integer>> histoneMap, int width, int height) {
+            
+                Map<String,HashMap<String,int[]>> histoneProperties = project.getHistoneProperties();
+               
+                int maxX = project.getMaxX();
+                int maxY = project.getMaxY();
+                
+//                //TODO ind die Höhe und Breite noch die Lücken zwischen den Histonen einberechnen (gaps)
+//		this.width = maxX * width;
+//		this.height = maxY * height;
+                
+                int gridX = 0;
+                int gridY = 0;
                 
                 setPrefSize(width * maxX, height * maxY);
                 
                 int x = 0;
                 int y = 0;
-           
-                for(int value : attributeMap.values()) {
-                   
+                String histoneNumberString = "";
+                
+                Pane pan = new Pane();                
+                this.setHgap(5);
+                this.setVgap(5);
+                
+//                System.err.println(histoneMap);
+                
+                int value;
+                Paint color;
+                AttributeRectangle rect;
+                
+                for(Map.Entry<String,HashMap<String,Integer>> histone : histoneMap.entrySet()) {
+                    pan = new Pane(); 
+                    x = 0;
+                    y = 0;
+                    histoneNumberString = histone.getKey();
+//                    /* 
                     
-                    Paint color = Color.BLACK;
+                    for(Map.Entry<String,Integer> attribute : histone.getValue().entrySet()) {
+                            value = attribute.getValue();
 
-//                    System.err.println(value);
+                            color = Color.BLACK;
+
+                            if(value == 0) {
+        //					color = Color.web("#FF9933");
+                                    color = ChromosomProject.color0;
+                            }
+                            else if(value == 1) {
+        //					color = Color.web("#3333FF");
+                                    color = ChromosomProject.color1;
+                            }
+                            else if(value == 2) {
+        //					color = Color.web("#3333FF");
+                                    color = ChromosomProject.color2;
+                            }
+                            else if(value == 3) {
+        //					color = Color.web("#FF9933");
+                                    color = ChromosomProject.color3;
+                            }
+                            else if(value == 4) {
+        //					color = Color.web("#E84C3C");
+                                    color = ChromosomProject.color4;
+                            }
+
+        //                    Rectangle rect = new Rectangle(width, height , color); rect.setOpacity(1.0);
+                            rect = new AttributeRectangle(width, height, color);
+                            
+                            x = histoneProperties.get(histoneNumberString).get(attribute.getKey())[0];
+                            y = histoneProperties.get(histoneNumberString).get(attribute.getKey())[1];
+                            
+                            rect.setX(x * width);
+                            rect.setY(y * height);
+                            rect.setStroke(Color.BLACK);
+                            rect.setStrokeWidth(0.3);
+                            rect.setAttributeValue(value);
+
+//                            Color col  = Color.BLACK;
+//                            Color strokeCol = Color.BLACK;
+//
+//                            if(rect.getFill()!=null) {
+//                                col = Color.web(rect.getFill().toString());
+//                            }
+//
+//                            String colString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
+//
+//                            if(rect.getStroke()!=null) {
+//                                col = Color.web(rect.getStroke().toString());
+//                            }
+//
+//                            String strokeColString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
+//
+//                            String pointString = "";
+//
+//                            svgExportString += "<rect x=\"" + rect.getX() + "\" y=\"" + rect.getY() + "\" width=\"" + width + "\" height=\"" + height + "\" style=\"fill:rgb(" + colString + ");stroke:rgb(" + strokeColString + ");stroke-width:" + rect.getStrokeWidth() + ";\" />";
+//                            svgExportString += "\n";
+
+                            pan.getChildren().add(rect);
+
+
+//                            if(x % maxX == 0 && x > 0) {
+//                                    y++;
+//                                    x = 0;
+//                            }
+//                            else
+//                                x++;
+                            
+
+                            
+//                            System.err.println(attribute.getKey() + " : " + x + " ; " + y);
+                            
+                        }
+                       
+                        this.add(pan, gridX, gridY); 
+                        gridY++;
+                    }
+                        
+//                    this.setGridLinesVisible(true);
                     
-                    if(value == 0) {
-//					color = Color.web("#FF9933");
-                            color = ChromosomProject.color0;
-                    }
-                    else if(value == 1) {
-//					color = Color.web("#3333FF");
-                            color = ChromosomProject.color1;
-                    }
-                    else if(value == 2) {
-//					color = Color.web("#3333FF");
-                            color = ChromosomProject.color2;
-                    }
-                    else if(value == 3) {
-//					color = Color.web("#FF9933");
-                            color = ChromosomProject.color3;
-                    }
-                    else if(value == 4) {
-//					color = Color.web("#E84C3C");
-                            color = ChromosomProject.color4;
-                    }
-			
-//                    Rectangle rect = new Rectangle(width, height , color); rect.setOpacity(1.0);
-                    AttributeRectangle rect = new AttributeRectangle(width, height , color);
-                    rect.setX(x * width);
-                    rect.setY(y * height);
-                    rect.setStroke(Color.BLACK);
-                    rect.setStrokeWidth(0.3);
-                    rect.setAttributeValue(value);
+//                    svgExportString += "</g>";
                     
-                    Color col  = Color.BLACK;
-                    Color strokeCol = Color.BLACK;
-
-                    if(rect.getFill()!=null) {
-                        col = Color.web(rect.getFill().toString());
-                    }
-
-                    String colString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
-
-                    if(rect.getStroke()!=null) {
-                        col = Color.web(rect.getStroke().toString());
-                    }
-
-                    String strokeColString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
-
-                    String pointString = "";
-
-                    svgExportString += "<rect x=\"" + rect.getX() + "\" y=\"" + rect.getY() + "\" width=\"" + width + "\" height=\"" + height + "\" style=\"fill:rgb(" + colString + ");stroke:rgb(" + strokeColString + ");stroke-width:" + rect.getStrokeWidth() + ";\" />";
-                    svgExportString += "\n";
                     
-                    getChildren().add(rect);
-                    
-                    Bounds bounds = rect.localToScene(rect.getBoundsInLocal());
-                    
-                    x++;
-                    if((x) % maxX == 0) {
-                            y++;
-                            x = 0;
-                    }
-                    
-                }
-                svgExportString += "</g>";
+                    x = 0;
+                    y = 0;
+//                    */
+                       
         }
         
         public String getSVGExportString() {
-            return svgExportString;
+            return ""; //svgExportString;
         }
-        
+   
 }
 

@@ -36,30 +36,34 @@ public class BigNukleosomRow extends GridPane {
 //                setStyle("-fx-border: 2px solid; -fx-border-color: red;");
 
 		
-		int 	maxX = X;
+		int maxX = X;
 		
 //		List<String> returnList = project.getReadedNukleosoms();
 		Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
 		
+//                System.err.println(timeVector);
+                
+                BigNukleosomNew nukl;
+                
                 for(int y = 0; y < timeVector.size(); y++) {
                     for(int x = 0; x < timeVector.get(y).size();x++) {
-                        
+                       for(String histoneNumber : timeVector.get(y).get(x).keySet()) { 
                     
 			
-//			List<int[]> valueList = new ArrayList<int[]>();
-//			
-//			for(int u = 0; u < project.getHistoneNumber(); u++) {
-//				valueList.add(timeVector.get(y).get(x).get(u));
-//			}
-                    
-//                        System.err.println(timeVector.size() + " " + timeVector.get(0).size());
-//                        System.err.println("Y: " + y);
-                        BigNukleosomNew nukl = new BigNukleosomNew(project,timeVector.get(y).get(x).get("3"), width, height);
-        
-			add(nukl, x,y);
-                        nuklList.add(nukl);
-                      }  
-                    
+    //			List<int[]> valueList = new ArrayList<int[]>();
+    //			
+    //			for(int u = 0; u < project.getHistoneNumber(); u++) {
+    //				valueList.add(timeVector.get(y).get(x).get(u));
+    //			}
+
+    //                        System.err.println(timeVector.size() + " " + timeVector.get(0).size());
+    //                        System.err.println("Y: " + y);
+                            nukl = new BigNukleosomNew(project,timeVector.get(y).get(x), width, height);
+
+                            add(nukl, x,y);
+                            nuklList.add(nukl);
+                        }
+                    }  
 		}
                 
 //		for(int i = 0; i < number; i++) {

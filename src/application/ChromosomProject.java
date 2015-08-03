@@ -6,10 +6,13 @@ import javafx.scene.paint.Color;
 import NukleosomReader.NukleosomReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 public class ChromosomProject {
 
+        Map<String,HashMap<String,int[]>> histoneProperties = new HashMap<String,HashMap<String,int[]>>();
+    
 	int number = 10000, offset = 2,
 		nukleosomWidth = 6, nukleosomHeight = 6,
 		histoneNumber = 1,
@@ -31,6 +34,26 @@ public class ChromosomProject {
 	public static Color color4 = Color.rgb(237, 74, 65);
 	
 	public ChromosomProject() {
+
+            int h34Array[] = {0,0};
+            int h327Array[] = {1,0};
+            int h44Array[] = {0,0};
+            int h427Array[] = {1,0};
+
+           Map<String, int[]> h3arrayMap = new HashMap<String, int[]>();
+           Map<String, int[]> h4arrayMap = new HashMap<String, int[]>();
+
+           h3arrayMap.put("4",h34Array);
+           h3arrayMap.put("27",h327Array);
+           
+           h4arrayMap.put("4",h44Array);
+           h4arrayMap.put("27",h327Array);
+           
+           histoneProperties.put("3", (HashMap<String, int[]>) h3arrayMap);
+           histoneProperties.put("4", (HashMap<String, int[]>) h4arrayMap);
+           
+//           System.err.println("histone: " + histoneProperties);
+           
 		//readNukleosoms(defaultFileName, offset, number);
 	}
 	
@@ -119,4 +142,18 @@ public class ChromosomProject {
         public void setFileLines(ArrayList<String> fileLines) {
             this.fileLines = fileLines;
         }
+        
+        public Map<String,HashMap<String,int[]>> getHistoneProperties() {
+            return histoneProperties;
+        }
+
+    public int getMaxY() {
+        //TODO Muss noch mit FUnktion gefüllt werden
+        return 2;
+    }
+
+    public int getMaxX() {
+        //TODO Muss noch mit FUnktion gefüllt werden
+        return 2;
+    }
 }
