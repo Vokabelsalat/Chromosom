@@ -39,15 +39,17 @@ public class BigNukleosomRow extends GridPane {
 		int maxX = X;
 		
 //		List<String> returnList = project.getReadedNukleosoms();
-		Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
+		List<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
 		
 //                System.err.println(timeVector);
                 
                 BigNukleosomNew nukl;
                 
                 for(int y = 0; y < timeVector.size(); y++) {
-                    for(int x = 0; x < timeVector.get(y).size();x++) {
-                       for(String histoneNumber : timeVector.get(y).get(x).keySet()) { 
+                    ArrayList< HashMap<String,HashMap<String,Integer>>> nukleomList = timeVector.get(y);
+                    for(int x = 0; x < nukleomList.size();x++) {
+                        HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
+                        for(String histoneNumber : histoneMap.keySet()) { 
                     
 			
     //			List<int[]> valueList = new ArrayList<int[]>();

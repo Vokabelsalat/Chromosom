@@ -21,8 +21,8 @@ public class ChromosomProject {
 	List<String> dataList;
 	private int sunburstHeight = 50;
 	private int sunburstWidth = 50;
-        private ArrayList fileLines;
-        public  Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector;
+        private List fileLines;
+        public  List<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector;
         
         public String selectedTabName = "";
 	
@@ -127,15 +127,15 @@ public class ChromosomProject {
             return selectedTabName;
         }
         
-        public Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> getTimeVector(){
+        public List<ArrayList< HashMap<String,HashMap<String,Integer>>>> getTimeVector(){
             return timeVector;
         } 
         
-        public void setTimeVector( Vector<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector) {
+        public void setTimeVector( List<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector) {
             this.timeVector = timeVector;
         } 
         
-        public ArrayList<String> getFileLines() {
+        public List<String> getFileLines() {
             return fileLines;
         }
         
