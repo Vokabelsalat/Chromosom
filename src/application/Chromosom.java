@@ -17,7 +17,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import Nukleosom.BigNukleosomNew;
 import Nukleosom.BigNukleosomRow;
 import NukleosomReader.NukleosomReader;
 import NukleosomVase.NukleosomVaseGrid;
@@ -27,14 +26,19 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 
 public class Chromosom extends Application {
+    private static int maxTimeSteps;
+    private static int offset;
+    private static String fileName;
 
     private BorderPane rootLayout;
     private ChromosomProject project;
@@ -57,8 +61,10 @@ public class Chromosom extends Application {
         MenuBar menuBar = createMenu(primaryStage);
         rootLayout.setTop(menuBar);
 
-        OptionsPanel options = new OptionsPanel();
+        OptionsPanel options = new OptionsPanel(project);
         rootLayout.setLeft(options);
+        
+
 
         Tab nukleosomeTab = createNuclosomeTab(primaryStage);
         tabPane.getTabs().add(nukleosomeTab);
@@ -84,12 +90,23 @@ public class Chromosom extends Application {
         project = new ChromosomProject();
 //                
         NukleosomReader nukleosomReader = new NukleosomReader(project);
-        nukleosomReader.openFile("outfile.txt");
+        
+        project.defaultFileName = fileName;
+        if(maxTimeSteps!=0) {
+            project.setMaxTimeSteps(maxTimeSteps);
+        }
+        if(offset!=0) {
+            project.setOffset(offset);
+        }
+        
+        nukleosomReader.openFile(project.getDefaultFileName());
 //		NukleosomReader.fillDataVectors(project);
 
 //		row = new BigNukleosomRow(project,10,10,project.getNukleosomWidth(), project.getNukleosomHeight());
-
-        row = new BigNukleosomRow(project, project.getTimeVector().get(0).size(), project.getTimeVector().size(), project.getNukleosomWidth(), project.getNukleosomHeight());
+        for(Map.Entry<String, HashMap<String, HashMap<String, HashMap<String, Integer>>>> entry : project.getTimeVector().entrySet()) {
+            row = new BigNukleosomRow(project, entry.getValue().size(), project.getTimeVector().size(), project.getNukleosomWidth(), project.getNukleosomHeight());
+            break;
+        }
         ScrollPane sb = new ScrollPane();
         sb.setContent(row);
 
@@ -172,7 +189,9 @@ public class Chromosom extends Application {
             fileChooser.showOpenDialog(primaryStage);
 
         });
-        menu.getItems().add(openFile);
+        
+//        menu.getItems().add(openFile);
+        
         MenuItem exportToSVG = new MenuItem("Export to SVG");
         exportToSVG.setOnAction(actionEvent -> {
 
@@ -194,7 +213,9 @@ public class Chromosom extends Application {
             newStage.show();
 
         });
-        menu.getItems().add(exportToSVG);
+        
+//        menu.getItems().add(exportToSVG);
+        
         MenuItem exportToPNG = new MenuItem("Export to PNG");
         exportToPNG.setOnAction(actionEvent -> {
 
@@ -215,7 +236,9 @@ public class Chromosom extends Application {
             newStage.show();
 
         });
-        menu.getItems().add(exportToPNG);
+        
+//        menu.getItems().add(exportToPNG);
+        
         MenuItem exportToPDF = new MenuItem("Export to PDF");
         exportToPDF.setOnAction(actionEvent -> {
 
@@ -237,7 +260,9 @@ public class Chromosom extends Application {
             newStage.show();
 
         });
-        menu.getItems().add(exportToPDF);
+        
+//        menu.getItems().add(exportToPDF);
+        
         menu.getItems().add(new SeparatorMenuItem());
         MenuItem exit = new MenuItem("Exit");
         exit.setOnAction(actionEvent -> Platform.exit());
@@ -355,6 +380,18 @@ public class Chromosom extends Application {
     }
 
     public static void main(String[] args) {
+        
+        if(args[0]!=null)
+            fileName = args[0];
+        if(args.length > 1) {
+             maxTimeSteps = Integer.parseInt(args[1]);
+        }
+        if(args.length > 2) {
+             offset = Integer.parseInt(args[2]);
+        }        
+           
+        
         launch(args);
+
     }
 }

@@ -13,7 +13,7 @@ public class ChromosomProject {
 
         Map<String,HashMap<String,int[]>> histoneProperties = new HashMap<String,HashMap<String,int[]>>();
     
-	int number = 10000, offset = 2,
+	int number = 10000, offset = 0,
 		nukleosomWidth = 6, nukleosomHeight = 6,
 		histoneNumber = 1,
 		scale = 4;	
@@ -22,23 +22,25 @@ public class ChromosomProject {
 	private int sunburstHeight = 50;
 	private int sunburstWidth = 50;
         private List fileLines;
-        public  List<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector;
+        public  HashMap<String, HashMap<String, HashMap<String,HashMap<String,Integer>>>> timeVector;
         
         public String selectedTabName = "";
 	
-//	public static Color color0 = Color.rgb(237, 124, 36);
-        public static Color color0 = Color.rgb(255, 255, 255);
-	public static Color color1 = Color.rgb(60, 58, 245);
-	public static Color color2 = Color.rgb(165, 164, 249);
-	public static Color color3 = Color.rgb(255, 184, 122);
-	public static Color color4 = Color.rgb(237, 74, 65);
-	
+        public static Color color0 = Color.rgb(255, 255, 255); //Weiß
+	public static Color color1 = Color.rgb(60, 58, 245); //Blau
+	public static Color color2 = Color.rgb(165, 164, 249); //Lila
+	public static Color color3 = Color.rgb(255, 184, 122); //Orange
+	public static Color color4 = Color.rgb(237, 74, 65); //Rot
+        
+        public static int maxTimeSteps = 500;
+                
 	public ChromosomProject() {
 
-            int h34Array[] = {0,0};
-            int h327Array[] = {1,0};
-            int h44Array[] = {0,0};
-            int h427Array[] = {1,0};
+           int h34Array[] = {0,0};
+           int h327Array[] = {1,0};
+
+           int h44Array[] = {0,0};
+           int h427Array[] = {1,0};
 
            Map<String, int[]> h3arrayMap = new HashMap<String, int[]>();
            Map<String, int[]> h4arrayMap = new HashMap<String, int[]>();
@@ -127,11 +129,11 @@ public class ChromosomProject {
             return selectedTabName;
         }
         
-        public List<ArrayList< HashMap<String,HashMap<String,Integer>>>> getTimeVector(){
+        public HashMap<String, HashMap<String, HashMap<String,HashMap<String,Integer>>>>  getTimeVector(){
             return timeVector;
         } 
         
-        public void setTimeVector( List<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector) {
+        public void setTimeVector( HashMap<String, HashMap<String, HashMap<String,HashMap<String,Integer>>>> timeVector) {
             this.timeVector = timeVector;
         } 
         
@@ -146,6 +148,10 @@ public class ChromosomProject {
         public Map<String,HashMap<String,int[]>> getHistoneProperties() {
             return histoneProperties;
         }
+        
+        public void setMaxTimeSteps(int maxTimeSteps) {
+            this.maxTimeSteps = maxTimeSteps;
+        }
 
     public int getMaxY() {
         //TODO Muss noch mit FUnktion gefüllt werden
@@ -155,5 +161,17 @@ public class ChromosomProject {
     public int getMaxX() {
         //TODO Muss noch mit FUnktion gefüllt werden
         return 2;
+    }
+
+    public int getMaxTimeSteps() {
+        return maxTimeSteps;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+    
+    public int getOffset() {
+        return offset;
     }
 }

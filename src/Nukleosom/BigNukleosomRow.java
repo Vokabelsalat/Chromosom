@@ -3,15 +3,14 @@ package Nukleosom;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
-import NukleosomReader.NukleosomGenerator;
 import application.ChromosomProject;
 import java.util.HashMap;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.scene.control.Label;
 
 public class BigNukleosomRow extends GridPane {
 
@@ -30,8 +29,8 @@ public class BigNukleosomRow extends GridPane {
                 this.nuklList = new ArrayList<BigNukleosomNew>();
 		
 		setAlignment(Pos.CENTER);
-		setHgap(width / (7./4.));
-		setVgap(height / (7./6.));
+		setHgap(width / (7./7.));
+		setVgap(height / (7./10.));
 		setPadding(new Insets(0,getHgap(),getVgap(),0));
 //                setStyle("-fx-border: 2px solid; -fx-border-color: red;");
 
@@ -39,18 +38,20 @@ public class BigNukleosomRow extends GridPane {
 		int maxX = X;
 		
 //		List<String> returnList = project.getReadedNukleosoms();
-		List<ArrayList< HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
+		HashMap<String, HashMap<String, HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
 		
 //                System.err.println(timeVector);
                 
                 BigNukleosomNew nukl;
                 
-                for(int y = 0; y < timeVector.size(); y++) {
-                    ArrayList< HashMap<String,HashMap<String,Integer>>> nukleomList = timeVector.get(y);
-                    for(int x = 0; x < nukleomList.size();x++) {
+                for(String y : timeVector.keySet()) {
+                    
+                    add(new Label(y),0,Integer.parseInt(y)-project.getOffset());
+                    
+                    HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = timeVector.get(y);
+                    for(String x : timeVector.get(y).keySet()) {
                         HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
                         for(String histoneNumber : histoneMap.keySet()) { 
-                    
 			
     //			List<int[]> valueList = new ArrayList<int[]>();
     //			
@@ -62,7 +63,7 @@ public class BigNukleosomRow extends GridPane {
     //                        System.err.println("Y: " + y);
                             nukl = new BigNukleosomNew(project,timeVector.get(y).get(x), width, height);
 
-                            add(nukl, x,y);
+                            add(nukl, Integer.parseInt(x)+1,Integer.parseInt(y)-project.getOffset());
                             nuklList.add(nukl);
                         }
                     }  

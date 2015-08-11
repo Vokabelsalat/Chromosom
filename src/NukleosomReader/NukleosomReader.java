@@ -1,26 +1,15 @@
 package NukleosomReader;
 
 import application.ChromosomProject;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 public class NukleosomReader {
 
@@ -105,7 +94,7 @@ public class NukleosomReader {
             System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
         }
     }
-
+/*
     public void fillDataVectors(FileInputStream f) {
         try {
 
@@ -118,7 +107,7 @@ public class NukleosomReader {
             String str = "";
             String strArray[] = {"", ""};
             String line = "";
-
+            
             //Hier muss die vordefinierte Attributmenge eingelesen werden
             HashMap<String, Integer> attributeMap;// = new HashMap<String, Integer>();
             HashMap<String, HashMap<String, Integer>> histonMap;// = new HashMap<String, HashMap<String,Integer>>();
@@ -232,7 +221,7 @@ public class NukleosomReader {
         }
 
     }
-///*
+*/
 
     public void fillDataVectors(BufferedReader br) {
 
@@ -240,13 +229,17 @@ public class NukleosomReader {
             //Hier muss die vordefinierte Attributmenge eingelesen werden
             HashMap<String, Integer> attributeMap;// = new HashMap<String, Integer>();
             HashMap<String, HashMap<String, Integer>> histonMap;// = new HashMap<String, HashMap<String,Integer>>();
-            ArrayList<HashMap<String, HashMap<String, Integer>>> nukleosomList = new ArrayList<>();
-            ArrayList<ArrayList< HashMap<String, HashMap<String, Integer>>>> timeVector = new ArrayList<>();
+            HashMap<String, HashMap<String, HashMap<String, Integer>>> nukleosomList =  new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
+            HashMap<String, HashMap<String, HashMap<String, HashMap<String, Integer>>>> timeVector = new HashMap<String, HashMap<String, HashMap<String, HashMap<String, Integer>>>> ();
+//            HashMap<String, HashMap<String, HashMap<String, Integer>>> nukleosomList = new HashMap<>();
+//            HashMap<String, HashMap<String, HashMap<String, HashMap<String, Integer>>>> timeVector = new HashMap<>();
 
+            int stepsNumber = 0;
+            int nukleosomNumber = 0;
             String line = "";
 
-            while ((line = br.readLine()) != null) {
-
+            while ((line = br.readLine()) != null && timeVector.size() < project.getMaxTimeSteps()) {
+                
                 //Leere Zeilen abfangen
                 if (line.equals("")) {
                     continue;
@@ -254,32 +247,38 @@ public class NukleosomReader {
 
                 //Den Beginn einen neuen Zeitschritts einleiten
                 if (line.contains(">")) {
-                    if (!nukleosomList.isEmpty()) {
-                        timeVector.add(nukleosomList);
+                    if (!nukleosomList.isEmpty() && stepsNumber >= project.getOffset()) {
+                        timeVector.put(String.valueOf(stepsNumber), nukleosomList); 
                     }
-                    nukleosomList = new ArrayList<>();
+                   
+                    nukleosomList = new HashMap<>();
+                    nukleosomNumber = 0;
+                    stepsNumber++;
                     continue;
                 }
 
                 histonMap = parseLine(line);
 
-                nukleosomList.add(histonMap);
+                nukleosomList.put(String.valueOf(nukleosomNumber), histonMap);
+                nukleosomNumber++;
             }
 
+            
+            
             //Um den letzten Zeitschritt noch hinzuzufügen
             if (!nukleosomList.isEmpty()) {
-                timeVector.add(nukleosomList);
+                timeVector.put(String.valueOf(stepsNumber), nukleosomList);
             }
             project.setTimeVector(timeVector);
 
         } catch (IOException ex) {
             Logger.getLogger(NukleosomReader.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
-//*/
+
 
     private HashMap<String, HashMap<String, Integer>> parseLine(String line) throws NumberFormatException {
+        
         HashMap<String, HashMap<String, Integer>> histonMap = new HashMap<>();
         HashMap<String, Integer> attributeMap;
         if (line.contains("H")) {

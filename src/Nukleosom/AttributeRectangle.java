@@ -5,6 +5,7 @@
  */
 package Nukleosom;
 
+import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
@@ -36,5 +37,6 @@ public class AttributeRectangle extends Rectangle{
     public int getAttributeValue() {
         return attributeValue;
     }
+
     
 }

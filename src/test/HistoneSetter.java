@@ -5,17 +5,20 @@
  */
 package test;
 
-import java.util.Vector;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 
@@ -26,58 +29,29 @@ import javafx.stage.Stage;
 public class HistoneSetter extends Application{
 
     public static String zwischen = "";
-    int maxX = 3;
-    int maxY = 3;
-    
+    int maxX = 5;
+    int maxY = 5;
+    GridPane grid1 = new GridPane();
+    GridPane grid2 = new GridPane();
+            
     @Override
     public void start(Stage primaryStage) {
             SplitPane root = new SplitPane();
             
             BorderPane leftPane = new BorderPane();
             
-//            AttributeLabel lab1 = new AttributeLabel("H2A");
-//            AttributeLabel lab2 = new AttributeLabel("H2B");
-//            AttributeLabel lab3 = new AttributeLabel("H3");
-//            AttributeLabel lab4 = new AttributeLabel("H4");
-//            
-//            lab1.setPrefSize(30, 30);
-//            lab2.setPrefSize(30, 30);
-//            lab3.setPrefSize(30, 30);
-//            lab4.setPrefSize(30, 30);
-//            
-//            root.add(lab1,0,0);
-//            root.add(lab2,1,0);
-//            root.add(lab3,0,1);
-//            root.add(lab4,1,1);
-            
-            System.out.println("javafx.runtime.version: " + System.getProperties().get("javafx.runtime.version")); 
-
-            
             int x = 0;
             int y = 0;
-            
-            GridPane grid1 = new GridPane();
-            GridPane grid2 = new GridPane();
-            
-            grid1.setGridLinesVisible(true);
-            grid2.setGridLinesVisible(true);
-            
-            for(int i = 0; i < 9; i++) {
-                grid1.add(new AttributeLabel(""), x, y);
-                
-                if(x % (maxX-1) == 0 && x > 0) {
-                    y++;
-                    x = 0;
-                }
-                else {
-                    x++;
-                }
-            }
+
+            addEmptyAttributes(grid1, maxX, maxY);
             
             String attributeArray[] = {"H2A", "H2B", "H3", "H4"};
             x=0;
             y=0;
             
+            addEmptyAttributes(grid2, 2, 2);
+            
+            //attriibuteArray zum Grid2 hinzufügen
             for(int i = 0; i < attributeArray.length; i++) {
                 grid2.add(new AttributeLabel(attributeArray[i]), x, y);
                 
@@ -92,6 +66,9 @@ public class HistoneSetter extends Application{
             
             Spinner spinX = new Spinner(0,0,3);
             Spinner spinY = new Spinner(0,0,3);
+            
+            spinX.setPrefSize(50, 10);
+            spinY.setPrefSize(50, 10);
             
             SpinnerValueFactory svfX = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100,3,1);
             spinX.setValueFactory(svfX);
@@ -119,9 +96,9 @@ public class HistoneSetter extends Application{
                             grid1.addColumn(value, nodes);
                         }
                         else {
-                            for(int u = maxX; u < grid1.getChildren().size(); u = u + maxX) {
-//                                if(grid1.getChildren().get(u) instanceof AttributeLabel) {
-//                                    AttributeLabel lab = (AttributeLabel)grid1.getChildren().get(u);
+                            for(int u = 1; u < grid1.getChildren().size(); u++) {
+                                if(grid1.getChildren().get(u) instanceof AttributeLabel) {
+                                    AttributeLabel lab = (AttributeLabel)grid1.getChildren().get(u);
 //                                    if(!lab.getText().equals("")) {
 //                                        for(int t = 1; t < grid2.getChildren().size(); t++) {
 //                                            AttributeLabel label = (AttributeLabel)grid2.getChildren().get(t);
@@ -131,10 +108,13 @@ public class HistoneSetter extends Application{
 //                                            }
 //                                        }
 //                                    }
-//                                }
+//                                    grid1.getChildren().
+                                    
+//                                    System.err.println("TEXT. " + lab.getText() + " " + u);
+                                }
 //                                System.err.println(grid1.getChildren().size());
-                                grid1.getChildren().remove(grid1.getChildren().get(u));
-                                System.err.println(u);
+//                                grid1.getChildren().remove(grid1.getChildren().get(u));
+//                                System.err.println(u);
                             } 
                         }
                         maxX = value;
@@ -145,29 +125,25 @@ public class HistoneSetter extends Application{
                 public void changed(ObservableValue<? extends Integer> ov,
                     Integer old_val, Integer new_val) {
                         int value = Integer.parseInt(svfY.valueProperty().getValue().toString());
-                        if(maxY < value) {
-                            for(int u = 0; u < maxX; u++) {
-                                grid1.add(new AttributeLabel(""), u, value-1);
-                            } 
-                        }
-                        else {
-                            for(int u = maxX * maxY; u > (maxX * maxY) - maxX; u--) {
-                                if(grid1.getChildren().get(u) instanceof AttributeLabel) {
-                                    AttributeLabel lab = (AttributeLabel)grid1.getChildren().get(u);
-                                    if(!lab.getText().equals("")) {
-                                        for(int t = 1; t < grid2.getChildren().size(); t++) {
-                                            AttributeLabel label = (AttributeLabel)grid2.getChildren().get(t);
-                                            if(label.getText().equals("")) {
-                                                label.setText(lab.getText());
-                                                break;
-                                            }
+                        
+                        for(int u = 1; u < (maxX * maxY); u++) {
+                            if(grid1.getChildren().get(u) instanceof AttributeLabel) {
+                                AttributeLabel lab = (AttributeLabel)grid1.getChildren().get(u);
+                                if(!lab.getText().equals("")) {
+                                    for(int t = 1; t < grid2.getChildren().size(); t++) {
+                                        AttributeLabel label = (AttributeLabel)grid2.getChildren().get(t);
+                                        if(label.getText().equals("")) {
+                                            label.setText(lab.getText());
+                                            break;
                                         }
                                     }
                                 }
-                                
-                                grid1.getChildren().remove(grid1.getChildren().get(u));
-                            } 
-                        }
+                            }
+                        } 
+//                        grid1.getChildren().removeAll(grid1.getChildren());
+                        
+                        addEmptyAttributes(grid1, maxX, value);
+
                         maxY = value;
                 }
              });
@@ -176,6 +152,21 @@ public class HistoneSetter extends Application{
             leftPane.setTop(spinX);
             leftPane.setCenter(grid1);
             
+            Button submit = new Button();
+            submit.setText("Bestätigen");
+            submit.setOnAction(new EventHandler<ActionEvent>() {     
+                @Override public void handle(ActionEvent e) {         
+                 
+                    addEmptyAttributes(grid1,3 ,3);
+                    leftPane.setCenter(grid1);
+                    
+                } 
+            });
+            Pane buttonPane = new Pane();
+            buttonPane.getChildren().add(submit);
+            leftPane.setBottom(buttonPane);
+            
+            
             root.getItems().addAll(leftPane, grid2);
             
             Scene scene = new Scene(root, 500, 500);
@@ -183,6 +174,31 @@ public class HistoneSetter extends Application{
             primaryStage.setScene(scene);
             primaryStage.show();
 
+    }
+
+    private void addEmptyAttributes(GridPane grid, int x, int y) {
+        
+         for(int i = 1; i < grid.getChildren().size();i++) {
+             grid.getChildren().remove(i);
+         }
+        
+//         grid = new GridPane();
+         
+        int countX = 0, countY = 0;
+        
+        for(int i = 0; i < x*y; i++) {
+            grid.add(new AttributeLabel(""), countX, countY);
+            
+            if(countX % (x-1) == 0 && countX > 0) {
+                countY++;
+                countX = 0;
+            }
+            else {
+                countX++;
+            }
+        }
+        
+        grid.setGridLinesVisible(true);
     }
 
     public static void main(String[] args) {
