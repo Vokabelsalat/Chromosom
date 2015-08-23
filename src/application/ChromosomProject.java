@@ -1,19 +1,19 @@
 package application;
 
+import Nukleosom.BigNukleosomNew;
 import java.util.List;
 
 import javafx.scene.paint.Color;
-import NukleosomReader.NukleosomReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
+import java.util.Stack;
 
 public class ChromosomProject {
 
         Map<String,HashMap<String,int[]>> histoneProperties = new HashMap<String,HashMap<String,int[]>>();
     
-	int number = 10000, offset = 0,
+	int number = 10000,
 		nukleosomWidth = 6, nukleosomHeight = 6,
 		histoneNumber = 1,
 		scale = 4;	
@@ -24,18 +24,35 @@ public class ChromosomProject {
         private List fileLines;
         public  HashMap<String, HashMap<String, HashMap<String,HashMap<String,Integer>>>> timeVector;
         
-        public String selectedTabName = "";
+        public Stack<Integer> stepSize = new Stack<>();
+        
+        public Stack<Integer> offset = new Stack();
 	
+        public Stack<Integer> stepsToShow = new Stack();
+        
+        public Stack<Integer> maxTimeSteps = new Stack();
+        
+        public String selectedTabName = "";
+        
         public static Color color0 = Color.rgb(255, 255, 255); //Weiß
 	public static Color color1 = Color.rgb(60, 58, 245); //Blau
 	public static Color color2 = Color.rgb(165, 164, 249); //Lila
 	public static Color color3 = Color.rgb(255, 184, 122); //Orange
 	public static Color color4 = Color.rgb(237, 74, 65); //Rot
         
-        public static int maxTimeSteps = 500;
-                
-	public ChromosomProject() {
+        public Chromosom chromosom;
+   
+        public boolean showNukleosoms = false;
+        
+	public ChromosomProject(Chromosom chromosom) {
 
+           stepSize.push(1);
+           offset.push(0);
+           stepsToShow.push(200);
+           maxTimeSteps.push(0);
+            
+           this.chromosom = chromosom; 
+            
            int h34Array[] = {0,0};
            int h327Array[] = {1,0};
 
@@ -148,11 +165,7 @@ public class ChromosomProject {
         public Map<String,HashMap<String,int[]>> getHistoneProperties() {
             return histoneProperties;
         }
-        
-        public void setMaxTimeSteps(int maxTimeSteps) {
-            this.maxTimeSteps = maxTimeSteps;
-        }
-
+       
     public int getMaxY() {
         //TODO Muss noch mit FUnktion gefüllt werden
         return 2;
@@ -163,15 +176,39 @@ public class ChromosomProject {
         return 2;
     }
 
-    public int getMaxTimeSteps() {
-        return maxTimeSteps;
+//    public int getMaxTimeSteps() {
+//        return maxTimeSteps;
+//    }
+
+//    public void setOffset(int offset) {
+//        this.offset = offset;
+//    }
+//    
+//    public int getOffset() {
+//        return offset;
+//    }
+    
+//    public int getDefaultStepSize() {
+//        return defaultStepSize;
+//    } 
+//    
+//    public void setDefaultStepSize(int defaultStepSize) {
+//        this.defaultStepSize = defaultStepSize;
+//    } 
+
+    public void zoomIn(int newOffset) {
+        chromosom.zoomIn(newOffset);
     }
 
-    public void setOffset(int offset) {
-        this.offset = offset;
+    public void zoomOut() {
+        chromosom.zoomOut();
     }
-    
-    public int getOffset() {
-        return offset;
+
+    public void addNukleosomToOptions(BigNukleosomNew bigNukleosomNew) {
+        chromosom.addNukleosomToOptions(bigNukleosomNew);
+    }
+
+    public Chromosom getChromosom() {
+        return chromosom;
     }
 }

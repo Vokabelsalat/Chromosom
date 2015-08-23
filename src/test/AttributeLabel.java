@@ -32,7 +32,7 @@ public class AttributeLabel extends BorderPane{
         this.setOnDragDetected(new EventHandler <MouseEvent>() {
             public void handle(MouseEvent event) {
                 /* drag was detected, start drag-and-drop gesture*/
-                System.out.println("onDragDetected");
+//                System.out.println("onDragDetected");
 
                 /* allow any transfer mode */
                 Dragboard db = label.startDragAndDrop(TransferMode.ANY);
@@ -49,7 +49,7 @@ public class AttributeLabel extends BorderPane{
         this.setOnDragOver(new EventHandler <DragEvent>() {
             public void handle(DragEvent event) {
                 /* data is dragged over the target */
-                System.out.println("onDragOver");
+//                System.out.println("onDragOver");
                 /* accept it only if it is  not dragged from the same node 
                  * and if it has a string data */
                 if (event.getGestureSource() != text &&
@@ -66,7 +66,7 @@ public class AttributeLabel extends BorderPane{
             public void handle(DragEvent event) {
                 /* the drag-and-drop gesture entered the target */
                 
-                System.out.println("onDragEntered");
+//                System.out.println("onDragEntered");
                 /* show to the user that it is an actual gesture target */
                 if (event.getGestureSource() != text &&
                         event.getDragboard().hasString()) {
@@ -91,7 +91,7 @@ public class AttributeLabel extends BorderPane{
             
             public void handle(DragEvent event) {
                 /* data dropped */
-                System.out.println("onDragDropped");
+//                System.out.println("onDragDropped");
                 /* if there is a string data on dragboard, read it and use it */
                 Dragboard db = event.getDragboard();
                 boolean success = false;
@@ -114,7 +114,7 @@ public class AttributeLabel extends BorderPane{
         this.setOnDragDone(new EventHandler <DragEvent>() {
             public void handle(DragEvent event) {
                 /* the drag-and-drop gesture ended */
-                System.out.println("onDragDone");
+//                System.out.println("onDragDone");
                 /* if the data was successfully moved, clear it */
                 if (event.getTransferMode() == TransferMode.MOVE) {
                     label.setText(HistoneSetter.zwischen);

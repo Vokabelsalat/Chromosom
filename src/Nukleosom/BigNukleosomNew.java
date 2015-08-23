@@ -12,10 +12,13 @@ import javafx.scene.paint.Paint;
 import application.ChromosomProject;
 import java.util.HashMap;
 import java.util.Map;
-import javafx.scene.control.Tooltip;
+import javafx.event.EventHandler;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Translate;
 
 public class BigNukleosomNew extends GridPane {
 	
@@ -24,7 +27,17 @@ public class BigNukleosomNew extends GridPane {
 	double angleWidth;
 //        private String svgExportString = "<g transform=\"translate(%X,%Y)\">\n";
 	
-	public BigNukleosomNew(ChromosomProject project, HashMap<String,HashMap<String,Integer>> histoneMap, int width, int height) {
+        HashMap<String,HashMap<String,Integer>> histoneMap;
+        ChromosomProject project;
+        int width; 
+        int height;
+        
+	public BigNukleosomNew(ChromosomProject project, HashMap<String,HashMap<String,Integer>> histoneMap, int width, int height, boolean showLabels) {
+            
+            this.histoneMap = histoneMap;
+            this.project = project;
+            this.width = width;
+            this.height = height;
             
                 Map<String,HashMap<String,int[]>> histoneProperties = project.getHistoneProperties();
                
@@ -91,11 +104,18 @@ public class BigNukleosomNew extends GridPane {
 
                                 rect.setX(x * width);
                                 rect.setY(y * height);
+                                
                                 rect.setStroke(Color.BLACK);
                                 rect.setStrokeWidth(0.3);
 //                                rect.setAttributeValue(value);
                                 pan.getChildren().add(rect);
                                 
+                                if(showLabels == true) {
+                                    Label lab = new Label(String.valueOf(value));
+//                                    lab.setTranslateX(x * width);
+                                    lab.getTransforms().add(new Translate(x*width,0.0));
+                                    pan.getChildren().add(lab);
+                                }
                             }
                             else {
                                Rectangle rect = new Rectangle(width, height , Color.WHITE); 
@@ -230,12 +250,18 @@ public class BigNukleosomNew extends GridPane {
                     x = 0;
                     y = 0;
 //                    */
-                       
+                    
+                    this.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent mouseEvent) {
+                           project.addNukleosomToOptions(new BigNukleosomNew(project, histoneMap, width * 4, height * 4, true));
+                        }
+                    });
+                    
         }
         
         public String getSVGExportString() {
             return ""; //svgExportString;
         }
-   
 }
 

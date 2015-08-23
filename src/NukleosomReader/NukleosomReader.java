@@ -234,11 +234,12 @@ public class NukleosomReader {
 //            HashMap<String, HashMap<String, HashMap<String, Integer>>> nukleosomList = new HashMap<>();
 //            HashMap<String, HashMap<String, HashMap<String, HashMap<String, Integer>>>> timeVector = new HashMap<>();
 
-            int stepsNumber = 0;
+//            int stepsNumber = 0;
             int nukleosomNumber = 0;
             String line = "";
+            String stepNumberString = "";
 
-            while ((line = br.readLine()) != null && timeVector.size() < project.getMaxTimeSteps()) {
+            while ((line = br.readLine()) != null) {
                 
                 //Leere Zeilen abfangen
                 if (line.equals("")) {
@@ -247,13 +248,16 @@ public class NukleosomReader {
 
                 //Den Beginn einen neuen Zeitschritts einleiten
                 if (line.contains(">")) {
-                    if (!nukleosomList.isEmpty() && stepsNumber >= project.getOffset()) {
-                        timeVector.put(String.valueOf(stepsNumber), nukleosomList); 
+                    
+                    String splt[] = line.replaceAll(">", "").split(" ");
+                    stepNumberString = String.valueOf(Integer.parseInt(splt[0]) - 1);
+                    
+                    if (!nukleosomList.isEmpty()) {
+                        timeVector.put(stepNumberString, nukleosomList); 
                     }
                    
                     nukleosomList = new HashMap<>();
                     nukleosomNumber = 0;
-                    stepsNumber++;
                     continue;
                 }
 
@@ -262,20 +266,21 @@ public class NukleosomReader {
                 nukleosomList.put(String.valueOf(nukleosomNumber), histonMap);
                 nukleosomNumber++;
             }
-
-            
             
             //Um den letzten Zeitschritt noch hinzuzufügen
             if (!nukleosomList.isEmpty()) {
-                timeVector.put(String.valueOf(stepsNumber), nukleosomList);
+                timeVector.put(String.valueOf((Integer.parseInt(stepNumberString)+1)), nukleosomList);
             }
             project.setTimeVector(timeVector);
-
+            
+            project.stepSize.push( timeVector.size() / (project.stepsToShow.peek() - 1));
+//            project.stepsToShow.pop();
+//            project.stepsToShow.push(timeVector.size() / project.stepSize.peek());
+            
         } catch (IOException ex) {
             Logger.getLogger(NukleosomReader.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
 
     private HashMap<String, HashMap<String, Integer>> parseLine(String line) throws NumberFormatException {
         

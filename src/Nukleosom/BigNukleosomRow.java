@@ -2,7 +2,6 @@
 package Nukleosom;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
@@ -10,7 +9,7 @@ import application.ChromosomProject;
 import java.util.HashMap;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
+import test.PlusMinusLabel;
 
 public class BigNukleosomRow extends GridPane {
 
@@ -18,6 +17,7 @@ public class BigNukleosomRow extends GridPane {
 	int X, Y, height, width;
 	BigNukleosomRow scaledRow;
         ArrayList<BigNukleosomNew> nuklList;
+        String y = "";
 	
 	public BigNukleosomRow(ChromosomProject project, int X, int Y, int width, int height) {
 		
@@ -33,41 +33,77 @@ public class BigNukleosomRow extends GridPane {
 		setVgap(height / (7./10.));
 		setPadding(new Insets(0,getHgap(),getVgap(),0));
 //                setStyle("-fx-border: 2px solid; -fx-border-color: red;");
-
 		
 		int maxX = X;
-		
+                
 //		List<String> returnList = project.getReadedNukleosoms();
 		HashMap<String, HashMap<String, HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
 		
-//                System.err.println(timeVector);
-                
                 BigNukleosomNew nukl;
+                int numberOfSteps = 0;
+                 
+                if(project.maxTimeSteps.peek() == 0) {
+                    project.maxTimeSteps.push(timeVector.size());
+                }
                 
-                for(String y : timeVector.keySet()) {
+                int utz = 0;
+                
+                for(utz = 0; utz <= project.maxTimeSteps.peek(); utz = utz + project.stepSize.peek()) {
                     
-                    add(new Label(y),0,Integer.parseInt(y)-project.getOffset());
+                    y = String.valueOf(utz + project.offset.peek());
                     
-                    HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = timeVector.get(y);
-                    for(String x : timeVector.get(y).keySet()) {
-                        HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
-                        for(String histoneNumber : histoneMap.keySet()) { 
-			
-    //			List<int[]> valueList = new ArrayList<int[]>();
-    //			
-    //			for(int u = 0; u < project.getHistoneNumber(); u++) {
-    //				valueList.add(timeVector.get(y).get(x).get(u));
-    //			}
+                    if(timeVector.containsKey(y)) {
+                        
+                        add(new PlusMinusLabel(y, project), 0, numberOfSteps);
 
-    //                        System.err.println(timeVector.size() + " " + timeVector.get(0).size());
-    //                        System.err.println("Y: " + y);
-                            nukl = new BigNukleosomNew(project,timeVector.get(y).get(x), width, height);
+                        HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = timeVector.get(y);
+                        for(String x : timeVector.get(y).keySet()) {
+                            HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
+                            for(String histoneNumber : histoneMap.keySet()) { 
 
-                            add(nukl, Integer.parseInt(x)+1,Integer.parseInt(y)-project.getOffset());
-                            nuklList.add(nukl);
-                        }
-                    }  
+        //			List<int[]> valueList = new ArrayList<int[]>();
+        //			
+        //			for(int u = 0; u < project.getHistoneNumber(); u++) {
+        //				valueList.add(timeVector.get(y).get(x).get(u));
+        //			}
+
+        //                        System.err.println(timeVector.size() + " " + timeVector.get(0).size());
+        //                        System.err.println("Y: " + y);
+                                nukl = new BigNukleosomNew(project,timeVector.get(y).get(x), width, height, false);
+
+                                add(nukl, Integer.parseInt(x)+1,numberOfSteps);
+                                nuklList.add(nukl);
+                            }
+                        } 
+                        numberOfSteps++;
+                    }
 		}
+                
+//                   y = String.valueOf(utz + project.offset.peek());
+//                    
+//                    if(timeVector.containsKey(y)) {
+//                        
+//                        add(new PlusMinusLabel(y, project), 0, numberOfSteps);
+//
+//                        HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = timeVector.get(y);
+//                        for(String x : timeVector.get(y).keySet()) {
+//                            HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
+//                            for(String histoneNumber : histoneMap.keySet()) { 
+//
+//        //			List<int[]> valueList = new ArrayList<int[]>();
+//        //			
+//        //			for(int u = 0; u < project.getHistoneNumber(); u++) {
+//        //				valueList.add(timeVector.get(y).get(x).get(u));
+//        //			}
+//
+//        //                        System.err.println(timeVector.size() + " " + timeVector.get(0).size());
+//        //                        System.err.println("Y: " + y);
+//                                nukl = new BigNukleosomNew(project,timeVector.get(y).get(x), width, height, false);
+//
+//                                add(nukl, Integer.parseInt(x)+1,numberOfSteps);
+//                                nuklList.add(nukl);
+//                            }
+//                        } 
                 
 //		for(int i = 0; i < number; i++) {
 //			

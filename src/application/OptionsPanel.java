@@ -5,6 +5,7 @@
  */
 package application;
 
+import Nukleosom.BigNukleosomNew;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -20,6 +21,8 @@ import javafx.scene.text.Text;
  * @author jakob
  */
 public class OptionsPanel extends VBox{
+    
+    BigNukleosomNew nuklPane;
     
     public OptionsPanel(ChromosomProject project) {
         setPadding(new Insets(10));
@@ -71,4 +74,15 @@ public class OptionsPanel extends VBox{
         setStyle("-fx-border: 3px solid; -fx-border-color: black;");
 
     }
+    
+    public void addNukleosom(BigNukleosomNew nukleosom) {
+        if(nuklPane != null && getChildren().contains(nuklPane)) {
+            getChildren().remove(nuklPane);
+        }
+        
+        nuklPane = nukleosom;
+        getChildren().add(nuklPane);
+        
+    }
+    
 }
