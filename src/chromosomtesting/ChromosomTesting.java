@@ -68,8 +68,6 @@ public class ChromosomTesting extends Application {
 //        Rectangle rect = new Rectangle(20,20,10,10);
         NukleosomVase  vase = new NukleosomVase(4,true,100,100);
         
-       ChromosomProject project = new ChromosomProject();
-        
 //        BigNukleosomRow row = new BigNukleosomRow(project,2,2,project.getNukleosomWidth(), project.getNukleosomHeight());
         
 //        SunburstNukleosomRow sun = new SunburstNukleosomRow(project, 2, 2, project.getSunburstWidth(), project.getSunburstHeight());
