@@ -6,10 +6,14 @@
 package application;
 
 import Nukleosom.BigNukleosomNew;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -72,6 +76,27 @@ public class OptionsPanel extends VBox{
         getChildren().add(pan);
         
         setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+        
+        HBox hbox = new HBox();
+        
+        Button zoomIn = new Button("+");
+        zoomIn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                project.getChromosom().zoomInNukleosoms();
+            }
+        });
+        
+        Button zoomOut = new Button("-");
+        zoomOut.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                project.getChromosom().zoomOutNukleosoms();
+            }
+        });
+        
+        hbox.getChildren().add(zoomIn);
+        hbox.getChildren().add(zoomOut);
+        
+        getChildren().add(hbox);
 
     }
     
@@ -79,10 +104,8 @@ public class OptionsPanel extends VBox{
         if(nuklPane != null && getChildren().contains(nuklPane)) {
             getChildren().remove(nuklPane);
         }
-        
         nuklPane = nukleosom;
         getChildren().add(nuklPane);
-        
     }
     
 }

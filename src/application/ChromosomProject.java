@@ -13,8 +13,9 @@ public class ChromosomProject {
 
         Map<String,HashMap<String,int[]>> histoneProperties = new HashMap<String,HashMap<String,int[]>>();
     
-	int number = 10000,
-		nukleosomWidth = 6, nukleosomHeight = 6,
+	public int number = 10000,
+		nukleosomMinWidth = 6, nukleosomMinHeight = 6,
+                nukleosomWidth = 6, nukleosomHeight = 6,
 		histoneNumber = 1,
 		scale = 4;	
 	String defaultFileName = "ES_segmentation_wholedata.data";
@@ -32,6 +33,8 @@ public class ChromosomProject {
         
         public Stack<Integer> maxTimeSteps = new Stack();
         
+        public Stack<Integer> rootRow = new Stack();
+        
         public String selectedTabName = "";
         
         public static Color color0 = Color.rgb(255, 255, 255); //Weiß
@@ -46,11 +49,11 @@ public class ChromosomProject {
         
 	public ChromosomProject(Chromosom chromosom) {
 
-           stepSize.push(1);
+//           stepSize.push(1);
            offset.push(0);
-           stepsToShow.push(200);
-           maxTimeSteps.push(0);
-            
+           stepsToShow.push(100);
+           rootRow.push(0);
+           
            this.chromosom = chromosom; 
             
            int h34Array[] = {0,0};

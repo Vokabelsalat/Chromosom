@@ -32,15 +32,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.TreeItem;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import test.ChromosomTree;
 
 public class Chromosom extends Application {
     private static int maxTimeSteps;
     private static int offset;
     private static String fileName;
-
     private BorderPane rootLayout;
     private ChromosomProject project;
     private double screenWidth;
@@ -57,6 +57,8 @@ public class Chromosom extends Application {
     private Stage newStage;
     private Tab nukleosomeTab;
     private OptionsPanel options;
+    public ScrollPane sb;
+    public ChromosomTree tree;
     
     @Override
     public void start(Stage primaryStage) {
@@ -72,19 +74,20 @@ public class Chromosom extends Application {
         rootLayout.setLeft(options);
         
         project.defaultFileName = fileName;
-         if(maxTimeSteps!=0) {
-             project.maxTimeSteps.push(maxTimeSteps);
-         }
-         if(offset!=0) {
-             project.offset.push(offset);
-         }
+        project.maxTimeSteps.push(maxTimeSteps);
+        project.offset.push(offset);
          
         NukleosomReader nukleosomReader = new NukleosomReader(project);
         nukleosomReader.openFile(project.getDefaultFileName());
-
-        nukleosomeTab = createNuclosomeTab();
+        sb = new ScrollPane();
+        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
         tabPane.getTabs().add(nukleosomeTab);
         rootLayout.setCenter(tabPane);
+        
+        tree = new ChromosomTree(project);
+        tree.fillTree();
+        tree.fullFillTree();
+        options.getChildren().add(tree);
 
         primaryStage.setMaximized(true);
 
@@ -98,17 +101,15 @@ public class Chromosom extends Application {
         primaryStage.show();
     }
 
-    private Tab  createNuclosomeTab() {
+    private Tab  createNuclosomeTab(int stepSize) {
         Tab nukleosomeTab = new Tab();
         nukleosomeTab.setText("Nukleosoms");
+        
+        row = new BigNukleosomRow(project, project.getNukleosomWidth(), project.getNukleosomHeight(), maxTimeSteps, stepSize);
 
-        for(Map.Entry<String, HashMap<String, HashMap<String, HashMap<String, Integer>>>> entry : project.getTimeVector().entrySet()) {
-            row = new BigNukleosomRow(project, entry.getValue().size(), project.getTimeVector().size(), project.getNukleosomWidth(), project.getNukleosomHeight());
-            break;
-        }
-        ScrollPane sb = new ScrollPane();
+//        sb = new ScrollPane();
         sb.setContent(row);
-
+//        sb.setFitToHeight(true);
         nukleosomeTab.setContent(sb);
         nukleosomeTab.setClosable(false);
         
@@ -166,6 +167,7 @@ public class Chromosom extends Application {
         vaseTab3.setContent(sb6);
         vaseTab3.setClosable(false);
         tabPane.getTabs().add(vaseTab3);*/
+        
         return nukleosomeTab;
     }
 
@@ -399,18 +401,19 @@ public class Chromosom extends Application {
         project.maxTimeSteps.push(project.stepSize.peek());
         project.stepSize.push(1);
         project.offset.push(newOffset);
-        nukleosomeTab = createNuclosomeTab();
+        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
         tabPane.getTabs().remove(zahl);
         tabPane.getTabs().add(zahl, nukleosomeTab);
     }
 
     void zoomOut() {
         int zahl = tabPane.getTabs().indexOf(nukleosomeTab);
+        
         project.stepsToShow.pop();
         project.stepSize.pop();
         project.offset.pop();
         project.maxTimeSteps.pop();
-        nukleosomeTab = createNuclosomeTab();
+        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
         tabPane.getTabs().remove(zahl);
         tabPane.getTabs().add(zahl, nukleosomeTab);        
     }
@@ -419,4 +422,68 @@ public class Chromosom extends Application {
         options.addNukleosom(bigNukleosomNew);
     }
 
+    public void zoomInNukleosoms() {
+        int zahl = tabPane.getTabs().indexOf(nukleosomeTab);
+        
+        int w = project.getNukleosomWidth();
+        int h = project.getNukleosomHeight();
+        
+        project.nukleosomWidth = w + 3;
+        project.nukleosomHeight = h + 3;
+        
+        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
+        
+        tabPane.getTabs().remove(zahl);
+        tabPane.getTabs().add(zahl, nukleosomeTab);  
+    }
+
+    public void zoomOutNukleosoms() {
+        int zahl = tabPane.getTabs().indexOf(nukleosomeTab);
+        
+        int w = project.getNukleosomWidth();
+        int h = project.getNukleosomHeight();
+        
+        project.nukleosomWidth = w - 3;
+        project.nukleosomHeight = h - 3;
+        
+        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
+        
+        tabPane.getTabs().remove(zahl);
+        tabPane.getTabs().add(zahl, nukleosomeTab);  
+    }
+    
+    public void showChromosoms(int newOffset, int newStepSize, int newStepsToShow) {
+        
+//        System.err.println(project.stepSize);
+        
+        int zahl = tabPane.getTabs().indexOf(nukleosomeTab);
+        
+        if(project.stepSize.size()>1) {
+            project.stepSize.pop();
+        }
+        
+        if(project.stepsToShow.size()>1)
+            project.stepsToShow.pop();
+                 
+        if(project.offset.size()>1)  
+            project.offset.pop();
+        
+        if(project.maxTimeSteps.size()>1)
+            project.maxTimeSteps.pop();
+        
+        project.stepsToShow.push(newStepsToShow);
+        project.maxTimeSteps.push(newStepsToShow);
+        project.stepSize.push(newStepSize);
+        project.offset.push(newOffset);
+        
+        nukleosomeTab = createNuclosomeTab(newStepSize);
+        tabPane.getTabs().remove(zahl);
+        tabPane.getTabs().add(zahl, nukleosomeTab);
+        
+    }
+    
+    public void addTreeItem(String itemText, int rootRow) {
+        
+        tree.addItem(itemText, rootRow);
+    }
 }

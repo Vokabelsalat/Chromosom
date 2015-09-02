@@ -240,31 +240,31 @@ public class NukleosomReader {
             String stepNumberString = "";
 
             while ((line = br.readLine()) != null) {
-                
-                //Leere Zeilen abfangen
-                if (line.equals("")) {
-                    continue;
-                }
-
-                //Den Beginn einen neuen Zeitschritts einleiten
-                if (line.contains(">")) {
-                    
-                    String splt[] = line.replaceAll(">", "").split(" ");
-                    stepNumberString = String.valueOf(Integer.parseInt(splt[0]) - 1);
-                    
-                    if (!nukleosomList.isEmpty()) {
-                        timeVector.put(stepNumberString, nukleosomList); 
+//                if(project.maxTimeSteps.peek() == 0 || timeVector.size() < project.maxTimeSteps.peek()-1)
+                    //Leere Zeilen abfangen
+                    if (line.equals("")) {
+                        continue;
                     }
-                   
-                    nukleosomList = new HashMap<>();
-                    nukleosomNumber = 0;
-                    continue;
-                }
 
-                histonMap = parseLine(line);
+                    //Den Beginn einen neuen Zeitschritts einleiten
+                    if (line.contains(">")) {
 
-                nukleosomList.put(String.valueOf(nukleosomNumber), histonMap);
-                nukleosomNumber++;
+                        String splt[] = line.replaceAll(">", "").split(" ");
+                        stepNumberString = String.valueOf(Integer.parseInt(splt[0]) - 1);
+
+                        if (!nukleosomList.isEmpty()) {
+                            timeVector.put(stepNumberString, nukleosomList); 
+                        }
+
+                        nukleosomList = new HashMap<>();
+                        nukleosomNumber = 0;
+                        continue;
+                    }
+
+                    histonMap = parseLine(line);
+
+                    nukleosomList.put(String.valueOf(nukleosomNumber), histonMap);
+                    nukleosomNumber++;
             }
             
             //Um den letzten Zeitschritt noch hinzuzufügen
@@ -273,9 +273,17 @@ public class NukleosomReader {
             }
             project.setTimeVector(timeVector);
             
-            project.stepSize.push( timeVector.size() / (project.stepsToShow.peek() - 1));
-//            project.stepsToShow.pop();
-//            project.stepsToShow.push(timeVector.size() / project.stepSize.peek());
+            if(project.maxTimeSteps.peek() == 0) {
+                project.maxTimeSteps.pop();
+                project.maxTimeSteps.push(timeVector.size());
+            }
+            
+            int stepSize = (project.maxTimeSteps.peek() - project.offset.peek()) / (project.stepsToShow.peek() - 1);
+            
+            if(stepSize < 1) {
+                stepSize = 1;
+            }
+            project.stepSize.push(stepSize); 
             
         } catch (IOException ex) {
             Logger.getLogger(NukleosomReader.class.getName()).log(Level.SEVERE, null, ex);

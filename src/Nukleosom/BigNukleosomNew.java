@@ -7,8 +7,6 @@ package Nukleosom;
 
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-
-
 import application.ChromosomProject;
 import java.util.HashMap;
 import java.util.Map;
@@ -254,7 +252,7 @@ public class BigNukleosomNew extends GridPane {
                     this.setOnMouseClicked(new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent mouseEvent) {
-                           project.addNukleosomToOptions(new BigNukleosomNew(project, histoneMap, width * 4, height * 4, true));
+                           project.addNukleosomToOptions(new BigNukleosomNew(project, histoneMap, project.nukleosomMinWidth * 4, project.nukleosomMinHeight * 4, true));
                         }
                     });
                     
