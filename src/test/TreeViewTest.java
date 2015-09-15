@@ -35,12 +35,18 @@ public class TreeViewTest  extends Application {
     
     item = new TreeItem<>("B");
     rootItem.getChildren().add(item);
-
+    
+ 
     TreeView<String> tree = new TreeView<>(rootItem);
     StackPane root = new StackPane();
     root.getChildren().add(tree);
     primaryStage.setScene(new Scene(root, 300, 250));
-    primaryStage.show();
+    primaryStage.show();   
+    
+    tree.getTreeItem(1).setExpanded(true);
+    
+    System.err.println(tree.getTreeItem(2).getValue());
+
   }
 }
 

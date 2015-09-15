@@ -278,7 +278,7 @@ public class NukleosomReader {
                 project.maxTimeSteps.push(timeVector.size());
             }
             
-            int stepSize = (project.maxTimeSteps.peek() - project.offset.peek()) / (project.stepsToShow.peek() - 1);
+            int stepSize = project.maxTimeSteps.peek() / (project.stepsToShow.peek() - 1);
             
             if(stepSize < 1) {
                 stepSize = 1;

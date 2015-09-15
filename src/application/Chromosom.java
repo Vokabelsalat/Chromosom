@@ -84,16 +84,18 @@ public class Chromosom extends Application {
         tabPane.getTabs().add(nukleosomeTab);
         rootLayout.setCenter(tabPane);
         
-        tree = new ChromosomTree(project);
+        tree = new ChromosomTree(project); 
         tree.fillTree();
-        tree.fullFillTree();
+       
+        
+        
         options.getChildren().add(tree);
 
         primaryStage.setMaximized(true);
 
         Scene scene = new Scene(rootLayout);
         primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
+        primaryStage.setResizable(true);
         show(primaryStage);
     }
 
@@ -423,13 +425,14 @@ public class Chromosom extends Application {
     }
 
     public void zoomInNukleosoms() {
+        System.err.println(project.stepSize);
         int zahl = tabPane.getTabs().indexOf(nukleosomeTab);
         
         int w = project.getNukleosomWidth();
         int h = project.getNukleosomHeight();
         
-        project.nukleosomWidth = w + 3;
-        project.nukleosomHeight = h + 3;
+        project.nukleosomWidth = w + 2;
+        project.nukleosomHeight = h + 2;
         
         nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
         
@@ -443,8 +446,8 @@ public class Chromosom extends Application {
         int w = project.getNukleosomWidth();
         int h = project.getNukleosomHeight();
         
-        project.nukleosomWidth = w - 3;
-        project.nukleosomHeight = h - 3;
+        project.nukleosomWidth = w - 2;
+        project.nukleosomHeight = h - 2;
         
         nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
         
@@ -452,7 +455,7 @@ public class Chromosom extends Application {
         tabPane.getTabs().add(zahl, nukleosomeTab);  
     }
     
-    public void showChromosoms(int newOffset, int newStepSize, int newStepsToShow) {
+    public void showChromosoms(int newOffset, int newStepSize, int newStepsToShow, int newMaxTimeSteps) {
         
 //        System.err.println(project.stepSize);
         
@@ -472,7 +475,7 @@ public class Chromosom extends Application {
             project.maxTimeSteps.pop();
         
         project.stepsToShow.push(newStepsToShow);
-        project.maxTimeSteps.push(newStepsToShow);
+        project.maxTimeSteps.push(newMaxTimeSteps);
         project.stepSize.push(newStepSize);
         project.offset.push(newOffset);
         
@@ -482,8 +485,4 @@ public class Chromosom extends Application {
         
     }
     
-    public void addTreeItem(String itemText, int rootRow) {
-        
-        tree.addItem(itemText, rootRow);
-    }
 }

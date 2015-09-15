@@ -5,9 +5,8 @@
  */
 package test;
 
-import Nukleosom.BigNukleosomNew;
 import application.ChromosomProject;
-import java.util.HashMap;
+import java.util.Stack;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
@@ -25,88 +24,97 @@ public class ChromosomTree extends Pane{
     TreeItem<Label> rootItem = new TreeItem<>(new Label("ROOT"));
     public TreeView<Label> tree;
     ChromosomProject project;
+    public Stack<Integer> done = new Stack<Integer>();
     
     public ChromosomTree(ChromosomProject project) {
         this.project = project;
         tree = new TreeView<>(rootItem);
         rootItem.setExpanded(true);
         getChildren().add(tree);
+        tree.setPrefSize(150, 500);
    
     }
     
-    public void fullFillTree() {
-        
-        for(int i = 0; i < tree.getRoot().getChildren().size(); i++) {
-            
-            String text = tree.getRoot().getChildren().get(i).getValue().getText();
-            
-                            int u = 0;
-
-                            for(u = 0; u < tree.getTreeItem(project.rootRow.peek()).getChildren().size(); u++) {
-                                if(tree.getTreeItem(project.rootRow.peek()).getChildren().get(u).getValue().getText().equals(text)) {
-                                    break;
-                                }
-                            }
-                            u++;
-                            
-                            project.rootRow.push(u); 
-                            
-                            if(project.stepSize.size()>1) {
-                                project.stepSize.pop();
-                            }
-
-                            if(project.stepsToShow.size()>1)
-                                project.stepsToShow.pop();
-
-                            if(project.offset.size()>1)  
-                                project.offset.pop();
-
-                            if(project.maxTimeSteps.size()>1)
-                                project.maxTimeSteps.pop();
-
-                            project.stepsToShow.push(project.stepSize.peek());
-                            project.maxTimeSteps.push(project.stepSize.peek());
-                            project.stepSize.push(1);
-                            project.offset.push(Integer.parseInt(text)); 
-                            fillTree();
-                            project.rootRow.pop(); 
-        }
-    }
-    
     public void fillTree() {
-                HashMap<String, HashMap<String, HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
-		
-                String y = "";
+        
+                String y;
                 
                 for(int utz = 0; utz < project.maxTimeSteps.peek(); utz = utz + project.stepSize.peek()) {
                     
                     y = String.valueOf(utz + project.offset.peek());
                     
-                    if(timeVector.containsKey(y)) {
+                    if(project.getTimeVector().containsKey(y)) {
                         
-                        project.getChromosom().addTreeItem(y, project.rootRow.peek());
+                        int row = addItem(y, project.rootRow.peek(), project.stepSize.peek(), project.stepsToShow.peek(), project.maxTimeSteps.peek());
+                        
+//                        if(project.stepSize.peek()>10) {
+//                        if(project.stepSize.peek()>10) {
+                            
+                        if(project.stepsToShow.peek() > 8) {
+                            
+                            project.maxTimeSteps.push(project.stepSize.peek());
+                            
+                            int test = project.stepsToShow.peek();
+                            
+                            project.stepsToShow.push(test/5);
+                            
+                            project.offset.push(Integer.parseInt(y));
+                            
+                            
+                            int stepSize = project.maxTimeSteps.peek() / (project.stepsToShow.peek() - 1);
+                            
+                            if(stepSize < 1) {
+                                stepSize = 1;
+                            }                            
+                            
+                            project.stepSize.push(stepSize);
+                            
+                            
+//                            if(!done.contains(project.stepSize.peek()));
+//                                done.push(project.stepSize.peek());
+                            
+                            
+                            project.rootRow.push(row);
+                            
+                            if(row != -1) {
+                                tree.getTreeItem(row).setExpanded(true);
+
+                                fillTree();
+
+                                tree.getTreeItem(row).setExpanded(false);
+                            }
+                            
+                            if(project.stepSize.size() > 1) {
+                                project.stepSize.pop();
+                            }
+                            if(project.stepsToShow.size() > 1) {
+                                project.stepsToShow.pop();
+                            }
+                            if(project.maxTimeSteps.size() > 1) {
+                                project.maxTimeSteps.pop();
+                            }
+                            if(project.offset.size() > 1) {
+                                project.offset.pop();
+                            }   
+                            if(project.rootRow.size() > 1) {
+                                project.rootRow.pop();
+                            }
+                            
+                        }
                         
                         
-//                        HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = timeVector.get(y);
-//                        for(String x : timeVector.get(y).keySet()) {
-//                            HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
-//                            for(String histoneNumber : histoneMap.keySet()) { 
-//
-//                            }
-//                        } 
                     }
 		}
-                
-
-                
     }
     
-    public void addItem(String itemText, int rootRow) {
+    public int addItem(String itemText, int rootRow, int oldStepSize, int stepsToShow, int maxTimeSteps) {
+        
+        int row = -1;
         if(tree.getTreeItem(rootRow) != null) {
             
             for(TreeItem<Label> item : tree.getTreeItem(rootRow).getChildren()) {
                 if(item.getValue().getText().equals(itemText)) {
-                    return;
+                    return row;
                 }
             }
             
@@ -122,18 +130,24 @@ public class ChromosomTree extends Pane{
                                 project.stepSize.pop();
                             }
 
-                            int i = 0;
+                            int i;
 
-                            for(i = 0; i < tree.getTreeItem(project.rootRow.peek()).getChildren().size(); i++) {
-                                if(tree.getTreeItem(project.rootRow.peek()).getChildren().get(i).getValue().getText().equals(itemText)) {
+                            for(i = 0; i < tree.getTreeItem(rootRow).getChildren().size(); i++) {
+                                if(tree.getTreeItem(rootRow).getChildren().get(i).getValue().getText().equals(itemText)) {
                                     break;
                                 }
                             }
                             i++;
                             
                             project.rootRow.push(i); 
-//                            System.err.println(i);
-                            project.getChromosom().showChromosoms(Integer.parseInt(itemText), 1, project.stepSize.peek());
+                            
+                            int stepSize = oldStepSize / ((stepsToShow/5) - 1);
+                            
+                            if(stepSize < 1) {
+                                stepSize = 1;
+                            }                            
+                            
+                            project.getChromosom().showChromosoms(Integer.parseInt(itemText), stepSize, stepsToShow/4, oldStepSize);
                             project.rootRow.pop();
                         }
                     }
@@ -144,9 +158,10 @@ public class ChromosomTree extends Pane{
             TreeItem<Label> item = new TreeItem<>(lab);
             tree.getTreeItem(rootRow).getChildren().add(item);
             
-            int row = tree.getRow(item);
+            row = tree.getRow(item);
             
         }
+        return row;
     }
     
     

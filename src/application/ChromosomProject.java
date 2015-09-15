@@ -51,7 +51,7 @@ public class ChromosomProject {
 
 //           stepSize.push(1);
            offset.push(0);
-           stepsToShow.push(100);
+           stepsToShow.push(50);
            rootRow.push(0);
            
            this.chromosom = chromosom; 
