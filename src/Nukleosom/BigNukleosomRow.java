@@ -7,8 +7,11 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import application.ChromosomProject;
 import java.util.HashMap;
+import java.util.Vector;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import test.PlusMinusLabel;
 
 public class BigNukleosomRow extends GridPane {
@@ -18,6 +21,7 @@ public class BigNukleosomRow extends GridPane {
 	BigNukleosomRow scaledRow;
         ArrayList<BigNukleosomNew> nuklList;
         String y = "";
+        int numberOfSteps;
         
         int maxTimeSteps, stepSize;
 	
@@ -41,7 +45,7 @@ public class BigNukleosomRow extends GridPane {
 		HashMap<String, HashMap<String, HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
 		
                 BigNukleosomNew nukl;
-                int numberOfSteps = 0;
+                numberOfSteps = 0;
                  
                 for(int utz = 0; utz < project.maxTimeSteps.peek(); utz = utz + stepSize) {
                     
@@ -66,6 +70,8 @@ public class BigNukleosomRow extends GridPane {
                         numberOfSteps++;
                     }
 		}
+                
+                y = String.valueOf(project.offset.peek()-1);
                 
 //                   y = String.valueOf(utz + project.offset.peek());
 //                    
@@ -143,6 +149,167 @@ public class BigNukleosomRow extends GridPane {
             
             return bounds.getMaxY() - bounds.getMinY();
         }
+            
+    public void goUp() {
+        
+        String testY = String.valueOf(Integer.parseInt(y) - project.stepSize.peek());
+        
+        if(!project.timeVector.containsKey(testY)) {
+            return;
+        }        
+        
+        Vector<Node> slideVector = new Vector<>();
+        
+        int maxCol = 0;
+        int maxRow = 0;
+        int row = 0;
+        int col = 0;
+
+        for(Node node : getChildren()) {
+
+            row = getRowIndex(node);
+            col = getColumnIndex(node);
+
+            if(row > maxRow) {
+                maxRow = row;
+            }
+
+            if(col > maxCol) {
+                maxCol = col;
+            }
+        }
+            
+        for(Node node : getChildren()) {
+            row = getRowIndex(node);
+            
+            if (row <= maxRow - 10) {
+                slideVector.add(node);
+            }
+        }
+        
+        Node[][] nodeArray = new Node[maxCol+1][maxRow+1];
+            
+        for(Node node : slideVector) {
+            nodeArray[getColumnIndex(node)][getRowIndex(node) + 10] = node;
+        }
+        
+        getChildren().removeAll(getChildren());
+        
+        for(row = 10; row <= maxRow; row++) {
+            for(col = 0; col < maxCol; col++) {
+                this.add(nodeArray[col][row], col, row);
+            }
+        } 
+        
+        numberOfSteps = 0;
+        
+        y = String.valueOf(Integer.parseInt(y) - 10);
+        
+        for(int f = 0; f < 10; f++) {
+            y = String.valueOf(Integer.parseInt(y) + project.stepSize.peek());
+
+            if(project.timeVector.containsKey(y)) {
+
+                add(new PlusMinusLabel(y, project), 0, numberOfSteps);
+
+                HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = project.timeVector.get(y);
+                for(String x : project.timeVector.get(y).keySet()) {
+                    HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
+                    for(String histoneNumber : histoneMap.keySet()) { 
+
+                        BigNukleosomNew nukl = new BigNukleosomNew(project,project.timeVector.get(y).get(x), width, height, false);
+
+                        add(nukl, Integer.parseInt(x)+1,numberOfSteps);
+                        nuklList.add(nukl);
+                    }
+                } 
+                numberOfSteps++;
+            }
+        }  
+        
+        y = String.valueOf(Integer.parseInt(y) - 10);
+        
+    }
+
+    public void goDown() {
+        
+        String testY = String.valueOf(Integer.parseInt(y) + project.stepSize.peek() * project.stepsToShow.peek());
+        
+        if(!project.timeVector.containsKey(testY)) {
+            return;
+        }
+        
+        y = String.valueOf(Integer.parseInt(y) + project.stepSize.peek() * (project.stepsToShow.peek()));
+
+        Vector<Node> slideVector = new Vector<>();
+        
+        int maxCol = 0;
+        int maxRow = 0;
+        int row = 0;
+        int col = 0;
+
+        for(Node node : getChildren()) {
+
+            row = getRowIndex(node);
+            col = getColumnIndex(node);
+
+            if(row > maxRow) {
+                maxRow = row;
+            }
+
+            if(col > maxCol) {
+                maxCol = col;
+            }
+
+            if (row >= 10) {
+                slideVector.add(node);
+            }
+        }
+            
+        Node[][] nodeArray = new Node[maxCol+1][maxRow+1];
+            
+        for(Node node : slideVector) {
+            nodeArray[getColumnIndex(node)][getRowIndex(node)-10] = node;
+        }
+        
+        getChildren().removeAll(getChildren());
+        
+        
+        for(row = 0; row < maxRow-9; row++) {
+            for(col = 0; col < maxCol; col++) {
+                this.add(nodeArray[col][row], col, row);
+            }
+        } 
+        
+        numberOfSteps = project.stepsToShow.peek();
+        
+        for(int f = 0; f < 10; f++) {
+            y = String.valueOf(Integer.parseInt(y) + project.stepSize.peek());
+
+            if(project.timeVector.containsKey(y)) {
+
+                add(new PlusMinusLabel(y, project), 0, numberOfSteps-10);
+
+                HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = project.timeVector.get(y);
+                for(String x : project.timeVector.get(y).keySet()) {
+                    HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
+                    for(String histoneNumber : histoneMap.keySet()) { 
+
+                        BigNukleosomNew nukl = new BigNukleosomNew(project,project.timeVector.get(y).get(x), width, height, false);
+
+                        add(nukl, Integer.parseInt(x)+1,numberOfSteps-10);
+                        nuklList.add(nukl);
+                    }
+                } 
+                numberOfSteps++;
+            }
+        }     
+        
+        y = String.valueOf(Integer.parseInt(y) - project.stepSize.peek() * project.stepsToShow.peek());
+        
+    }
+    
+    
 }
 //	public class BigNukleosomRow extends JPanel {
 //	

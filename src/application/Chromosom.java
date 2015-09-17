@@ -27,12 +27,13 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TreeItem;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import test.ChromosomTree;
@@ -59,6 +60,7 @@ public class Chromosom extends Application {
     private OptionsPanel options;
     public ScrollPane sb;
     public ChromosomTree tree;
+    public BorderPane nukleosomBorderPane;
     
     @Override
     public void start(Stage primaryStage) {
@@ -86,8 +88,6 @@ public class Chromosom extends Application {
         
         tree = new ChromosomTree(project); 
         tree.fillTree();
-       
-        
         
         options.getChildren().add(tree);
 
@@ -109,8 +109,33 @@ public class Chromosom extends Application {
         
         row = new BigNukleosomRow(project, project.getNukleosomWidth(), project.getNukleosomHeight(), maxTimeSteps, stepSize);
 
-//        sb = new ScrollPane();
-        sb.setContent(row);
+        nukleosomBorderPane = new BorderPane();
+        
+        nukleosomBorderPane.setCenter(row);
+        
+        Button up = new Button("^");
+        
+        up.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                row.goUp();
+            }
+        });
+            
+
+        Button down = new Button("v");
+        
+        down.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                row.goDown();
+            }
+        });
+        
+        nukleosomBorderPane.setTop(up);
+        nukleosomBorderPane.setBottom(down);
+        
+        sb.setContent(nukleosomBorderPane);
 //        sb.setFitToHeight(true);
         nukleosomeTab.setContent(sb);
         nukleosomeTab.setClosable(false);
