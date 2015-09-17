@@ -58,14 +58,14 @@ public class OptionsPanel extends VBox{
         Button zoomIn = new Button("+");
         zoomIn.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                project.getChromosom().zoomInNukleosoms();
+                project.getChromosom().zoomInNukleosoms(2);
             }
         });
         
         Button zoomOut = new Button("-");
         zoomOut.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                project.getChromosom().zoomOutNukleosoms();
+                project.getChromosom().zoomOutNukleosoms(2);
             }
         });
         

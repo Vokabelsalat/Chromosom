@@ -23,19 +23,24 @@ import NukleosomReader.NukleosomReader;
 import NukleosomVase.NukleosomVaseGrid;
 import SunburstNukleosom.SunburstNukleosom;
 import SunburstNukleosom.SunburstNukleosomRow;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import javax.imageio.ImageIO;
 import test.ChromosomTree;
 
 public class Chromosom extends Application {
@@ -82,7 +87,7 @@ public class Chromosom extends Application {
         NukleosomReader nukleosomReader = new NukleosomReader(project);
         nukleosomReader.openFile(project.getDefaultFileName());
         sb = new ScrollPane();
-        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
+        nukleosomeTab = createNuclosomeTab();
         tabPane.getTabs().add(nukleosomeTab);
         rootLayout.setCenter(tabPane);
         
@@ -103,11 +108,11 @@ public class Chromosom extends Application {
         primaryStage.show();
     }
 
-    private Tab  createNuclosomeTab(int stepSize) {
+    private Tab  createNuclosomeTab() {
         Tab nukleosomeTab = new Tab();
         nukleosomeTab.setText("Nukleosoms");
         
-        row = new BigNukleosomRow(project, project.getNukleosomWidth(), project.getNukleosomHeight(), maxTimeSteps, stepSize);
+        row = new BigNukleosomRow(project, project.getNukleosomWidth(), project.getNukleosomHeight(), project.maxTimeSteps.peek(), project.stepSize.peek());
 
         nukleosomBorderPane = new BorderPane();
         
@@ -222,16 +227,19 @@ public class Chromosom extends Application {
         
         MenuItem exportToSVG = new MenuItem("Export to SVG");
         exportToSVG.setOnAction(actionEvent -> {
-
+            BorderPane pane = new BorderPane();
             Label label = new Label("Die Darstellung wird exportiert ...");
             Button but = new Button("Wollen Sie die Darstellung exportieren?");
             but.setOnAction(actionEvent2 -> {
+                pane.getChildren().remove(but);
+                pane.setCenter(new Label("Bitte warten!"));
                 this.export("SVG");
+                
             });
 
-            BorderPane pane = new BorderPane();
+
             pane.setCenter(but);
-            Scene scene2 = new Scene(pane, 200, 200);
+            Scene scene2 = new Scene(pane, 400, 200);
             newStage = new Stage();
             newStage.setScene(scene2);
             //tell stage it is meannt to pop-up (Modal)
@@ -243,6 +251,7 @@ public class Chromosom extends Application {
         });
         
 //        menu.getItems().add(exportToSVG);
+        
         
         MenuItem exportToPNG = new MenuItem("Export to PNG");
         exportToPNG.setOnAction(actionEvent -> {
@@ -291,6 +300,32 @@ public class Chromosom extends Application {
         
 //        menu.getItems().add(exportToPDF);
         
+        
+        MenuItem saveAsPNG = new MenuItem("Save as PNG");
+        saveAsPNG.setOnAction(actionEvent -> {
+
+            Label label = new Label("Die Darstellung wird exportiert ...");
+            Button but = new Button("Wollen Sie die Darstellung exportieren?");
+            BorderPane pane = new BorderPane();
+            but.setOnAction(actionEvent2 -> {
+                pane.getChildren().remove(but);
+                pane.setCenter(new Label("Bitte warten!"));
+                this.saveAsPng();
+            });
+
+            pane.setCenter(but);
+            Scene scene2 = new Scene(pane, 400, 200);
+            newStage = new Stage();
+            newStage.setScene(scene2);
+            //tell stage it is meannt to pop-up (Modal)
+            newStage.initModality(Modality.APPLICATION_MODAL);
+            newStage.setTitle("Export");
+            newStage.show();
+
+        });
+        
+        menu.getItems().add(saveAsPNG);
+        
         menu.getItems().add(new SeparatorMenuItem());
         MenuItem exit = new MenuItem("Exit");
         exit.setOnAction(actionEvent -> Platform.exit());
@@ -299,11 +334,33 @@ public class Chromosom extends Application {
         menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
         return menuBar;
     }
+    
+    public void saveAsPng() {
+        
+        int add = 4;
+        
+        zoomInNukleosoms(add);
+        
+        WritableImage image = row.snapshot(new SnapshotParameters(), null);
+        
+        // TODO: probably use a file chooser here
+        File file = new File("PNGExport.png");
+
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+        } catch (IOException e) {
+            // TODO: handle exception here
+        }
+        
+        zoomOutNukleosoms(add);
+        
+        newStage.close();
+    }
 
     public void exportToSVG(String fileName) {
 
         Tab selectedTab = tabPane.getSelectionModel().getSelectedItem();
-        String selectedTabName = tabPane.getSelectionModel().getSelectedItem().getText();
+        String selectedTabName = selectedTab.getText();
         project.setSelectedTabName(selectedTabName);
         if (fileName.equals("")) {
             fileName = selectedTabName + ".svg";
@@ -428,7 +485,7 @@ public class Chromosom extends Application {
         project.maxTimeSteps.push(project.stepSize.peek());
         project.stepSize.push(1);
         project.offset.push(newOffset);
-        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
+        nukleosomeTab = createNuclosomeTab();
         tabPane.getTabs().remove(zahl);
         tabPane.getTabs().add(zahl, nukleosomeTab);
     }
@@ -440,7 +497,7 @@ public class Chromosom extends Application {
         project.stepSize.pop();
         project.offset.pop();
         project.maxTimeSteps.pop();
-        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
+        nukleosomeTab = createNuclosomeTab();
         tabPane.getTabs().remove(zahl);
         tabPane.getTabs().add(zahl, nukleosomeTab);        
     }
@@ -449,32 +506,32 @@ public class Chromosom extends Application {
         options.addNukleosom(bigNukleosomNew);
     }
 
-    public void zoomInNukleosoms() {
+    public void zoomInNukleosoms(int add) {
         System.err.println(project.stepSize);
         int zahl = tabPane.getTabs().indexOf(nukleosomeTab);
         
         int w = project.getNukleosomWidth();
         int h = project.getNukleosomHeight();
         
-        project.nukleosomWidth = w + 2;
-        project.nukleosomHeight = h + 2;
+        project.nukleosomWidth = w + add;
+        project.nukleosomHeight = h + add;
         
-        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
+        nukleosomeTab = createNuclosomeTab();
         
         tabPane.getTabs().remove(zahl);
         tabPane.getTabs().add(zahl, nukleosomeTab);  
     }
 
-    public void zoomOutNukleosoms() {
+    public void zoomOutNukleosoms(int add) {
         int zahl = tabPane.getTabs().indexOf(nukleosomeTab);
         
         int w = project.getNukleosomWidth();
         int h = project.getNukleosomHeight();
         
-        project.nukleosomWidth = w - 2;
-        project.nukleosomHeight = h - 2;
+        project.nukleosomWidth = w - add;
+        project.nukleosomHeight = h - add;
         
-        nukleosomeTab = createNuclosomeTab(project.stepSize.peek());
+        nukleosomeTab = createNuclosomeTab();
         
         tabPane.getTabs().remove(zahl);
         tabPane.getTabs().add(zahl, nukleosomeTab);  
@@ -504,7 +561,7 @@ public class Chromosom extends Application {
         project.stepSize.push(newStepSize);
         project.offset.push(newOffset);
         
-        nukleosomeTab = createNuclosomeTab(newStepSize);
+        nukleosomeTab = createNuclosomeTab();
         tabPane.getTabs().remove(zahl);
         tabPane.getTabs().add(zahl, nukleosomeTab);
         

@@ -274,7 +274,6 @@ public class BigNukleosomRow extends GridPane {
         
         getChildren().removeAll(getChildren());
         
-        
         for(row = 0; row < maxRow-9; row++) {
             for(col = 0; col < maxCol; col++) {
                 this.add(nodeArray[col][row], col, row);
