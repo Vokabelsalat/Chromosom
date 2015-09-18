@@ -32,10 +32,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
+import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -49,11 +50,13 @@ public class Chromosom extends Application {
     private static String fileName;
     private BorderPane rootLayout;
     private ChromosomProject project;
+    private ChromosomProject project2;
     private double screenWidth;
     private double screenHeight;
     private int maxX = 0;
     private int maxY = 0;
     private BigNukleosomRow row;
+    private BigNukleosomRow row2;
     private SunburstNukleosomRow sun;
     private NukleosomVaseGrid vase;
     private NukleosomVaseGrid vase2;
@@ -64,13 +67,16 @@ public class Chromosom extends Application {
     private Tab nukleosomeTab;
     private OptionsPanel options;
     public ScrollPane sb;
+    public ScrollPane sb2;
     public ChromosomTree tree;
     public BorderPane nukleosomBorderPane;
+    public BorderPane nukleosomBorderPane2;
     
     @Override
     public void start(Stage primaryStage) {
         
         this.project = new ChromosomProject(this);
+        this.project2 = new ChromosomProject(this);
         
         initGUI(primaryStage);
         
@@ -83,10 +89,19 @@ public class Chromosom extends Application {
         project.defaultFileName = fileName;
         project.maxTimeSteps.push(maxTimeSteps);
         project.offset.push(offset);
+        
+        project2.defaultFileName = fileName;
+        project2.maxTimeSteps.push(maxTimeSteps);
+        project2.offset.push(offset);
          
         NukleosomReader nukleosomReader = new NukleosomReader(project);
         nukleosomReader.openFile(project.getDefaultFileName());
+        
+        NukleosomReader nukleosomReader2 = new NukleosomReader(project2);
+        nukleosomReader2.openFile(project2.getDefaultFileName());
+        
         sb = new ScrollPane();
+        sb2 = new ScrollPane();
         nukleosomeTab = createNuclosomeTab();
         tabPane.getTabs().add(nukleosomeTab);
         rootLayout.setCenter(tabPane);
@@ -141,8 +156,45 @@ public class Chromosom extends Application {
         nukleosomBorderPane.setBottom(down);
         
         sb.setContent(nukleosomBorderPane);
+        
+        row2 = new BigNukleosomRow(project2, project2.getNukleosomWidth(), project2.getNukleosomHeight(), project2.maxTimeSteps.peek(), project2.stepSize.peek());
+
+        nukleosomBorderPane2 = new BorderPane();
+        
+        nukleosomBorderPane2.setCenter(row2);
+        
+        Button up2 = new Button("^");
+        
+        up2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                row2.goUp();
+            }
+        });
+
+        Button down2 = new Button("v");
+        
+        down2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                row2.goDown();
+            }
+        });
+        
+        nukleosomBorderPane2.setTop(up2);
+        nukleosomBorderPane2.setBottom(down2);
+        
+        sb2.setContent(nukleosomBorderPane2);
+        
+        
+        
+        SplitPane splitPane = new SplitPane();
+        splitPane.setOrientation(Orientation.HORIZONTAL);
+        splitPane.getItems().addAll(sb, sb2);
+        
+        
 //        sb.setFitToHeight(true);
-        nukleosomeTab.setContent(sb);
+        nukleosomeTab.setContent(splitPane);
         nukleosomeTab.setClosable(false);
         
         /*		Tab sunburstTab = new Tab();

@@ -156,7 +156,13 @@ public class BigNukleosomRow extends GridPane {
         
         if(!project.timeVector.containsKey(testY)) {
             return;
-        }        
+        }       
+        
+        int add = 10;
+//        
+//        if(Integer.parseInt(y) - add < 0) {
+//            add = Integer.parseInt(y) - add;
+//        }
         
         Vector<Node> slideVector = new Vector<>();
         
@@ -182,7 +188,7 @@ public class BigNukleosomRow extends GridPane {
         for(Node node : getChildren()) {
             row = getRowIndex(node);
             
-            if (row <= maxRow - 10) {
+            if (row <= maxRow - add) {
                 slideVector.add(node);
             }
         }
@@ -190,12 +196,12 @@ public class BigNukleosomRow extends GridPane {
         Node[][] nodeArray = new Node[maxCol+1][maxRow+1];
             
         for(Node node : slideVector) {
-            nodeArray[getColumnIndex(node)][getRowIndex(node) + 10] = node;
+            nodeArray[getColumnIndex(node)][getRowIndex(node) + add] = node;
         }
         
         getChildren().removeAll(getChildren());
         
-        for(row = 10; row <= maxRow; row++) {
+        for(row = add; row <= maxRow; row++) {
             for(col = 0; col < maxCol; col++) {
                 this.add(nodeArray[col][row], col, row);
             }
@@ -203,9 +209,9 @@ public class BigNukleosomRow extends GridPane {
         
         numberOfSteps = 0;
         
-        y = String.valueOf(Integer.parseInt(y) - 10);
+        y = String.valueOf(Integer.parseInt(y) - add);
         
-        for(int f = 0; f < 10; f++) {
+        for(int f = 0; f < add; f++) {
             y = String.valueOf(Integer.parseInt(y) + project.stepSize.peek());
 
             if(project.timeVector.containsKey(y)) {
@@ -227,13 +233,23 @@ public class BigNukleosomRow extends GridPane {
             }
         }  
         
-        y = String.valueOf(Integer.parseInt(y) - 10);
+        y = String.valueOf(Integer.parseInt(y) - add);
         
     }
 
     public void goDown() {
         
-        String testY = String.valueOf(Integer.parseInt(y) + project.stepSize.peek() * project.stepsToShow.peek());
+//        System.err.println(y);
+        
+        String testY = String.valueOf(Integer.parseInt(y) + project.stepSize.peek() * (project.stepsToShow.peek()+1));
+        
+//        System.err.println(testY);
+        
+//        int add = 10;
+        
+//        if(Integer.parseInt(y) + add > ) {
+//            
+//        }
         
         if(!project.timeVector.containsKey(testY)) {
             return;
