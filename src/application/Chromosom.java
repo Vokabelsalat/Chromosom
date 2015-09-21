@@ -1,5 +1,7 @@
 package application;
 
+import HeatChromosom.HeatNukleosomGrid;
+import HeatChromosom.HeatReader;
 import Nukleosom.BigNukleosomNew;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.scene.control.Spinner;
 
 import Nukleosom.BigNukleosomRow;
 import NukleosomReader.NukleosomReader;
@@ -30,15 +33,19 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javax.imageio.ImageIO;
@@ -50,13 +57,11 @@ public class Chromosom extends Application {
     private static String fileName;
     private BorderPane rootLayout;
     private ChromosomProject project;
-    private ChromosomProject project2;
     private double screenWidth;
     private double screenHeight;
     private int maxX = 0;
     private int maxY = 0;
     private BigNukleosomRow row;
-    private BigNukleosomRow row2;
     private SunburstNukleosomRow sun;
     private NukleosomVaseGrid vase;
     private NukleosomVaseGrid vase2;
@@ -67,16 +72,28 @@ public class Chromosom extends Application {
     private Tab nukleosomeTab;
     private OptionsPanel options;
     public ScrollPane sb;
-    public ScrollPane sb2;
     public ChromosomTree tree;
     public BorderPane nukleosomBorderPane;
-    public BorderPane nukleosomBorderPane2;
+    public HeatReader hr;
+    public HeatNukleosomGrid heatGrid;
+    public ScrollPane sp;
     
     @Override
     public void start(Stage primaryStage) {
         
+//        startChromosom(primaryStage);
+        startHeatChromosom(primaryStage);
+
+//        primaryStage.setMaximized(true);
+
+        Scene scene = new Scene(rootLayout);
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(true);
+        show(primaryStage);
+    }
+
+    private void startChromosom(Stage primaryStage) {
         this.project = new ChromosomProject(this);
-        this.project2 = new ChromosomProject(this);
         
         initGUI(primaryStage);
         
@@ -89,19 +106,10 @@ public class Chromosom extends Application {
         project.defaultFileName = fileName;
         project.maxTimeSteps.push(maxTimeSteps);
         project.offset.push(offset);
-        
-        project2.defaultFileName = fileName;
-        project2.maxTimeSteps.push(maxTimeSteps);
-        project2.offset.push(offset);
          
         NukleosomReader nukleosomReader = new NukleosomReader(project);
         nukleosomReader.openFile(project.getDefaultFileName());
-        
-        NukleosomReader nukleosomReader2 = new NukleosomReader(project2);
-        nukleosomReader2.openFile(project2.getDefaultFileName());
-        
         sb = new ScrollPane();
-        sb2 = new ScrollPane();
         nukleosomeTab = createNuclosomeTab();
         tabPane.getTabs().add(nukleosomeTab);
         rootLayout.setCenter(tabPane);
@@ -110,15 +118,64 @@ public class Chromosom extends Application {
         tree.fillTree();
         
         options.getChildren().add(tree);
-
-        primaryStage.setMaximized(true);
-
-        Scene scene = new Scene(rootLayout);
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(true);
-        show(primaryStage);
     }
-
+    
+    private void startHeatChromosom(Stage primaryStage) {
+        initGUI(primaryStage);
+        
+        rootLayout.setCenter(row);
+        
+        hr = new HeatReader("0.txt");
+        
+        heatGrid = new HeatNukleosomGrid(hr, "0");
+        
+        sp = new ScrollPane();
+        sp.setContent(heatGrid);
+        
+        rootLayout.setCenter(sp);
+        
+        HBox hbox = new HBox();
+        
+//        hr.timeMap.size()-1
+        Spinner spin = new Spinner(0.0, 5000.0 , 0.0);
+        spin.setEditable(true);
+        
+        spin.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable,
+                    Number oldValue, Number newValue) {
+                int i = newValue.intValue();
+                String newText = String.valueOf(i);
+                if(!hr.timeMap.containsKey(newText)) {
+                    hr.readLogFile(newText + ".txt");
+                }
+                showNewHeatGrid(newText);
+            }
+        });
+        
+        hbox.getChildren().addAll(spin);
+        hbox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+        
+        rootLayout.setBottom(hbox);
+        
+        VBox vbox = new VBox();
+        vbox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+        
+        ImageView imageView = new ImageView(heatGrid.createColorScaleImage(20, 100, Orientation.VERTICAL));
+        
+        vbox.getChildren().add(imageView);
+         
+        rootLayout.setRight(vbox);
+        
+    }
+    
+    private void showNewHeatGrid(String newValue) {
+        heatGrid = new HeatNukleosomGrid(hr, newValue);
+        sp = new ScrollPane();
+        sp.setContent()heatGrid);
+        rootLayout.setCenter(sp);
+    }
+    
     private void show(Stage primaryStage) {
         primaryStage.show();
     }
@@ -156,45 +213,8 @@ public class Chromosom extends Application {
         nukleosomBorderPane.setBottom(down);
         
         sb.setContent(nukleosomBorderPane);
-        
-        row2 = new BigNukleosomRow(project2, project2.getNukleosomWidth(), project2.getNukleosomHeight(), project2.maxTimeSteps.peek(), project2.stepSize.peek());
-
-        nukleosomBorderPane2 = new BorderPane();
-        
-        nukleosomBorderPane2.setCenter(row2);
-        
-        Button up2 = new Button("^");
-        
-        up2.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                row2.goUp();
-            }
-        });
-
-        Button down2 = new Button("v");
-        
-        down2.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                row2.goDown();
-            }
-        });
-        
-        nukleosomBorderPane2.setTop(up2);
-        nukleosomBorderPane2.setBottom(down2);
-        
-        sb2.setContent(nukleosomBorderPane2);
-        
-        
-        
-        SplitPane splitPane = new SplitPane();
-        splitPane.setOrientation(Orientation.HORIZONTAL);
-        splitPane.getItems().addAll(sb, sb2);
-        
-        
 //        sb.setFitToHeight(true);
-        nukleosomeTab.setContent(splitPane);
+        nukleosomeTab.setContent(sb);
         nukleosomeTab.setClosable(false);
         
         /*		Tab sunburstTab = new Tab();
@@ -618,5 +638,7 @@ public class Chromosom extends Application {
         tabPane.getTabs().add(zahl, nukleosomeTab);
         
     }
+
+
     
 }
