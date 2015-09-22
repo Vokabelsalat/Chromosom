@@ -123,8 +123,6 @@ public class Chromosom extends Application {
     private void startHeatChromosom(Stage primaryStage) {
         initGUI(primaryStage);
         
-        rootLayout.setCenter(row);
-        
         hr = new HeatReader("0.txt");
         
         heatGrid = new HeatNukleosomGrid(hr, "0");
@@ -137,8 +135,8 @@ public class Chromosom extends Application {
         HBox hbox = new HBox();
         
 //        hr.timeMap.size()-1
-        Spinner spin = new Spinner(0.0, 5000.0 , 0.0);
-        spin.setEditable(true);
+        Spinner spin = new Spinner(0.0, 6000.0 , 0.0);
+        spin.setEditable(true); 
         
         spin.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -146,10 +144,33 @@ public class Chromosom extends Application {
                     Number oldValue, Number newValue) {
                 int i = newValue.intValue();
                 String newText = String.valueOf(i);
-                if(!hr.timeMap.containsKey(newText)) {
-                    hr.readLogFile(newText + ".txt");
+                int add;
+                
+                if(i > oldValue.intValue()) {
+                    add = 1;
                 }
-                showNewHeatGrid(newText);
+                else {
+                    add = -1;
+                }
+                
+                if(!hr.timeMap.containsKey(newText)) {
+                    File file = new File(newText + ".txt");
+                    
+                    while(!file.exists() && i < 6000) {
+                       i = i + add;
+                       newText = String.valueOf(i);
+                       file = new File(newText + ".txt");
+                    }
+                    if(file.exists()) {
+                        hr.readLogFile(newText + ".txt");
+                        showNewHeatGrid(newText);
+                        spin.getValueFactory().setValue((double)i);
+                    }
+                }
+                else {
+                   showNewHeatGrid(String.valueOf(i)); 
+                }
+                
             }
         });
         
@@ -161,9 +182,9 @@ public class Chromosom extends Application {
         VBox vbox = new VBox();
         vbox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
         
-        ImageView imageView = new ImageView(heatGrid.createColorScaleImage(20, 100, Orientation.VERTICAL));
+//        ImageView imageView = new ImageView(heatGrid.createColorScaleImage(20, 100, Orientation.VERTICAL));
         
-        vbox.getChildren().add(imageView);
+//        vbox.getChildren().add(imageView);
          
         rootLayout.setRight(vbox);
         
@@ -172,7 +193,7 @@ public class Chromosom extends Application {
     private void showNewHeatGrid(String newValue) {
         heatGrid = new HeatNukleosomGrid(hr, newValue);
         sp = new ScrollPane();
-        sp.setContent()heatGrid);
+        sp.setContent(heatGrid);
         rootLayout.setCenter(sp);
     }
     
