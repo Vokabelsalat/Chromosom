@@ -38,10 +38,10 @@ public class HeatNukleosom extends Pane {
 
         Paint color;
 
-        color = Color.BLUE;
+        color = Color.hsb(50,1.0,value,1.0).invert();
 
         Rectangle rect = new Rectangle(width, height , color); 
-        rect.setOpacity(value);   
+//        rect.setOpacity(value);   
 
         rect.setX(width);
         rect.setY(height);

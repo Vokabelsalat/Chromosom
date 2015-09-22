@@ -120,10 +120,27 @@ public class Chromosom extends Application {
         options.getChildren().add(tree);
     }
     
+    private void searchForLogFiles(String path) {
+        File[] files = new File(path).listFiles();
+        //If this pathname does not denote a directory, then listFiles() returns null. 
+
+        for (File file : files) {
+            if (file.isFile()) {
+                hr.readLogFile(file.getPath());
+            }
+        }
+    }
+    
     private void startHeatChromosom(Stage primaryStage) {
         initGUI(primaryStage);
+
+        File testFile = new File("test.txt");
+        
+        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logFiles");
         
         hr = new HeatReader("0.txt");
+        
+        searchForLogFiles(pazText);
         
         heatGrid = new HeatNukleosomGrid(hr, "0");
         
@@ -153,6 +170,15 @@ public class Chromosom extends Application {
                     add = -1;
                 }
                 
+//                while(!hr.timeMap.containsKey(newText) && i < 100000 && i > 0) {
+//                   i = i + add;
+//                   newText = String.valueOf(i);
+//                }
+                
+//                if(hr.timeMap.containsKey(newText)) {
+//                    showNewHeatGrid(newText);
+//                }
+                
                 if(!hr.timeMap.containsKey(newText)) {
                     File file = new File(newText + ".txt");
                     
@@ -163,6 +189,7 @@ public class Chromosom extends Application {
                     }
                     if(file.exists()) {
                         hr.readLogFile(newText + ".txt");
+                        System.err.println("hit");
                         showNewHeatGrid(newText);
                         spin.getValueFactory().setValue((double)i);
                     }
@@ -170,7 +197,6 @@ public class Chromosom extends Application {
                 else {
                    showNewHeatGrid(String.valueOf(i)); 
                 }
-                
             }
         });
         
@@ -182,9 +208,9 @@ public class Chromosom extends Application {
         VBox vbox = new VBox();
         vbox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
         
-//        ImageView imageView = new ImageView(heatGrid.createColorScaleImage(20, 100, Orientation.VERTICAL));
-        
-//        vbox.getChildren().add(imageView);
+        ImageView imageView = new ImageView(heatGrid.createColorScaleImage(20, 100, Orientation.VERTICAL));
+
+        vbox.getChildren().add(imageView);
          
         rootLayout.setRight(vbox);
         

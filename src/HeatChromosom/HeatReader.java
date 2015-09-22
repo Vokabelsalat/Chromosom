@@ -38,7 +38,9 @@ public class HeatReader {
     
     public void readLogFile(String fileName) {
         
-        if(timeMap.containsKey(fileName)) {
+        timeStep = fileName.substring(0, fileName.indexOf("."));
+        
+        if(timeMap.containsKey(timeStep)) {
             return;
         }
         
@@ -52,7 +54,7 @@ public class HeatReader {
             ArrayList<ArrayList<Double>> enzymeList = new ArrayList<>();
             ArrayList<Double> nukleosomList;
             
-            timeStep = fileName.substring(0, fileName.indexOf("."));
+            
             String line = "";
             max = 0.0;
             min = 0.0;
