@@ -1,6 +1,8 @@
 package application;
 
 import HeatChromosom.HeatNukleosomGrid;
+import HeatChromosom.HeatOptions;
+import HeatChromosom.HeatProject;
 import HeatChromosom.HeatReader;
 import Nukleosom.BigNukleosomNew;
 import java.util.ArrayList;
@@ -41,8 +43,11 @@ import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -77,6 +82,7 @@ public class Chromosom extends Application {
     public HeatReader hr;
     public HeatNukleosomGrid heatGrid;
     public ScrollPane sp;
+    public HeatProject heatProject;
     
     @Override
     public void start(Stage primaryStage) {
@@ -133,24 +139,9 @@ public class Chromosom extends Application {
     
     private void startHeatChromosom(Stage primaryStage) {
         initGUI(primaryStage);
-
-        File testFile = new File("test.txt");
         
-        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logFiles");
-        
-        hr = new HeatReader("0.txt");
-        
-        searchForLogFiles(pazText);
-        
-        heatGrid = new HeatNukleosomGrid(hr, "0");
-        
-        sp = new ScrollPane();
-        sp.setContent(heatGrid);
-        
-        rootLayout.setCenter(sp);
-        
-        HBox hbox = new HBox();
-        
+        VBox hbox = new VBox();
+        HBox spinBox = new HBox();
 //        hr.timeMap.size()-1
         Spinner spin = new Spinner(0.0, 6000.0 , 0.0);
         spin.setEditable(true); 
@@ -189,7 +180,6 @@ public class Chromosom extends Application {
                     }
                     if(file.exists()) {
                         hr.readLogFile(newText + ".txt");
-                        System.err.println("hit");
                         showNewHeatGrid(newText);
                         spin.getValueFactory().setValue((double)i);
                     }
@@ -200,10 +190,82 @@ public class Chromosom extends Application {
             }
         });
         
-        hbox.getChildren().addAll(spin);
+        spin.getEditor().setOnKeyPressed(event -> {
+           switch (event.getCode()) {
+                case UP:
+                    spin.increment();
+                    break;
+                case DOWN:
+                    spin.decrement();
+                    break;
+            }
+        });
+        
+        spinBox.getChildren().addAll(spin);
+        spinBox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+        
         hbox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
         
-        rootLayout.setBottom(hbox);
+        hbox.getChildren().add(new Label("Result:"));
+        
+        HeatOptions selectedNukleosom = new HeatOptions();
+        hbox.getChildren().add(selectedNukleosom);
+        
+        Separator sep = new Separator();
+        hbox.getChildren().add(sep);
+        
+        hbox.getChildren().add(new Label("Selected Items:"));
+        
+        HeatOptions hOptions = new HeatOptions();
+        hbox.getChildren().add(hOptions);
+        
+        Spinner nearSpin = new Spinner(0.0, 1.0 , 0.0, 0.01);
+        nearSpin.setEditable(true); 
+        
+        nearSpin.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable,
+                    Number oldValue, Number newValue) {
+                System.err.println(newValue);
+                heatGrid.highlightNear(newValue.doubleValue());
+            }
+        });      
+        
+        nearSpin.getEditor().setOnKeyPressed(event -> {
+           switch (event.getCode()) {
+                case UP:
+                    nearSpin.increment();
+                    break;
+                case DOWN:
+                    nearSpin.decrement();
+                    break;
+//                case ENTER:
+//                    nearSpin
+            }
+        });
+        
+        hbox.getChildren().add(nearSpin);
+        
+        rootLayout.setRight(hbox);
+
+        File testFile = new File("test.txt");
+        
+        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logFiles");
+        
+        hr = new HeatReader("0.txt");
+        
+        searchForLogFiles(pazText);
+        
+        heatProject = new HeatProject(this);
+        
+        heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, "0");
+        
+        sp = new ScrollPane();
+        sp.setContent(heatGrid);
+        
+        rootLayout.setBottom(spinBox);
+        
+        rootLayout.setCenter(sp);
         
         VBox vbox = new VBox();
         vbox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
@@ -212,12 +274,12 @@ public class Chromosom extends Application {
 
         vbox.getChildren().add(imageView);
          
-        rootLayout.setRight(vbox);
+        rootLayout.setLeft(vbox);
         
     }
     
     private void showNewHeatGrid(String newValue) {
-        heatGrid = new HeatNukleosomGrid(hr, newValue);
+        heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, newValue);
         sp = new ScrollPane();
         sp.setContent(heatGrid);
         rootLayout.setCenter(sp);

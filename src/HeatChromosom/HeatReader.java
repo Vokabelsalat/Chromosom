@@ -38,7 +38,7 @@ public class HeatReader {
     
     public void readLogFile(String fileName) {
         
-        timeStep = fileName.substring(0, fileName.indexOf("."));
+        timeStep = fileName.substring(fileName.lastIndexOf("\\")+1, fileName.indexOf("."));
         
         if(timeMap.containsKey(timeStep)) {
             return;
@@ -85,7 +85,7 @@ public class HeatReader {
                     }
                     
                 }
-                else if(line.contains("\\|")) {
+                else if(line.contains("|")) {
                     String strArray[] = line.split("\\|");
                     int hitArray[] = new int[strArray.length];
                     hitArray[0] = Integer.parseInt(strArray[0]);
