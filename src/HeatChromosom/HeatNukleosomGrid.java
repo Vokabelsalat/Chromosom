@@ -96,57 +96,42 @@ public class HeatNukleosomGrid extends GridPane{
             if(nod instanceof HeatChromosom.HeatNukleosom ) {
                 HeatNukleosom nukl = (HeatNukleosom)nod;
                 if(nukl.value >= value - 0.015 && nukl.value <= value + 0.015) {
-                    nukl.setStrokeColor(Color.rgb(255, 0, 255));
-                    nukl.setStrokeWidth(2.3);
+//                    nukl.setStrokeColor(Color.rgb(255, 0, 255));
+//                    nukl.setStrokeWidth(2.3);
+                    
+                    nukl.highlight();
+                    
                     highlightedList.add(nukl);
                 }
             }
         }
+        
+        for(Node nod : this.getChildren()) {
+            if(nod instanceof HeatChromosom.HeatNukleosom ) {
+                HeatNukleosom nukl = (HeatNukleosom)nod;
+                if(!highlightedList.contains(nukl) && !highlightedList.isEmpty()) {
+                    nukl.setOpacity(0.3);
+                }
+            }
+        }        
     }
     
     public void resetHighlightedNukl() {
         
+        for(Node nod : this.getChildren()) {
+            if(nod instanceof HeatChromosom.HeatNukleosom ) {
+                HeatNukleosom nukl = (HeatNukleosom)nod;
+                nukl.setOpacity(1.0); 
+            }
+        }        
+        
         if(highlightedList != null) {
             for(HeatNukleosom nukl : highlightedList) {
-                nukl.setStrokeColor(Color.GRAY);
-                nukl.setStrokeWidth(nukl.oldStrokeWidth);
+                nukl.deHighlight();
             }
         }
         
         highlightedList = new ArrayList<>();
-    }
-    
-    public Image createColorScaleImage(int width, int height, Orientation orientation) {
-        WritableImage image = new WritableImage(width, height);
-        PixelWriter pixelWriter = image.getPixelWriter();
-        if (orientation == Orientation.HORIZONTAL) {
-            for (int x=0; x<width; x++) {
-                
-                double value = 0.0 + (1.0 - 0.0) * x / width;
-                Color color = Color.hsb(50,1.0,value,1.0).invert();
-                
-                if(x==0 || x == width-1) {
-                    color = Color.BLACK;
-                }
-                
-                for (int y=0; y<height; y++) {
-                    pixelWriter.setColor(x, y, color);
-                }
-            }
-        } else {
-            for (int y=0; y<height; y++) {
-                double value = 1.0 - (1.0 - 0.0) * y / height ;
-                Color color = Color.hsb(50,1.0,value,1.0).invert();
-                
-                if(y==0 || y == height-1) {
-                    color = Color.BLACK;
-                }
-                for (int x=0; x<width; x++) {
-                    pixelWriter.setColor(x, y, color);
-                }
-            }
-        }
-        return image ;
     }
     
     private void resetAndHighlightNukleosom(HeatNukleosom newNukl, HeatNukleosom oldNukl, boolean left, Color color) {

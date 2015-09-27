@@ -24,6 +24,7 @@ public class HeatNukleosom extends Pane {
     double value;
     HeatNukleosomGrid parent;
     Rectangle rect;
+    Rectangle highlightRect;
     double oldStrokeWidth;
     int x, y;
     
@@ -42,7 +43,7 @@ public class HeatNukleosom extends Pane {
 
         Paint color;
 
-        color = Color.hsb(50,1.0,value,1.0).invert();
+        color = generateColorForValue(value);
 
         rect = new Rectangle(width, height , color); 
 //        rect.setOpacity(value);   
@@ -99,6 +100,21 @@ public class HeatNukleosom extends Pane {
         }
     }
     
+    public void highlight() {
+        
+        Color col = Color.rgb(255,0,230);
+        
+        highlightRect = new Rectangle(width, height , col); 
+        highlightRect.setOpacity(value + 0.15);
+        
+       getChildren().add(highlightRect);
+    }
+    
+    public void deHighlight() {
+       if(highlightRect != null)
+        getChildren().remove(highlightRect);
+    }
+    
     public void setStrokeColor(Color col) {
         rect.setStroke(col);
     } 
@@ -106,5 +122,9 @@ public class HeatNukleosom extends Pane {
     public void setStrokeWidth(double doub) {
         rect.setStrokeWidth(doub);
     } 
+    
+    public static Color generateColorForValue(double orgValue) {
+        return Color.hsb(50,1.0,orgValue,1.0).invert();
+    }
     
 }

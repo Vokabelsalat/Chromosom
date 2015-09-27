@@ -16,9 +16,9 @@ import javafx.scene.layout.Pane;
  *
  * @author Jakob
  */
-public class HeatOptions extends GridPane{
+public class HeatOptionsGrid extends GridPane{
     
-    public HeatOptions() {
+    public HeatOptionsGrid() {
         
         this.setHgap(7);
         this.setVgap(7);
