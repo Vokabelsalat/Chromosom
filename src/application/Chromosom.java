@@ -1,7 +1,8 @@
 package application;
 
+import HeatChromosom.HeatLegend;
 import HeatChromosom.HeatNukleosomGrid;
-import HeatChromosom.HeatOptions;
+import HeatChromosom.HeatOptionsPanel;
 import HeatChromosom.HeatProject;
 import HeatChromosom.HeatReader;
 import Nukleosom.BigNukleosomNew;
@@ -21,7 +22,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.scene.control.Spinner;
 
 import Nukleosom.BigNukleosomRow;
 import NukleosomReader.NukleosomReader;
@@ -35,22 +35,14 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
+import javafx.geometry.Insets;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javax.imageio.ImageIO;
@@ -140,113 +132,9 @@ public class Chromosom extends Application {
     private void startHeatChromosom(Stage primaryStage) {
         initGUI(primaryStage);
         
-        VBox hbox = new VBox();
-        HBox spinBox = new HBox();
-//        hr.timeMap.size()-1
-        Spinner spin = new Spinner(0.0, 6000.0 , 0.0);
-        spin.setEditable(true); 
+        HeatOptionsPanel hop = new HeatOptionsPanel(this);
         
-        spin.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable,
-                    Number oldValue, Number newValue) {
-                int i = newValue.intValue();
-                String newText = String.valueOf(i);
-                int add;
-                
-                if(i > oldValue.intValue()) {
-                    add = 1;
-                }
-                else {
-                    add = -1;
-                }
-                
-//                while(!hr.timeMap.containsKey(newText) && i < 100000 && i > 0) {
-//                   i = i + add;
-//                   newText = String.valueOf(i);
-//                }
-                
-//                if(hr.timeMap.containsKey(newText)) {
-//                    showNewHeatGrid(newText);
-//                }
-                
-                if(!hr.timeMap.containsKey(newText)) {
-                    File file = new File(newText + ".txt");
-                    
-                    while(!file.exists() && i < 6000) {
-                       i = i + add;
-                       newText = String.valueOf(i);
-                       file = new File(newText + ".txt");
-                    }
-                    if(file.exists()) {
-                        hr.readLogFile(newText + ".txt");
-                        showNewHeatGrid(newText);
-                        spin.getValueFactory().setValue((double)i);
-                    }
-                }
-                else {
-                   showNewHeatGrid(String.valueOf(i)); 
-                }
-            }
-        });
-        
-        spin.getEditor().setOnKeyPressed(event -> {
-           switch (event.getCode()) {
-                case UP:
-                    spin.increment();
-                    break;
-                case DOWN:
-                    spin.decrement();
-                    break;
-            }
-        });
-        
-        spinBox.getChildren().addAll(spin);
-        spinBox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
-        
-        hbox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
-        
-        hbox.getChildren().add(new Label("Result:"));
-        
-        HeatOptions selectedNukleosom = new HeatOptions();
-        hbox.getChildren().add(selectedNukleosom);
-        
-        Separator sep = new Separator();
-        hbox.getChildren().add(sep);
-        
-        hbox.getChildren().add(new Label("Selected Items:"));
-        
-        HeatOptions hOptions = new HeatOptions();
-        hbox.getChildren().add(hOptions);
-        
-        Spinner nearSpin = new Spinner(0.0, 1.0 , 0.0, 0.01);
-        nearSpin.setEditable(true); 
-        
-        nearSpin.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable,
-                    Number oldValue, Number newValue) {
-                System.err.println(newValue);
-                heatGrid.highlightNear(newValue.doubleValue());
-            }
-        });      
-        
-        nearSpin.getEditor().setOnKeyPressed(event -> {
-           switch (event.getCode()) {
-                case UP:
-                    nearSpin.increment();
-                    break;
-                case DOWN:
-                    nearSpin.decrement();
-                    break;
-//                case ENTER:
-//                    nearSpin
-            }
-        });
-        
-        hbox.getChildren().add(nearSpin);
-        
-        rootLayout.setRight(hbox);
+        rootLayout.setRight(hop);
 
         File testFile = new File("test.txt");
         
@@ -261,24 +149,18 @@ public class Chromosom extends Application {
         heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, "0");
         
         sp = new ScrollPane();
+        
+        BorderPane.setMargin(sp, new Insets(7,7,7,7));
         sp.setContent(heatGrid);
         
-        rootLayout.setBottom(spinBox);
+        HeatLegend heatLegend = new HeatLegend(this);
+        
+        rootLayout.setBottom(heatLegend);
         
         rootLayout.setCenter(sp);
-        
-        VBox vbox = new VBox();
-        vbox.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
-        
-        ImageView imageView = new ImageView(heatGrid.createColorScaleImage(20, 100, Orientation.VERTICAL));
-
-        vbox.getChildren().add(imageView);
-         
-        rootLayout.setLeft(vbox);
-        
     }
     
-    private void showNewHeatGrid(String newValue) {
+    public void showNewHeatGrid(String newValue) {
         heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, newValue);
         sp = new ScrollPane();
         sp.setContent(heatGrid);

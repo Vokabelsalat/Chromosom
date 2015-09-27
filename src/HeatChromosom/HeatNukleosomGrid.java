@@ -86,6 +86,9 @@ public class HeatNukleosomGrid extends GridPane{
                 add(heatNukl, nukleosom, enzyme);
             }
         }
+        
+//        setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+        
     }
     
     public void highlightNear(double value) {
@@ -110,7 +113,7 @@ public class HeatNukleosomGrid extends GridPane{
             if(nod instanceof HeatChromosom.HeatNukleosom ) {
                 HeatNukleosom nukl = (HeatNukleosom)nod;
                 if(!highlightedList.contains(nukl) && !highlightedList.isEmpty()) {
-                    nukl.setOpacity(0.3);
+                    nukl.setOpacity(0.35);
                 }
             }
         }        

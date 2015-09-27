@@ -24,8 +24,9 @@ public class HeatOptionsPanel extends VBox{
     public HeatOptionsPanel(Chromosom chromosom) {
         
         this.chromosom = chromosom;
+        this.setSpacing(3);
         
-        setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+//        setStyle("-fx-border: 3px solid; -fx-border-color: black;");
         
         getChildren().add(new Label("Result:"));
         
@@ -39,6 +40,11 @@ public class HeatOptionsPanel extends VBox{
         
         HeatOptionsGrid hOptions = new HeatOptionsGrid();
         getChildren().add(hOptions);
+        
+        Separator sep2 = new Separator();
+        getChildren().add(sep2); 
+        
+        getChildren().add(new Label("Probability Highlight:"));
         
         Spinner nearSpin = new Spinner(0.0, 1.0 , 0.0, 0.01);
         nearSpin.setEditable(true); 

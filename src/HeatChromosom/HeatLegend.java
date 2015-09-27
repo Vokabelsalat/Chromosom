@@ -90,7 +90,7 @@ public class HeatLegend extends HBox{
         getChildren().addAll(spin, sep, new Label("0.0"), imageView, new Label("1.0"));
         setSpacing(5.0);
         
-        setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+//        setStyle("-fx-border: 3px solid; -fx-border-color: black;");
     }
     
     public Image createColorScaleImage(int width, int height, Orientation orientation) {
