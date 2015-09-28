@@ -23,6 +23,7 @@ public class HeatReader {
     
     public HashMap<String, ArrayList<ArrayList<Double>>> timeMap;
     public HashMap<String, int[]> hitMap;
+    public ArrayList<Integer> channelList;
     
     double max;
     double min;
@@ -33,7 +34,64 @@ public class HeatReader {
         
         timeMap = new HashMap<>();
         hitMap = new HashMap<>();
+        channelList = new ArrayList<>();
+        
+        readChannelInfo("channelinfo.log");
+        
         readLogFile(fileName);
+    }
+    
+    public void readChannelInfo(String fileName) {
+        FileInputStream fin = null;
+        BufferedReader br = null;
+        
+        int enzyme = 0;
+        int channel = 0;
+//        int rowNumber = 0;
+        
+        try {
+            fin = new FileInputStream(fileName);
+            br = new BufferedReader(new InputStreamReader(fin));
+            
+            String line = "";
+            
+            while((line = br.readLine()) != null) {
+                
+                if(line.equals("")) {
+                    
+                }
+                else if(line.contains("Enzyme")) {
+                    if(line.contains(" ")) {
+                        
+                        String splitArray[] = line.split(" ");
+                        enzyme = Integer.parseInt(splitArray[1]);
+                    }
+                }
+                else if(line.contains("Channel")) {
+                    if(line.contains(" ")) {
+                        
+                        String splitArray[] = line.split(" ");
+                        
+                        channel = Integer.parseInt(splitArray[1]);
+                        
+                        channelList.add(channel, enzyme);
+//                        channel++;
+                    }
+                }
+            }
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(HeatReader.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(HeatReader.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                br.close();
+                fin.close();
+            } catch (IOException ex) {
+                Logger.getLogger(HeatReader.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
     public void readLogFile(String fileName) {
@@ -53,7 +111,6 @@ public class HeatReader {
             
             ArrayList<ArrayList<Double>> enzymeList = new ArrayList<>();
             ArrayList<Double> nukleosomList;
-            
             
             String line = "";
             max = 0.0;
@@ -93,7 +150,6 @@ public class HeatReader {
                     
                     hitMap.put(timeStep, hitArray);
                 }
-                    
             }
             
             timeMap.put(timeStep, enzymeList);

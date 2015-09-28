@@ -8,7 +8,9 @@ package HeatChromosom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -125,6 +127,7 @@ public class HeatNukleosomGrid extends GridPane{
             if(nod instanceof HeatChromosom.HeatNukleosom ) {
                 HeatNukleosom nukl = (HeatNukleosom)nod;
                 nukl.setOpacity(1.0); 
+                nukl.getChildren().remove(nukl.highlightRect);
             }
         }        
         
@@ -178,10 +181,10 @@ public class HeatNukleosomGrid extends GridPane{
                     table.getChildren().remove(nod);
                 }
                 
-                
                 StackPane pane = new StackPane();
                 
-                pane.setPrefSize(25, 25);
+                pane.setPrefSize(28, 28);
+                pane.setAlignment(Pos.CENTER_LEFT);
                 
                 Color color = Color.GRAY;
 
@@ -193,10 +196,15 @@ public class HeatNukleosomGrid extends GridPane{
                 }
 
                 Rectangle bg = new Rectangle(28,28,color);
+                bg.setTranslateX(0);
+                bg.setTranslateY(0);
+
 
                 pane.getChildren().add(bg);
 
                 Rectangle fg = new Rectangle(24, 24, Color.WHITE);
+                fg.setTranslateX(2);
+//                fg.setTranslateY(1);
 
                 pane.getChildren().add(fg); 
                 
@@ -208,8 +216,28 @@ public class HeatNukleosomGrid extends GridPane{
                 
                 table.add(pane, col, 0);
                 table.add(new Label(String.valueOf(newNukl.value).replace(".", ",")), col, 1);
+               
+                //Nukleosom
                 table.add(new Label(String.valueOf(nukl.x)), col, 2);
-                table.add(new Label(String.valueOf(nukl.y)), col, 3);
+                
+                int y = (nukl.y/2);
+                
+                //Enzyme
+                table.add(new Label(String.valueOf(hr.channelList.get(y))), col, 3);
+                
+                //Channel
+                table.add(new Label(String.valueOf(y)), col, 4);
+                
+                //Action
+                String action;
+                if(nukl.y%2 == 0) {
+                    action = "activation";
+                }
+                else {
+                    action = "deactivation";
+                }
+                
+                table.add(new Label(action), col, 5);
             }
         }
     }

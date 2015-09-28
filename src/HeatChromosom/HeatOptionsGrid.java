@@ -19,13 +19,15 @@ import javafx.scene.layout.Pane;
 public class HeatOptionsGrid extends GridPane{
     
     public HeatOptionsGrid() {
-        
+
         this.setHgap(7);
         this.setVgap(7);
         
         this.add(new Label("Probability:"), 0, 1);
         this.add(new Label("Nukleosom:"), 0, 2);
         this.add(new Label("Enzyme:"), 0, 3);
+        this.add(new Label("Channel:"), 0, 4);
+        this.add(new Label("Action:"), 0, 5);
         
         Pane emptyPane = new Pane();
         emptyPane.setMinSize(28,28);
@@ -33,6 +35,8 @@ public class HeatOptionsGrid extends GridPane{
         this.add(emptyPane, 0, 0);
         
         this.setMinSize(150, 0);
+        
+        
     }
     
 }
