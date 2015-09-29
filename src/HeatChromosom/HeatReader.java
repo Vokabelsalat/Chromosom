@@ -6,6 +6,7 @@
 package HeatChromosom;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -28,9 +29,7 @@ public class HeatReader {
     double max;
     double min;
     
-    String timeStep;
-    
-    public HeatReader(String fileName) {
+    public HeatReader() {
         
         timeMap = new HashMap<>();
         hitMap = new HashMap<>();
@@ -38,7 +37,8 @@ public class HeatReader {
         
         readChannelInfo("channelinfo.log");
         
-        readLogFile(fileName);
+
+//        readLogFile(fileName);
     }
     
     public void readChannelInfo(String fileName) {
@@ -94,11 +94,31 @@ public class HeatReader {
         }
     }
     
-    public void readLogFile(String fileName) {
-        
-        timeStep = fileName.substring(fileName.lastIndexOf("\\")+1, fileName.indexOf("."));
+    public void searchForLogFiles(String path) {
+        File[] files = new File(path).listFiles();
+        //If this pathname does not denote a directory, then listFiles() returns null. 
+
+        for (File file : files) {
+            if (file.isFile()) {
+                addLogFile(file.getPath());
+            }
+        }
+    }
+    
+    
+    public void addLogFile(String fileName) {
+        String timeStep = fileName.substring(fileName.lastIndexOf("\\")+1, fileName.indexOf("."));
         
         if(timeMap.containsKey(timeStep)) {
+            return;
+        }
+        
+        timeMap.put(timeStep, null);
+    }
+    
+    public void readLogFile(String timeStep) {
+        
+        if(timeMap.containsKey(timeStep) && timeMap.get(timeStep) != null) {
             return;
         }
         
@@ -106,7 +126,7 @@ public class HeatReader {
         BufferedReader br = null;
         
         try {
-            fin = new FileInputStream(fileName);
+            fin = new FileInputStream("logs/" + timeStep + ".csv");
             br = new BufferedReader(new InputStreamReader(fin));
             
             ArrayList<ArrayList<Double>> enzymeList = new ArrayList<>();
@@ -152,7 +172,7 @@ public class HeatReader {
                 }
             }
             
-            timeMap.put(timeStep, enzymeList);
+            timeMap.replace(timeStep, enzymeList);
             
 //            for(ArrayList<ArrayList<Double>> entry : timeMap.values()) {
 //                for(int enzyme = 0; enzyme < entry.size(); enzyme++) {
@@ -163,7 +183,7 @@ public class HeatReader {
 //                }
 //            }
             
-            scaleValues();
+            scaleValues(timeStep);
             
         } catch (FileNotFoundException ex) {
             Logger.getLogger(HeatReader.class.getName()).log(Level.SEVERE, null, ex);
@@ -177,9 +197,13 @@ public class HeatReader {
                 Logger.getLogger(HeatReader.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        System.out.println(timeStep + ".csv was added to timeMap");
+        
     }
     
-    public void scaleValues() {
+    public void scaleValues(String timeStep) {
+        if( timeMap.get(timeStep) != null) {
             ArrayList<ArrayList<Double>> entry = timeMap.get(timeStep); 
             
             ArrayList<ArrayList<Double>> newEnzymeList = new ArrayList<>();
@@ -198,6 +222,7 @@ public class HeatReader {
             
             timeMap.remove(timeStep);
             timeMap.put(timeStep, newEnzymeList);
+        }
     }
     
 }

@@ -27,7 +27,7 @@ public class HeatOptionsGrid extends GridPane{
         this.add(new Label("Nukleosom:"), 0, 2);
         this.add(new Label("Enzyme:"), 0, 3);
         this.add(new Label("Channel:"), 0, 4);
-        this.add(new Label("Action:"), 0, 5);
+//        this.add(new Label("Action:"), 0, 5);
         
         Pane emptyPane = new Pane();
         emptyPane.setMinSize(28,28);

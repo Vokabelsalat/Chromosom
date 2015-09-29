@@ -32,7 +32,7 @@ public class HeatLegend extends HBox{
         
         this.chromosom = chromosom;
         
-        Spinner spin = new Spinner(0.0, 6000.0 , 0.0);
+        Spinner spin = new Spinner(0.0, 20000.0 , 0.0);
         spin.setEditable(true); 
         
         spin.valueProperty().addListener(new ChangeListener<Number>() {
@@ -53,13 +53,13 @@ public class HeatLegend extends HBox{
                 if(!chromosom.hr.timeMap.containsKey(newText)) {
                     File file = new File(newText + ".txt");
                     
-                    while(!file.exists() && i < 6000) {
+                    while(!file.exists() && i < 20000) {
                        i = i + add;
                        newText = String.valueOf(i);
-                       file = new File(newText + ".txt");
+                       file = new File(newText);
                     }
                     if(file.exists()) {
-                        chromosom.hr.readLogFile(newText + ".txt");
+                        chromosom.hr.readLogFile(newText);
                         chromosom.showNewHeatGrid(newText);
                         spin.getValueFactory().setValue((double)i);
                     }

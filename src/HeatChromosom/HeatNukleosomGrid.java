@@ -49,6 +49,10 @@ public class HeatNukleosomGrid extends GridPane{
        
 //        ArrayList<Node> nodeList = new ArrayList<>();
         
+        if(timeMap.containsKey(timeStep) && timeMap.get(timeStep) == null) {
+            hr.readLogFile(timeStep);
+        }
+        
         ArrayList<ArrayList<Double>> enzymeList = timeMap.get(timeStep);
         
         
@@ -93,14 +97,14 @@ public class HeatNukleosomGrid extends GridPane{
         
     }
     
-    public void highlightNear(double value) {
+    public void highlightNear(double value, double range) {
         
         resetHighlightedNukl();
         
         for(Node nod : this.getChildren()) {
             if(nod instanceof HeatChromosom.HeatNukleosom ) {
                 HeatNukleosom nukl = (HeatNukleosom)nod;
-                if(nukl.value >= value - 0.015 && nukl.value <= value + 0.015) {
+                if(nukl.value >= value - range && nukl.value <= value + range) {
 //                    nukl.setStrokeColor(Color.rgb(255, 0, 255));
 //                    nukl.setStrokeWidth(2.3);
                     
@@ -220,24 +224,25 @@ public class HeatNukleosomGrid extends GridPane{
                 //Nukleosom
                 table.add(new Label(String.valueOf(nukl.x)), col, 2);
                 
-                int y = (nukl.y/2);
+                //Für die Action
+//                int y = (nukl.y/2);
                 
                 //Enzyme
-                table.add(new Label(String.valueOf(hr.channelList.get(y))), col, 3);
+                table.add(new Label(String.valueOf(hr.channelList.get(nukl.y))), col, 3);
                 
                 //Channel
-                table.add(new Label(String.valueOf(y)), col, 4);
+                table.add(new Label(String.valueOf(nukl.y)), col, 4);
                 
-                //Action
-                String action;
-                if(nukl.y%2 == 0) {
-                    action = "activation";
-                }
-                else {
-                    action = "deactivation";
-                }
-                
-                table.add(new Label(action), col, 5);
+//                //Action
+//                String action;
+//                if(nukl.y%2 == 0) {
+//                    action = "activation";
+//                }
+//                else {
+//                    action = "deactivation";
+//                }
+//                
+//                table.add(new Label(action), col, 5);
             }
         }
     }

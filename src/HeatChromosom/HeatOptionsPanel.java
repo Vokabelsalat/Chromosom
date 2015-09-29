@@ -12,6 +12,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -54,16 +56,21 @@ public class HeatOptionsPanel extends VBox{
         
         CheckBox checky = new CheckBox();
 
-        Spinner nearSpin = new Spinner(0.0, 1.0 , 0.0, 0.01);
+        Spinner nearSpin = new Spinner(0.0, 1.0, 0.0, 0.01);
+        Spinner rangeSpinner = new Spinner(0.0, 1.0, 0.0, 0.01);
+        
+        DoubleSpinnerValueFactory nearSpinValueFactory = new DoubleSpinnerValueFactory(0.0, 1.0, 0.0, 0.01);
+        nearSpin.setValueFactory(nearSpinValueFactory);
+        
+        DoubleSpinnerValueFactory rangeSpinValueFactory = new DoubleSpinnerValueFactory(0.0, 1.0, 0.0, 0.01);
+        rangeSpinner.setValueFactory(rangeSpinValueFactory);
         
         checky.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-            
-            System.err.println(new_val);
             
             if(new_val == true) {
                 String text = nearSpin.getEditor().getText().replaceAll(",", ".");
                 double doub = Double.parseDouble(text);
-                chromosom.heatGrid.highlightNear(doub);
+                chromosom.heatGrid.highlightNear(doub, rangeSpinValueFactory.getValue());
                 oldProb = doub;
             }
             else {
@@ -79,13 +86,20 @@ public class HeatOptionsPanel extends VBox{
         
         nearSpin.setMaxWidth(80.0);
         
-        nearSpin.valueProperty().addListener(new ChangeListener<Number>() {
+
+        
+        nearSpin.valueProperty().addListener(new ChangeListener<Double>() {
             @Override
-            public void changed(ObservableValue<? extends Number> observable,
-                    Number oldValue, Number newValue) {
-                oldProb = newValue.doubleValue();
-                chromosom.heatGrid.highlightNear(newValue.doubleValue());
-                checky.setSelected(true);
+            public void changed(ObservableValue<? extends Double> observable,
+                    Double oldValue, Double newValue) {
+                try {
+                    oldProb = newValue;//.doubleValue();
+                    chromosom.heatGrid.highlightNear(newValue, rangeSpinValueFactory.getValue());//.doubleValue());
+                    checky.setSelected(true);  
+                }
+                catch(Exception e) {
+                    
+                }
             }
         });      
         
@@ -98,28 +112,51 @@ public class HeatOptionsPanel extends VBox{
                     nearSpin.decrement();
                     break;
                 case ENTER:
-                    String text = nearSpin.getEditor().getText().replaceAll(",", ".");
-                    double doub = Double.parseDouble(text);
-                    if(oldProb == doub) {
-                        if(!chromosom.heatGrid.highlightedList.isEmpty()) {
-                            chromosom.heatGrid.highlightedList.removeAll(chromosom.heatGrid.highlightedList);
+                    if(!nearSpin.getEditor().getText().equals("")) {
+                        String text = nearSpin.getEditor().getText().replaceAll(",", ".");
+                        double doub = Double.parseDouble(text);
+                        if(oldProb == doub) {
+                            if(!chromosom.heatGrid.highlightedList.isEmpty()) {
+                                chromosom.heatGrid.highlightedList.removeAll(chromosom.heatGrid.highlightedList);
+                            }
+                            chromosom.heatGrid.resetHighlightedNukl();
+                            oldProb = oldProb + 2.0;
+                            checky.setSelected(false);
                         }
-                        chromosom.heatGrid.resetHighlightedNukl();
-                        oldProb = oldProb + 2.0;
-                        checky.setSelected(false);
+                        else {
+                            chromosom.heatGrid.highlightNear(doub, rangeSpinValueFactory.getValue());
+                            oldProb = doub;
+                            checky.setSelected(true);
+                        }
                     }
                     else {
-                        chromosom.heatGrid.highlightNear(doub);
-                        oldProb = doub;
-                        checky.setSelected(true);
+                        nearSpin.getEditor().setText("0.0");
                     }
                     break;
             }
         });
         
+        rangeSpinner.valueProperty().addListener(new ChangeListener<Double>() {
+            @Override
+            public void changed(ObservableValue<? extends Double> observable,
+                    Double oldValue, Double newValue) {
+                nearSpinValueFactory.setAmountToStepBy(newValue);
+                if(checky.isSelected() == true) {
+                    chromosom.heatGrid.highlightNear(nearSpinValueFactory.getValue(), newValue);
+                }
+            }
+        });
+        
+        rangeSpinner.setEditable(true);
+        rangeSpinner.setMaxWidth(70);
+        hbox.setSpacing(3);
         hbox.getChildren().addAll(checky, nearSpin);
         
-        getChildren().add(hbox);
+        HBox rangeHBox = new HBox();
+        rangeHBox.getChildren().addAll(new Label("Range:"), rangeSpinner);
+        rangeHBox.setSpacing(3);
+        
+        getChildren().addAll(hbox, rangeHBox);
     }
     
 }

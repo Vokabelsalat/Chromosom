@@ -118,16 +118,6 @@ public class Chromosom extends Application {
         options.getChildren().add(tree);
     }
     
-    private void searchForLogFiles(String path) {
-        File[] files = new File(path).listFiles();
-        //If this pathname does not denote a directory, then listFiles() returns null. 
-
-        for (File file : files) {
-            if (file.isFile()) {
-                hr.readLogFile(file.getPath());
-            }
-        }
-    }
     
     private void startHeatChromosom(Stage primaryStage) {
         initGUI(primaryStage);
@@ -138,11 +128,13 @@ public class Chromosom extends Application {
 
         File testFile = new File("test.txt");
         
-        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logFiles");
+        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logs");
         
-        hr = new HeatReader("0.txt");
+        hr = new HeatReader();
         
-        searchForLogFiles(pazText);
+        hr.searchForLogFiles(pazText);
+        
+        hr.readLogFile("0");
         
         heatProject = new HeatProject(this);
         
