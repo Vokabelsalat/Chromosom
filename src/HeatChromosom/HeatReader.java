@@ -37,7 +37,6 @@ public class HeatReader {
         
         readChannelInfo("channelinfo.log");
         
-
 //        readLogFile(fileName);
     }
     

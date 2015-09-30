@@ -30,6 +30,7 @@ public class HeatNukleosom extends Pane {
     
     public HeatNukleosom(double value, int x, int y, int width, int height, boolean showLabels, boolean showStrokes, String strokeType) {
 
+        highlightRect = new Rectangle(width, height , Color.rgb(255,0,230)); 
         this.value = value;
         this.parent = parent;
         this.width = width;
@@ -72,7 +73,7 @@ public class HeatNukleosom extends Pane {
         double strokeWidth = 1.0;
         double add = strokeWidth + rect.strokeWidthProperty().doubleValue();
         
-        if(strokeType.equals("HORIZONTAL") || strokeType.equals("BOTH")) {
+        if(strokeType.equals("HORIZONTAL")){// || strokeType.equals("BOTH")) {
             line = new Line(0,0,width,0);
             line.setStroke(Color.GRAY);
             line.setStrokeWidth(strokeWidth);
@@ -83,7 +84,7 @@ public class HeatNukleosom extends Pane {
             getChildren().add(line);
         }
         
-        if(strokeType.equals("VERTICAL") || strokeType.equals("BOTH")) {
+        if(strokeType.equals("VERTICAL")){// || strokeType.equals("BOTH")) {
             line = new Line(0,0,0,height);
             line.setStrokeWidth(strokeWidth);
             line.setStroke(Color.GRAY);
@@ -102,12 +103,11 @@ public class HeatNukleosom extends Pane {
     
     public void highlight() {
         
-        Color col = Color.rgb(255,0,230);
-        
-        highlightRect = new Rectangle(width, height , col); 
         highlightRect.setOpacity(value + 0.15);
+        highlightRect.setStrokeWidth(rect.getStrokeWidth());
+        highlightRect.setStroke(rect.getStroke());
         
-       getChildren().add(highlightRect);
+        getChildren().add(highlightRect);
     }
     
     public void deHighlight() {
@@ -117,14 +117,30 @@ public class HeatNukleosom extends Pane {
     
     public void setStrokeColor(Color col) {
         rect.setStroke(col);
+        highlightRect.setStroke(col);
     } 
     
     public void setStrokeWidth(double doub) {
         rect.setStrokeWidth(doub);
+        highlightRect.setStrokeWidth(doub);
     } 
     
     public static Color generateColorForValue(double orgValue) {
-        return Color.hsb(50,1.0,orgValue,1.0).invert();
+        Color cool = Color.hsb(60,1.0,categorizeValue(orgValue),1.0).invert();
+//        if(orgValue != 0.0) {
+//            cool = cool.deriveColor(0.0, 1.0, 0.95, 1.0);
+//        }
+        
+        return cool;
+    }
+    
+    public static double categorizeValue(double value) {
+        
+//        double returnDouble;
+        
+        double face = Math.floor(value/0.05);
+        
+        return face * 0.05;
     }
     
 }

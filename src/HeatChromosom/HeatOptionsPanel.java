@@ -25,6 +25,11 @@ public class HeatOptionsPanel extends VBox{
     
     Chromosom chromosom;
     double oldProb = 2.0;
+    public CheckBox checky;
+    Spinner nearSpin;
+    Spinner rangeSpinner;
+    public DoubleSpinnerValueFactory rangeSpinValueFactory;
+    public DoubleSpinnerValueFactory nearSpinValueFactory;
     
     public HeatOptionsPanel(Chromosom chromosom) {
         
@@ -54,15 +59,15 @@ public class HeatOptionsPanel extends VBox{
         
         HBox hbox = new HBox();
         
-        CheckBox checky = new CheckBox();
+        checky = new CheckBox();
 
-        Spinner nearSpin = new Spinner(0.0, 1.0, 0.0, 0.01);
-        Spinner rangeSpinner = new Spinner(0.0, 1.0, 0.0, 0.01);
+        nearSpin = new Spinner(0.0, 1.0, 0.0, 0.01);
+        rangeSpinner = new Spinner(0.0, 1.0, 0.0, 0.01);
         
-        DoubleSpinnerValueFactory nearSpinValueFactory = new DoubleSpinnerValueFactory(0.0, 1.0, 0.0, 0.01);
+        nearSpinValueFactory = new DoubleSpinnerValueFactory(0.0, 1.0, 0.0, 0.01);
         nearSpin.setValueFactory(nearSpinValueFactory);
         
-        DoubleSpinnerValueFactory rangeSpinValueFactory = new DoubleSpinnerValueFactory(0.0, 1.0, 0.0, 0.01);
+        rangeSpinValueFactory = new DoubleSpinnerValueFactory(0.0, 1.0, 0.0, 0.01);
         rangeSpinner.setValueFactory(rangeSpinValueFactory);
         
         checky.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
@@ -85,8 +90,6 @@ public class HeatOptionsPanel extends VBox{
         nearSpin.setEditable(true); 
         
         nearSpin.setMaxWidth(80.0);
-        
-
         
         nearSpin.valueProperty().addListener(new ChangeListener<Double>() {
             @Override
@@ -116,7 +119,7 @@ public class HeatOptionsPanel extends VBox{
                         String text = nearSpin.getEditor().getText().replaceAll(",", ".");
                         double doub = Double.parseDouble(text);
                         if(oldProb == doub) {
-                            if(!chromosom.heatGrid.highlightedList.isEmpty()) {
+                            if(chromosom.heatGrid.highlightedList != null && !chromosom.heatGrid.highlightedList.isEmpty()) {
                                 chromosom.heatGrid.highlightedList.removeAll(chromosom.heatGrid.highlightedList);
                             }
                             chromosom.heatGrid.resetHighlightedNukl();
@@ -147,6 +150,17 @@ public class HeatOptionsPanel extends VBox{
             }
         });
         
+        rangeSpinner.getEditor().setOnKeyPressed(event -> {
+           switch (event.getCode()) {
+                case UP:
+                    rangeSpinner.increment();
+                    break;
+                case DOWN:
+                    rangeSpinner.decrement();
+                    break;
+           }
+        });
+        
         rangeSpinner.setEditable(true);
         rangeSpinner.setMaxWidth(70);
         hbox.setSpacing(3);
@@ -158,5 +172,14 @@ public class HeatOptionsPanel extends VBox{
         
         getChildren().addAll(hbox, rangeHBox);
     }
+    
+//    public void highlightAllActual() {
+//        if(chromosom != null) {
+//            chromosom.heatGrid.highlightNear(nearSpinValueFactory.getValue(), rangeSpinValueFactory.getValue());
+//        }
+//        else {
+//            System.err.println("lol");
+//        }
+//    }
     
 }

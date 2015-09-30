@@ -31,15 +31,19 @@ import javafx.scene.shape.Rectangle;
  */
 public class HeatNukleosomGrid extends GridPane{
     
+    public static Color RED = Color.rgb(255, 0, 0);
+
+    public static Color GREEN = Color.rgb(0, 255, 0);
+    
     HeatReader hr; 
     HashMap<String,ArrayList<ArrayList<Double>>> timeMap;
     HashMap<String, int[]> hitMap;
-    int width = 9, height = 9;
+    int width = 8, height = 8;
     BorderPane parent;
     HeatNukleosom leftNode = null;
     HeatNukleosom rightNode = null;
     int startRow = 4;
-    ArrayList<HeatNukleosom> highlightedList;
+    public ArrayList<HeatNukleosom> highlightedList;
      
     public HeatNukleosomGrid(BorderPane parent, HeatProject project, HeatReader hr, String timeStep) {
         this.hr = hr;
@@ -80,11 +84,11 @@ public class HeatNukleosomGrid extends GridPane{
                     public void handle(MouseEvent mouseEvent) {
                         if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                             addHeatNukleosomToOptionPanel(heatNukl, 1, startRow);
-                            resetAndHighlightNukleosom(heatNukl, leftNode, true, Color.rgb(255, 0, 0));
+                            resetAndStrokeNukleosom(heatNukl, leftNode, true, RED);
                         }
                         if(mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                             addHeatNukleosomToOptionPanel(heatNukl, 2, startRow);
-                            resetAndHighlightNukleosom(heatNukl, rightNode, false, Color.rgb(0, 255, 0));
+                            resetAndStrokeNukleosom(heatNukl, rightNode, false, GREEN);
                         }
                     }
                 });
@@ -144,11 +148,14 @@ public class HeatNukleosomGrid extends GridPane{
         highlightedList = new ArrayList<>();
     }
     
-    private void resetAndHighlightNukleosom(HeatNukleosom newNukl, HeatNukleosom oldNukl, boolean left, Color color) {
+    private void resetAndStrokeNukleosom(HeatNukleosom newNukl, HeatNukleosom oldNukl, boolean left, Color color) {
+        
+        System.err.println("HIT");
         
          if(oldNukl != null) {
              oldNukl.setStrokeColor(Color.GRAY);
              oldNukl.setStrokeWidth(oldNukl.oldStrokeWidth);
+             oldNukl.highlightRect.setStrokeWidth(0.0);
          }
 
          newNukl.setStrokeColor(color);
@@ -193,10 +200,10 @@ public class HeatNukleosomGrid extends GridPane{
                 Color color = Color.GRAY;
 
                 if(col == 1 && row >= startRow) {
-                    color = Color.rgb(255, 0, 0);
+                    color = RED;
                 } 
                 else if(col > 1) {
-                    color = Color.rgb(0, 255, 0);
+                    color = GREEN;
                 }
 
                 Rectangle bg = new Rectangle(28,28,color);

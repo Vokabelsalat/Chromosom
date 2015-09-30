@@ -99,19 +99,19 @@ public class HeatLegend extends HBox{
         
         double step = 0.05;
         
-        double oldValue = step;
+//        double oldValue = step;
         
         if (orientation == Orientation.HORIZONTAL) {
             for (int x=0; x<width; x++) {
                 
                 double value = 0.0 + (1.0 - 0.0) * x / width;
                 
-                if(value < oldValue) {
-                    value = oldValue - step;
-                }
-                else {
-                    oldValue = oldValue + step;
-                }
+//                if(value < oldValue) {
+//                    value = oldValue - step;
+//                }
+//                else {
+//                    oldValue = oldValue + step;
+//                }
                 
                 Color color = HeatNukleosom.generateColorForValue(value);
                 
@@ -124,15 +124,15 @@ public class HeatLegend extends HBox{
                 }
             }
         } else {
-            for (int y=0; y<height; y++) {
+            for (int y=0; y <height; y++) {
                 double value = 1.0 - (1.0 - 0.0) * y / height ;
                 
-                if(value < oldValue) {
-                    value = oldValue - step;
-                }
-                else {
-                    oldValue = oldValue + step;
-                }
+//                if(value < oldValue) {
+//                    value = oldValue - step;
+//                }
+//                else {
+//                    oldValue = oldValue + step;
+//                }
                 
                 Color color = HeatNukleosom.generateColorForValue(value);
                 

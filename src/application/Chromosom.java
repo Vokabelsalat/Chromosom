@@ -75,6 +75,7 @@ public class Chromosom extends Application {
     public HeatNukleosomGrid heatGrid;
     public ScrollPane sp;
     public HeatProject heatProject;
+    public HeatOptionsPanel hop;
     
     @Override
     public void start(Stage primaryStage) {
@@ -122,7 +123,7 @@ public class Chromosom extends Application {
     private void startHeatChromosom(Stage primaryStage) {
         initGUI(primaryStage);
         
-        HeatOptionsPanel hop = new HeatOptionsPanel(this);
+        hop = new HeatOptionsPanel(this);
         
         rootLayout.setRight(hop);
 
@@ -154,9 +155,17 @@ public class Chromosom extends Application {
     
     public void showNewHeatGrid(String newValue) {
         heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, newValue);
+
         sp = new ScrollPane();
         sp.setContent(heatGrid);
         rootLayout.setCenter(sp);
+        
+        if(hop.checky.isSelected()) {
+            if(heatGrid != null) {
+                heatGrid.highlightedList = new ArrayList<>();
+                heatGrid.highlightNear(hop.nearSpinValueFactory.getValue(), hop.rangeSpinValueFactory.getValue());
+            }
+        }
     }
     
     private void show(Stage primaryStage) {
