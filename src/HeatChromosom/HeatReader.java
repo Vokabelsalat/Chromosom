@@ -22,9 +22,9 @@ import java.util.logging.Logger;
  */
 public class HeatReader {
     
-    public HashMap<String, ArrayList<ArrayList<Double>>> timeMap;
-    public HashMap<String, int[]> hitMap;
-    public ArrayList<Integer> channelList;
+    private HashMap<String, ArrayList<ArrayList<Double>>> timeMap;
+    private HashMap<String, int[]> hitMap;
+    private ArrayList<Integer> channelList;
     
     double max;
     double min;
@@ -73,7 +73,7 @@ public class HeatReader {
                         
                         channel = Integer.parseInt(splitArray[1]);
                         
-                        channelList.add(channel, enzyme);
+                        getChannelList().add(channel, enzyme);
 //                        channel++;
                     }
                 }
@@ -104,20 +104,30 @@ public class HeatReader {
         }
     }
     
+    public String getFirstItemInTimeMap() {
+        String returnStr = "";
+        for(int i = 0; i < 100000; i++) {
+            returnStr = String.valueOf(i);
+            if(getTimeMap().containsKey(returnStr) && getTimeMap() != null) {
+                break;
+            }
+        }
+        return returnStr;
+    }
     
     public void addLogFile(String fileName) {
         String timeStep = fileName.substring(fileName.lastIndexOf("\\")+1, fileName.indexOf("."));
         
-        if(timeMap.containsKey(timeStep)) {
+        if(getTimeMap().containsKey(timeStep)) {
             return;
         }
         
-        timeMap.put(timeStep, null);
+        getTimeMap().put(timeStep, null);
     }
     
     public void readLogFile(String timeStep) {
         
-        if(timeMap.containsKey(timeStep) && timeMap.get(timeStep) != null) {
+        if(getTimeMap().containsKey(timeStep) && getTimeMap().get(timeStep) != null) {
             return;
         }
         
@@ -167,11 +177,11 @@ public class HeatReader {
                     hitArray[0] = Integer.parseInt(strArray[0]);
                     hitArray[1] = Integer.parseInt(strArray[1]);
                     
-                    hitMap.put(timeStep, hitArray);
+                    getHitMap().put(timeStep, hitArray);
                 }
             }
             
-            timeMap.replace(timeStep, enzymeList);
+            getTimeMap().replace(timeStep, enzymeList);
             
 //            for(ArrayList<ArrayList<Double>> entry : timeMap.values()) {
 //                for(int enzyme = 0; enzyme < entry.size(); enzyme++) {
@@ -202,8 +212,8 @@ public class HeatReader {
     }
     
     public void scaleValues(String timeStep) {
-        if( timeMap.get(timeStep) != null) {
-            ArrayList<ArrayList<Double>> entry = timeMap.get(timeStep); 
+        if( getTimeMap().get(timeStep) != null) {
+            ArrayList<ArrayList<Double>> entry = getTimeMap().get(timeStep); 
             
             ArrayList<ArrayList<Double>> newEnzymeList = new ArrayList<>();
             ArrayList<Double> newNukleosomList;
@@ -219,9 +229,51 @@ public class HeatReader {
                 newEnzymeList.add(enzyme, newNukleosomList);
             }
             
-            timeMap.remove(timeStep);
-            timeMap.put(timeStep, newEnzymeList);
+            getTimeMap().remove(timeStep);
+            getTimeMap().put(timeStep, newEnzymeList);
         }
+    }
+
+    /**
+     * @return the timeMap
+     */
+    public HashMap<String, ArrayList<ArrayList<Double>>> getTimeMap() {
+        return timeMap;
+    }
+
+    /**
+     * @param timeMap the timeMap to set
+     */
+    public void setTimeMap(HashMap<String, ArrayList<ArrayList<Double>>> timeMap) {
+        this.timeMap = timeMap;
+    }
+
+    /**
+     * @return the hitMap
+     */
+    public HashMap<String, int[]> getHitMap() {
+        return hitMap;
+    }
+
+    /**
+     * @param hitMap the hitMap to set
+     */
+    public void setHitMap(HashMap<String, int[]> hitMap) {
+        this.hitMap = hitMap;
+    }
+
+    /**
+     * @return the channelList
+     */
+    public ArrayList<Integer> getChannelList() {
+        return channelList;
+    }
+
+    /**
+     * @param channelList the channelList to set
+     */
+    public void setChannelList(ArrayList<Integer> channelList) {
+        this.channelList = channelList;
     }
     
 }

@@ -26,11 +26,11 @@ import javafx.scene.paint.Color;
  */
 public class HeatLegend extends HBox{
     
-    Chromosom chromosom;
+    HeatProject project;
     
-    public HeatLegend(Chromosom chromosom) {
+    public HeatLegend(HeatProject project) {
         
-        this.chromosom = chromosom;
+        this.project = project;
         
         Spinner spin = new Spinner(0.0, 20000.0 , 0.0);
         spin.setEditable(true); 
@@ -50,7 +50,7 @@ public class HeatLegend extends HBox{
                     add = -1;
                 }
                 
-                if(!chromosom.hr.timeMap.containsKey(newText)) {
+                if(!project.getHeatReader().getTimeMap().containsKey(newText)) {
                     File file = new File(newText + ".txt");
                     
                     while(!file.exists() && i < 20000) {
@@ -59,13 +59,13 @@ public class HeatLegend extends HBox{
                        file = new File(newText);
                     }
                     if(file.exists()) {
-                        chromosom.hr.readLogFile(newText);
-                        chromosom.showNewHeatGrid(newText);
+                        project.getHeatReader().readLogFile(newText);
+                        project.showNewHeatGrid(newText);
                         spin.getValueFactory().setValue((double)i);
                     }
                 }
                 else {
-                   chromosom.showNewHeatGrid(String.valueOf(i)); 
+                   project.showNewHeatGrid(String.valueOf(i)); 
                 }
             }
         });

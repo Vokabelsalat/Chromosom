@@ -1,10 +1,6 @@
 package application;
 
-import HeatChromosom.HeatLegend;
-import HeatChromosom.HeatNukleosomGrid;
-import HeatChromosom.HeatOptionsPanel;
 import HeatChromosom.HeatProject;
-import HeatChromosom.HeatReader;
 import Nukleosom.BigNukleosomNew;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +33,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
@@ -70,12 +67,15 @@ public class Chromosom extends Application {
     private OptionsPanel options;
     public ScrollPane sb;
     public ChromosomTree tree;
-    public BorderPane nukleosomBorderPane;
-    public HeatReader hr;
-    public HeatNukleosomGrid heatGrid;
-    public ScrollPane sp;
-    public HeatProject heatProject;
-    public HeatOptionsPanel hop;
+    private BorderPane nukleosomBorderPane;
+    private ScrollPane sp;
+//    public HeatProject heatProject;
+//    public HeatProject heatProject2;
+    
+    public HeatProject projectArray[];
+    
+    public boolean sameRow, sameColumns;
+    
     
     @Override
     public void start(Stage primaryStage) {
@@ -85,88 +85,122 @@ public class Chromosom extends Application {
 
 //        primaryStage.setMaximized(true);
 
-        Scene scene = new Scene(rootLayout);
+        Scene scene = new Scene(getRootLayout());
         primaryStage.setScene(scene);
         primaryStage.setResizable(true);
         show(primaryStage);
     }
 
     private void startChromosom(Stage primaryStage) {
-        this.project = new ChromosomProject(this);
-        
-        initGUI(primaryStage);
-        
-        MenuBar menuBar = createMenu(primaryStage);
-        rootLayout.setTop(menuBar);
-
-        options = new OptionsPanel(project);
-        rootLayout.setLeft(options);
-        
-        project.defaultFileName = fileName;
-        project.maxTimeSteps.push(maxTimeSteps);
-        project.offset.push(offset);
-         
-        NukleosomReader nukleosomReader = new NukleosomReader(project);
-        nukleosomReader.openFile(project.getDefaultFileName());
-        sb = new ScrollPane();
-        nukleosomeTab = createNuclosomeTab();
-        tabPane.getTabs().add(nukleosomeTab);
-        rootLayout.setCenter(tabPane);
-        
-        tree = new ChromosomTree(project); 
-        tree.fillTree();
-        
-        options.getChildren().add(tree);
+//        this.project = new ChromosomProject(this);
+//        
+//        initGUI(primaryStage);
+//        
+//        MenuBar menuBar = createMenu(primaryStage);
+//        rootLayout.setTop(menuBar);
+//
+//        options = new OptionsPanel(project);
+//        rootLayout.setLeft(options);
+//        
+//        project.defaultFileName = fileName;
+//        project.maxTimeSteps.push(maxTimeSteps);
+//        project.offset.push(offset);
+//         
+//        NukleosomReader nukleosomReader = new NukleosomReader(project);
+//        nukleosomReader.openFile(project.getDefaultFileName());
+//        sb = new ScrollPane();
+//        nukleosomeTab = createNuclosomeTab();
+//        tabPane.getTabs().add(nukleosomeTab);
+//        rootLayout.setCenter(tabPane);
+//        
+//        tree = new ChromosomTree(project); 
+//        tree.fillTree();
+//        
+//        options.getChildren().add(tree);
     }
     
     
     private void startHeatChromosom(Stage primaryStage) {
         initGUI(primaryStage);
         
-        hop = new HeatOptionsPanel(this);
+        projectArray = new HeatProject[2];
         
-        rootLayout.setRight(hop);
-
-        File testFile = new File("test.txt");
+        HeatProject heatProject = new HeatProject(this);
+        HeatProject heatProject2 = new HeatProject(this);
         
-        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logs");
+        projectArray[0] = heatProject;
+        projectArray[1] = heatProject2;
         
-        hr = new HeatReader();
+        String first = heatProject.getHeatReader().getFirstItemInTimeMap();
+        String first2 = heatProject2.getHeatReader().getFirstItemInTimeMap();
+        heatProject.getHeatReader().readLogFile(first);
+        heatProject2.getHeatReader().readLogFile(first2);
         
-        hr.searchForLogFiles(pazText);
+        sameRow = false;
+        sameColumns = false;
         
-        hr.readLogFile("0");
-        
-        heatProject = new HeatProject(this);
-        
-        heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, "0");
-        
-        sp = new ScrollPane();
-        
-        BorderPane.setMargin(sp, new Insets(7,7,7,7));
-        sp.setContent(heatGrid);
-        
-        HeatLegend heatLegend = new HeatLegend(this);
-        
-        rootLayout.setBottom(heatLegend);
-        
-        rootLayout.setCenter(sp);
-    }
-    
-    public void showNewHeatGrid(String newValue) {
-        heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, newValue);
-
-        sp = new ScrollPane();
-        sp.setContent(heatGrid);
-        rootLayout.setCenter(sp);
-        
-        if(hop.checky.isSelected()) {
-            if(heatGrid != null) {
-                heatGrid.highlightedList = new ArrayList<>();
-                heatGrid.highlightNear(hop.nearSpinValueFactory.getValue(), hop.rangeSpinValueFactory.getValue());
+        if(heatProject.getHeatReader().getTimeMap().get(first).size() == 
+                heatProject2.getHeatReader().getTimeMap().get(first2).size()) {
+                sameRow = true;
+            if(heatProject.getHeatReader().getTimeMap().get(first).get(0).size() == 
+                heatProject2.getHeatReader().getTimeMap().get(first2).get(0).size()) {
+                sameColumns = true;
             }
         }
+        
+        SplitPane splitPane = new SplitPane();
+        
+        splitPane.setOrientation(Orientation.VERTICAL);
+        
+        splitPane.getItems().addAll(heatProject.createHeatMainPanel(), heatProject2.createHeatMainPanel());
+        
+
+        
+        getRootLayout().setCenter(splitPane);
+        
+//        hop = new HeatOptionsPanel(this);
+        
+//        rootLayout.setRight(hop);
+
+//        File testFile = new File("test.txt");
+        
+//        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logs");
+        
+//        hr = new HeatReader();
+        
+//        hr.searchForLogFiles(pazText);
+        
+//        hr.readLogFile("0");
+        
+//        heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, "0");
+        
+//        sp = new ScrollPane();
+        
+//        BorderPane.setMargin(sp, new Insets(7,7,7,7));
+        
+//        sp.setContent(heatGrid);
+        
+//        HeatLegend heatLegend = new HeatLegend(this);
+        
+//        rootLayout.setBottom(heatLegend);
+        
+//        rootLayout.setCenter(sp);
     }
+    
+//    public void showNewHeatGrid(String newValue) {
+//        heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, newValue);
+//
+//        sp = new ScrollPane();
+//        sp.setContent(heatGrid);
+//        rootLayout.setCenter(sp);
+//        
+//        if(hop.checky.isSelected()) {
+//            if(heatGrid != null) {
+//                heatGrid.highlightedList = new ArrayList<>();
+//                heatGrid.highlightNear(hop.nearSpinValueFactory.getValue(), hop.rangeSpinValueFactory.getValue());
+//            }
+//        }
+//    }
     
     private void show(Stage primaryStage) {
         primaryStage.show();
@@ -629,6 +663,13 @@ public class Chromosom extends Application {
         tabPane.getTabs().remove(zahl);
         tabPane.getTabs().add(zahl, nukleosomeTab);
         
+    }
+
+    /**
+     * @return the rootLayout
+     */
+    public BorderPane getRootLayout() {
+        return rootLayout;
     }
 
 

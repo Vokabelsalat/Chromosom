@@ -6,16 +6,23 @@
 package HeatChromosom;
 
 import application.Chromosom;
+import java.util.ArrayList;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 /**
  *
@@ -23,17 +30,20 @@ import javafx.scene.layout.VBox;
  */
 public class HeatOptionsPanel extends VBox{
     
-    Chromosom chromosom;
-    double oldProb = 2.0;
-    public CheckBox checky;
-    Spinner nearSpin;
-    Spinner rangeSpinner;
+    private HeatProject project;
+    private double oldProb = 2.0;
+    private CheckBox rangeBox;
+    private Spinner nearSpin;
+    private Spinner rangeSpinner;
     public DoubleSpinnerValueFactory rangeSpinValueFactory;
     public DoubleSpinnerValueFactory nearSpinValueFactory;
+    private int startRow = 4;
+    private HeatOptionsGrid selectedNukleosoms;
+    private HeatOptionsGrid resultNukleosom;
     
-    public HeatOptionsPanel(Chromosom chromosom) {
+    public HeatOptionsPanel(HeatProject project) {
         
-        this.chromosom = chromosom;
+        this.project = project;
         this.setSpacing(3);
         this.setMinSize(220, 0);
         
@@ -41,16 +51,16 @@ public class HeatOptionsPanel extends VBox{
         
         getChildren().add(new Label("Result:"));
         
-        HeatOptionsGrid selectedNukleosom = new HeatOptionsGrid();
-        getChildren().add(selectedNukleosom);
+        resultNukleosom = new HeatOptionsGrid();
+        getChildren().add(resultNukleosom);
         
         Separator sep = new Separator();
         getChildren().add(sep);
         
         getChildren().add(new Label("Selected Items:"));
         
-        HeatOptionsGrid hOptions = new HeatOptionsGrid();
-        getChildren().add(hOptions);
+        selectedNukleosoms = new HeatOptionsGrid();
+        getChildren().add(selectedNukleosoms);
         
         Separator sep2 = new Separator();
         getChildren().add(sep2); 
@@ -59,7 +69,7 @@ public class HeatOptionsPanel extends VBox{
         
         HBox hbox = new HBox();
         
-        checky = new CheckBox();
+        rangeBox = new CheckBox();
 
         nearSpin = new Spinner(0.0, 1.0, 0.0, 0.01);
         rangeSpinner = new Spinner(0.0, 1.0, 0.0, 0.01);
@@ -70,26 +80,26 @@ public class HeatOptionsPanel extends VBox{
         rangeSpinValueFactory = new DoubleSpinnerValueFactory(0.0, 1.0, 0.0, 0.01);
         rangeSpinner.setValueFactory(rangeSpinValueFactory);
         
-        checky.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+        rangeBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
             
             if(new_val == true) {
                 String text = nearSpin.getEditor().getText().replaceAll(",", ".");
                 double doub = Double.parseDouble(text);
-                chromosom.heatGrid.highlightNear(doub, rangeSpinValueFactory.getValue());
+                project.getHeatGrid().highlightNear(doub, rangeSpinValueFactory.getValue());
                 oldProb = doub;
             }
             else {
-                if(!chromosom.heatGrid.highlightedList.isEmpty()) {
-                    chromosom.heatGrid.highlightedList.removeAll(chromosom.heatGrid.highlightedList);
+                if(!project.getHeatGrid().getHighlightedList().isEmpty()) {
+                    project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
                 }
-                chromosom.heatGrid.resetHighlightedNukl();
+                project.getHeatGrid().resetHighlightedNukl();
                 oldProb = oldProb + 2.0;
             }
         });
         
         nearSpin.setEditable(true); 
         
-        nearSpin.setMaxWidth(80.0);
+        nearSpin.setMaxWidth(70.0);
         
         nearSpin.valueProperty().addListener(new ChangeListener<Double>() {
             @Override
@@ -97,8 +107,8 @@ public class HeatOptionsPanel extends VBox{
                     Double oldValue, Double newValue) {
                 try {
                     oldProb = newValue;//.doubleValue();
-                    chromosom.heatGrid.highlightNear(newValue, rangeSpinValueFactory.getValue());//.doubleValue());
-                    checky.setSelected(true);  
+                    project.getHeatGrid().highlightNear(newValue, rangeSpinValueFactory.getValue());//.doubleValue());
+                    getRangeBox().setSelected(true);  
                 }
                 catch(Exception e) {
                     
@@ -119,17 +129,17 @@ public class HeatOptionsPanel extends VBox{
                         String text = nearSpin.getEditor().getText().replaceAll(",", ".");
                         double doub = Double.parseDouble(text);
                         if(oldProb == doub) {
-                            if(chromosom.heatGrid.highlightedList != null && !chromosom.heatGrid.highlightedList.isEmpty()) {
-                                chromosom.heatGrid.highlightedList.removeAll(chromosom.heatGrid.highlightedList);
+                            if(project.getHeatGrid().getHighlightedList() != null && !project.getHeatGrid().getHighlightedList().isEmpty()) {
+                                project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
                             }
-                            chromosom.heatGrid.resetHighlightedNukl();
+                            project.getHeatGrid().resetHighlightedNukl();
                             oldProb = oldProb + 2.0;
-                            checky.setSelected(false);
+                            rangeBox.setSelected(false);
                         }
                         else {
-                            chromosom.heatGrid.highlightNear(doub, rangeSpinValueFactory.getValue());
+                            project.getHeatGrid().highlightNear(doub, rangeSpinValueFactory.getValue());
                             oldProb = doub;
-                            checky.setSelected(true);
+                            rangeBox.setSelected(true);
                         }
                     }
                     else {
@@ -143,9 +153,9 @@ public class HeatOptionsPanel extends VBox{
             @Override
             public void changed(ObservableValue<? extends Double> observable,
                     Double oldValue, Double newValue) {
-                nearSpinValueFactory.setAmountToStepBy(newValue);
-                if(checky.isSelected() == true) {
-                    chromosom.heatGrid.highlightNear(nearSpinValueFactory.getValue(), newValue);
+//                nearSpinValueFactory.setAmountToStepBy(newValue);
+                if(getRangeBox().isSelected() == true) {
+                    project.getHeatGrid().highlightNear(nearSpinValueFactory.getValue(), newValue);
                 }
             }
         });
@@ -163,8 +173,8 @@ public class HeatOptionsPanel extends VBox{
         
         rangeSpinner.setEditable(true);
         rangeSpinner.setMaxWidth(70);
-        hbox.setSpacing(3);
-        hbox.getChildren().addAll(checky, nearSpin);
+        hbox.setSpacing(18);
+        hbox.getChildren().addAll(rangeBox, nearSpin);
         
         HBox rangeHBox = new HBox();
         rangeHBox.getChildren().addAll(new Label("Range:"), rangeSpinner);
@@ -173,13 +183,104 @@ public class HeatOptionsPanel extends VBox{
         getChildren().addAll(hbox, rangeHBox);
     }
     
-//    public void highlightAllActual() {
-//        if(chromosom != null) {
-//            chromosom.heatGrid.highlightNear(nearSpinValueFactory.getValue(), rangeSpinValueFactory.getValue());
-//        }
-//        else {
-//            System.err.println("lol");
-//        }
-//    }
+    void addHeatNukleosomToOptionPanel(HeatNukleosom nukl, int col, int row) {
+         
+            if(getChildren().get(row) instanceof javafx.scene.layout.GridPane) {
+                GridPane table = (GridPane)getChildren().get(row);
+                
+                ArrayList<Node> nodeList = new ArrayList<>();
+                
+                for(Node nod : table.getChildren()) {
+                    if(table.getColumnIndex(nod) == col) {
+                        nodeList.add(nod);
+                    }
+                }
+                
+                for(Node nod : nodeList) {
+                    table.getChildren().remove(nod);
+                }
+                
+                StackPane pane = new StackPane();
+                
+                pane.setPrefSize(28, 28);
+                pane.setAlignment(Pos.CENTER_LEFT);
+                
+                Color color = Color.GRAY;
+
+                if(col == 1 && row >= getStartRow()) {
+                    color = HeatProject.RED;
+                } 
+                else if(col > 1) {
+                    color = HeatProject.GREEN;
+                }
+
+                Rectangle bg = new Rectangle(28,28,color);
+                bg.setTranslateX(0);
+                bg.setTranslateY(0);
+
+
+                pane.getChildren().add(bg);
+
+                Rectangle fg = new Rectangle(24, 24, Color.WHITE);
+                fg.setTranslateX(2);
+//                fg.setTranslateY(1);
+
+                pane.getChildren().add(fg); 
+                
+                HeatNukleosom newNukl = new HeatNukleosom(nukl.value, nukl.x, nukl.y, 18, 18, false, false, "");
+                newNukl.setTranslateX(5);
+                newNukl.setTranslateY(5);
+                
+                pane.getChildren().add(newNukl);
+                
+                table.add(pane, col, 0);
+                table.add(new Label(String.valueOf(newNukl.value).replace(".", ",")), col, 1);
+               
+                //Nukleosom
+                table.add(new Label(String.valueOf(nukl.x)), col, 2);
+                
+                //Für die Action
+//                int y = (nukl.y/2);
+                
+                //Enzyme
+                table.add(new Label(String.valueOf(project.getHeatReader().getChannelList().get(nukl.y))), col, 3);
+                
+                //Channel
+                table.add(new Label(String.valueOf(nukl.y)), col, 4);
+                
+//                //Action
+//                String action;
+//                if(nukl.y%2 == 0) {
+//                    action = "activation";
+//                }
+//                else {
+//                    action = "deactivation";
+//                }
+//                
+//                table.add(new Label(action), col, 5);
+            }
+        
+    }
+    
+    public void resetOptionPanel() {
+        int index = getChildren().indexOf(selectedNukleosoms);
+        selectedNukleosoms = new HeatOptionsGrid();
+        getChildren().remove(index);
+        getChildren().add(index, selectedNukleosoms);
+    }
+
+    /**
+     * @return the rangeBox
+     */
+    public CheckBox getRangeBox() {
+        return rangeBox;
+    }
+
+    /**
+     * @return the startRow
+     */
+    public int getStartRow() {
+        return startRow;
+    }
     
 }

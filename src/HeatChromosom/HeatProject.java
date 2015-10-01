@@ -6,6 +6,12 @@
 package HeatChromosom;
 
 import application.Chromosom;
+import java.io.File;
+import java.util.ArrayList;
+import javafx.geometry.Insets;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 
 /**
  *
@@ -13,10 +19,115 @@ import application.Chromosom;
  */
 public class HeatProject {
     
-    Chromosom chromosom;
+    public static final Color RED = Color.rgb(255, 0, 0);
+
+    public static final Color GREEN = Color.rgb(0, 255, 0);
+    
+    private Chromosom chromosom;
+    private HeatReader heatReader;
+    private HeatOptionsPanel heatOptionsPanel;
+    private BorderPane borderPane;
+    private HeatNukleosomGrid heatGrid;
+    private HeatLegend heatLegend;
+    private boolean both = false;
     
     public HeatProject(Chromosom chromosom) {
         this.chromosom = chromosom;
+        
+        prepareReader();
     }
+    
+    public void prepareReader() {
+        heatReader = new HeatReader();
+        
+        File testFile = new File("test.txt");
+        
+        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logs");
+    
+        heatReader.searchForLogFiles(pazText);
+        
+    }
+    
+    public BorderPane createHeatMainPanel() {
+        borderPane = new BorderPane();
+        
+        if(getChromosom().sameColumns && getChromosom().sameRow) {
+            this.both = true;
+        }
+//            heatOptionsPanel = new HeatOptionsPanel(this);
+//            
+//            if(chromosom.heatProject != null && chromosom.heatProject != this) {
+//                heatOptionsPanel = chromosom.heatProject.getHeatOptionsPanel();
+//                chromosom.getRootLayout().setRight(heatOptionsPanel);
+//            }
+//        }
+//        else {
+            heatOptionsPanel = new HeatOptionsPanel(this);
+            borderPane.setRight(heatOptionsPanel);
+//        }
+        
+        
+        
+        heatLegend = new HeatLegend(this);
+        borderPane.setBottom(heatLegend);
+        
+        showNewHeatGrid(heatReader.getFirstItemInTimeMap());
+        
+        return getBorderPane();
+    }
+    
+    public void showNewHeatGrid(String newValue) {
+        heatGrid = new HeatNukleosomGrid(this, newValue, both);
+
+        heatOptionsPanel.resetOptionPanel();
+        
+        ScrollPane sp = new ScrollPane();
+        BorderPane.setMargin(sp, new Insets(7,7,7,7));
+        sp.setContent(getHeatGrid());
+        borderPane.setCenter(sp);
+        
+        if(getHeatOptionsPanel().getRangeBox().isSelected()) {
+            if(getHeatGrid() != null) {
+                getHeatGrid().setHighlightedList(new ArrayList<>());
+                getHeatGrid().highlightNear(getHeatOptionsPanel().nearSpinValueFactory.getValue(), getHeatOptionsPanel().rangeSpinValueFactory.getValue());
+            }
+        }
+    }
+
+    /**
+     * @return the borderPane
+     */
+    public BorderPane getBorderPane() {
+        return borderPane;
+    }
+
+    /**
+     * @return the heatReader
+     */
+    public HeatReader getHeatReader() {
+        return heatReader;
+    }
+
+    /**
+     * @return the heatGrid
+     */
+    public HeatNukleosomGrid getHeatGrid() {
+        return heatGrid;
+    }
+
+    /**
+     * @return the heatOptionsPanel
+     */
+    public HeatOptionsPanel getHeatOptionsPanel() {
+        return heatOptionsPanel;
+    }
+
+    /**
+     * @return the chromosom
+     */
+    public Chromosom getChromosom() {
+        return chromosom;
+    }
+    
     
 }
