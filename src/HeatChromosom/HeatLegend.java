@@ -84,10 +84,16 @@ public class HeatLegend extends HBox{
         Separator sep = new Separator();
         sep.setOrientation(Orientation.VERTICAL);
 
+        if(project.getID() == 0) {
 
-        ImageView imageView = new ImageView(createColorScaleImage(100, 20, Orientation.HORIZONTAL));
+            ImageView imageView = new ImageView(createColorScaleImage(100, 20, Orientation.HORIZONTAL));
         
-        getChildren().addAll(spin, sep, new Label("0.0"), imageView, new Label("1.0"));
+            getChildren().addAll(spin, sep, new Label("0.0"), imageView, new Label("1.0"));
+        }
+        else {
+            getChildren().add(spin); 
+        }
+        
         setSpacing(5.0);
         
 //        setStyle("-fx-border: 3px solid; -fx-border-color: black;");

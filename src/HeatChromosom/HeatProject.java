@@ -29,11 +29,13 @@ public class HeatProject {
     private BorderPane borderPane;
     private HeatNukleosomGrid heatGrid;
     private HeatLegend heatLegend;
-    private boolean both = false;
+    private boolean twoHeatMaps = false;
+    private int ID = 0;
     
-    public HeatProject(Chromosom chromosom) {
+    public HeatProject(Chromosom chromosom, int ID) {
         this.chromosom = chromosom;
-        
+        this.ID = ID;
+
         prepareReader();
     }
     
@@ -52,7 +54,7 @@ public class HeatProject {
         borderPane = new BorderPane();
         
         if(getChromosom().sameColumns && getChromosom().sameRow) {
-            this.both = true;
+            this.twoHeatMaps = true;
         }
 //            heatOptionsPanel = new HeatOptionsPanel(this);
 //            
@@ -77,7 +79,7 @@ public class HeatProject {
     }
     
     public void showNewHeatGrid(String newValue) {
-        heatGrid = new HeatNukleosomGrid(this, newValue, both);
+        heatGrid = new HeatNukleosomGrid(this, newValue, twoHeatMaps);
 
         heatOptionsPanel.resetOptionPanel();
         
@@ -128,6 +130,13 @@ public class HeatProject {
     public Chromosom getChromosom() {
         return chromosom;
     }
-    
+
+    /**
+     * @return the ID
+     */
+    public int getID() {
+        return ID;
+    }
+
     
 }

@@ -7,6 +7,8 @@ package HeatChromosom;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
@@ -24,6 +26,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 
 /**
  *
@@ -41,6 +47,7 @@ public class HeatNukleosomGrid extends GridPane{
     private ArrayList<HeatNukleosom> highlightedList;
     private boolean both;
     private HeatProject project;
+    public String timeStep;
      
     public HeatNukleosomGrid(HeatProject project, String timeStep, boolean both) {
         this.project = project;
@@ -49,6 +56,7 @@ public class HeatNukleosomGrid extends GridPane{
         this.timeMap = hr.getTimeMap();
         this.hitMap = hr.getHitMap();
         this.parent = project.getBorderPane();
+        this.timeStep = timeStep;
        
 //        ArrayList<Node> nodeList = new ArrayList<>();
         
@@ -82,12 +90,22 @@ public class HeatNukleosomGrid extends GridPane{
                     @Override
                     public void handle(MouseEvent mouseEvent) {
                         if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-//                            project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(heatNukl, 1, project.getHeatOptionsPanel().getStartRow());
-                            resetAndStrokeNukleosom(heatNukl, leftNode, true, HeatProject.RED, true);
+                            for(HeatProject pro :project.getChromosom().projectList) {
+                                HeatNukleosom nop = heatNukl;
+                                if(pro != project) {
+                                    nop = pro.getHeatGrid().findNukleosom(heatNukl.x, heatNukl.y);
+                                }
+                                pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().leftNode, true, HeatProject.RED);
+                            }
                         }
                         if(mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
-//                            project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(heatNukl, 2, project.getHeatOptionsPanel().getStartRow());
-                            resetAndStrokeNukleosom(heatNukl, rightNode, false, HeatProject.GREEN, true);
+                            for(HeatProject pro :project.getChromosom().projectList) {
+                                HeatNukleosom nop = heatNukl;
+                                if(pro != project) {
+                                    nop = pro.getHeatGrid().findNukleosom(heatNukl.x, heatNukl.y);
+                                }
+                                pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().rightNode, false, HeatProject.GREEN);
+                            }
                         }
                     }
                 });
@@ -147,23 +165,8 @@ public class HeatNukleosomGrid extends GridPane{
         setHighlightedList(new ArrayList<>());
     }
     
-    private void resetAndStrokeNukleosom(HeatNukleosom newNukl, HeatNukleosom oldNukl, boolean left, Color color, boolean first) {
+    private void resetAndStrokeNukleosom(HeatNukleosom newNukl, HeatNukleosom oldNukl, boolean left, Color color) {
         
-        if(both == true && first == true) {
-            for(HeatProject pro :project.getChromosom().projectArray) {
-                if(pro != project) {
-                    
-                    HeatNukleosom nop = pro.getHeatGrid().findNukleosom(newNukl.x, newNukl.y);
-                    
-                    if(left == true) {
-                        pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().leftNode, left, color, false);
-                    }
-                    else {
-                        pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().rightNode, left, color, false);
-                    }
-                }
-            }
-        }
          if(oldNukl != null) {
              oldNukl.setStrokeColor(Color.GRAY);
              oldNukl.setStrokeWidth(oldNukl.oldStrokeWidth);
@@ -198,88 +201,6 @@ public class HeatNukleosomGrid extends GridPane{
         }
         return returnNukl;
     }
-
-//    void addHeatNukleosomToOptionPanel(HeatNukleosom nukl, int col, int row) {
-//        
-//        if(parent.getRight() instanceof javafx.scene.layout.VBox) {
-//            VBox box = (VBox)parent.getRight();
-//            
-//            if(box.getChildren().get(row) instanceof javafx.scene.layout.GridPane) {
-//                GridPane table = (GridPane)box.getChildren().get(row);
-//                
-//                ArrayList<Node> nodeList = new ArrayList<>();
-//                
-//                for(Node nod : table.getChildren()) {
-//                    if(table.getColumnIndex(nod) == col) {
-//                        nodeList.add(nod);
-//                    }
-//                }
-//                
-//                for(Node nod : nodeList) {
-//                    table.getChildren().remove(nod);
-//                }
-//                
-//                StackPane pane = new StackPane();
-//                
-//                pane.setPrefSize(28, 28);
-//                pane.setAlignment(Pos.CENTER_LEFT);
-//                
-//                Color color = Color.GRAY;
-//
-//                if(col == 1 && row >= startRow) {
-//                    color = HeatProject.RED;
-//                } 
-//                else if(col > 1) {
-//                    color = HeatProject.GREEN;
-//                }
-//
-//                Rectangle bg = new Rectangle(28,28,color);
-//                bg.setTranslateX(0);
-//                bg.setTranslateY(0);
-//
-//
-//                pane.getChildren().add(bg);
-//
-//                Rectangle fg = new Rectangle(24, 24, Color.WHITE);
-//                fg.setTranslateX(2);
-////                fg.setTranslateY(1);
-//
-//                pane.getChildren().add(fg); 
-//                
-//                HeatNukleosom newNukl = new HeatNukleosom(nukl.value, nukl.x, nukl.y, 18, 18, false, false, "");
-//                newNukl.setTranslateX(5);
-//                newNukl.setTranslateY(5);
-//                
-//                pane.getChildren().add(newNukl);
-//                
-//                table.add(pane, col, 0);
-//                table.add(new Label(String.valueOf(newNukl.value).replace(".", ",")), col, 1);
-//               
-//                //Nukleosom
-//                table.add(new Label(String.valueOf(nukl.x)), col, 2);
-//                
-//                //Für die Action
-////                int y = (nukl.y/2);
-//                
-//                //Enzyme
-//                table.add(new Label(String.valueOf(hr.getChannelList().get(nukl.y))), col, 3);
-//                
-//                //Channel
-//                table.add(new Label(String.valueOf(nukl.y)), col, 4);
-//                
-////                //Action
-////                String action;
-////                if(nukl.y%2 == 0) {
-////                    action = "activation";
-////                }
-////                else {
-////                    action = "deactivation";
-////                }
-////                
-////                table.add(new Label(action), col, 5);
-//            }
-//        }
-//    }
     
     private void setLeftNode(HeatNukleosom heatNukl) {
         leftNode = heatNukl;
@@ -293,6 +214,9 @@ public class HeatNukleosomGrid extends GridPane{
      * @return the highlightedList
      */
     public ArrayList<HeatNukleosom> getHighlightedList() {
+        if(highlightedList == null) {
+            highlightedList = new ArrayList<HeatNukleosom>();
+        }
         return highlightedList;
     }
 

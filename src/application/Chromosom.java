@@ -20,7 +20,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import Nukleosom.BigNukleosomRow;
-import NukleosomReader.NukleosomReader;
 import NukleosomVase.NukleosomVaseGrid;
 import SunburstNukleosom.SunburstNukleosom;
 import SunburstNukleosom.SunburstNukleosomRow;
@@ -43,6 +42,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 import test.ChromosomTree;
 
 public class Chromosom extends Application {
@@ -72,7 +75,7 @@ public class Chromosom extends Application {
 //    public HeatProject heatProject;
 //    public HeatProject heatProject2;
     
-    public HeatProject projectArray[];
+    public ArrayList<HeatProject> projectList;
     
     public boolean sameRow, sameColumns;
     
@@ -80,15 +83,12 @@ public class Chromosom extends Application {
     @Override
     public void start(Stage primaryStage) {
         
-//        startChromosom(primaryStage);
-        startHeatChromosom(primaryStage);
-
-//        primaryStage.setMaximized(true);
-
-        Scene scene = new Scene(getRootLayout());
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(true);
-        show(primaryStage);
+            startTwoHeatChromosom(primaryStage);
+            
+            Scene scene = new Scene(getRootLayout());
+            primaryStage.setScene(scene);
+            primaryStage.setResizable(true);
+            show(primaryStage);
     }
 
     private void startChromosom(Stage primaryStage) {
@@ -118,18 +118,17 @@ public class Chromosom extends Application {
 //        
 //        options.getChildren().add(tree);
     }
-    
-    
-    private void startHeatChromosom(Stage primaryStage) {
+
+        private void startTwoHeatChromosom(Stage primaryStage) {
         initGUI(primaryStage);
         
-        projectArray = new HeatProject[2];
+        projectList = new ArrayList<>();
         
-        HeatProject heatProject = new HeatProject(this);
-        HeatProject heatProject2 = new HeatProject(this);
+        HeatProject heatProject = new HeatProject(this, 0);
+        HeatProject heatProject2 = new HeatProject(this, 1);
         
-        projectArray[0] = heatProject;
-        projectArray[1] = heatProject2;
+        projectList.add(heatProject);
+        projectList.add(heatProject2);
         
         String first = heatProject.getHeatReader().getFirstItemInTimeMap();
         String first2 = heatProject2.getHeatReader().getFirstItemInTimeMap();
@@ -154,53 +153,35 @@ public class Chromosom extends Application {
         
         splitPane.getItems().addAll(heatProject.createHeatMainPanel(), heatProject2.createHeatMainPanel());
         
+        getRootLayout().setCenter(splitPane);
+        
+    }
+    
+    private void startHeatChromosom(Stage primaryStage) {
+        initGUI(primaryStage);
+        
+        projectList = new ArrayList<>();
+        
+        HeatProject heatProject = new HeatProject(this, 0);
+        
+        projectList.add(heatProject);
+        
+        String first = heatProject.getHeatReader().getFirstItemInTimeMap();
+        heatProject.getHeatReader().readLogFile(first);
+        
+        sameRow = false;
+        sameColumns = false;
+        
+        SplitPane splitPane = new SplitPane();
+        
+        splitPane.setOrientation(Orientation.VERTICAL);
+        
+        splitPane.getItems().addAll(heatProject.createHeatMainPanel());
 
         
         getRootLayout().setCenter(splitPane);
         
-//        hop = new HeatOptionsPanel(this);
-        
-//        rootLayout.setRight(hop);
-
-//        File testFile = new File("test.txt");
-        
-//        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logs");
-        
-//        hr = new HeatReader();
-        
-//        hr.searchForLogFiles(pazText);
-        
-//        hr.readLogFile("0");
-        
-//        heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, "0");
-        
-//        sp = new ScrollPane();
-        
-//        BorderPane.setMargin(sp, new Insets(7,7,7,7));
-        
-//        sp.setContent(heatGrid);
-        
-//        HeatLegend heatLegend = new HeatLegend(this);
-        
-//        rootLayout.setBottom(heatLegend);
-        
-//        rootLayout.setCenter(sp);
     }
-    
-//    public void showNewHeatGrid(String newValue) {
-//        heatGrid = new HeatNukleosomGrid(rootLayout, heatProject, hr, newValue);
-//
-//        sp = new ScrollPane();
-//        sp.setContent(heatGrid);
-//        rootLayout.setCenter(sp);
-//        
-//        if(hop.checky.isSelected()) {
-//            if(heatGrid != null) {
-//                heatGrid.highlightedList = new ArrayList<>();
-//                heatGrid.highlightNear(hop.nearSpinValueFactory.getValue(), hop.rangeSpinValueFactory.getValue());
-//            }
-//        }
-//    }
     
     private void show(Stage primaryStage) {
         primaryStage.show();
