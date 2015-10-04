@@ -5,14 +5,9 @@
  */
 package HeatChromosom;
 
-import application.Chromosom;
-import java.io.File;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.Spinner;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -32,54 +27,8 @@ public class HeatLegend extends HBox{
         
         this.project = project;
         
-        Spinner spin = new Spinner(0.0, 20000.0 , 0.0);
-        spin.setEditable(true); 
-        
-        spin.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable,
-                    Number oldValue, Number newValue) {
-                int i = newValue.intValue();
-                String newText = String.valueOf(i);
-                int add;
-                
-                if(i > oldValue.intValue()) {
-                    add = 1;
-                }
-                else {
-                    add = -1;
-                }
-                
-                if(!project.getHeatReader().getTimeMap().containsKey(newText)) {
-                    File file = new File(newText + ".txt");
-                    
-                    while(!file.exists() && i < 20000) {
-                       i = i + add;
-                       newText = String.valueOf(i);
-                       file = new File(newText);
-                    }
-                    if(file.exists()) {
-                        project.getHeatReader().readLogFile(newText);
-                        project.showNewHeatGrid(newText);
-                        spin.getValueFactory().setValue((double)i);
-                    }
-                }
-                else {
-                   project.showNewHeatGrid(String.valueOf(i)); 
-                }
-            }
-        });
-        
-        spin.getEditor().setOnKeyPressed(event -> {
-           switch (event.getCode()) {
-                case UP:
-                    spin.increment();
-                    break;
-                case DOWN:
-                    spin.decrement();
-                    break;
-            }
-        });
+        HeatTimeStepSpinner spin = new HeatTimeStepSpinner(project);
+
         
         Separator sep = new Separator();
         sep.setOrientation(Orientation.VERTICAL);

@@ -40,10 +40,8 @@ public class HeatOptionsPanel extends VBox{
     private HeatProject project;
     private double oldProb = 2.0;
     private CheckBox rangeBox;
-    private Spinner nearSpin;
-    private Spinner rangeSpinner;
-    public DoubleSpinnerValueFactory rangeSpinValueFactory;
-    public DoubleSpinnerValueFactory nearSpinValueFactory;
+    private HeatNearSpinner nearSpin;
+    private HeatRangeSpinner rangeSpin;
     private int startRow = 4;
     private HeatOptionsGrid selectedNukleosoms;
     private HeatOptionsGrid resultNukleosom;
@@ -79,17 +77,11 @@ public class HeatOptionsPanel extends VBox{
         
         hbox = new HBox();
         
+        rangeSpin = new HeatRangeSpinner(project);
+        nearSpin = new HeatNearSpinner(project);
+        
         rangeBox = new CheckBox();
 
-        nearSpin = new Spinner(0.0, 1.0, 0.0, 0.01);
-        rangeSpinner = new Spinner(0.0, 1.0, 0.0, 0.01);
-        
-        nearSpinValueFactory = new DoubleSpinnerValueFactory(0.0, 1.0, 0.0, 0.01);
-        nearSpin.setValueFactory(nearSpinValueFactory);
-        
-        rangeSpinValueFactory = new DoubleSpinnerValueFactory(0.0, 1.0, 0.0, 0.01);
-        rangeSpinner.setValueFactory(rangeSpinValueFactory);
-        
         rangeBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
             if(new_val == true) {
                 String text = nearSpin.getEditor().getText().replaceAll(",", ".");
@@ -97,13 +89,13 @@ public class HeatOptionsPanel extends VBox{
                 
                 if(pairButton.isSelected()) {
                     for(HeatProject pro : project.getChromosom().projectList) {
-                        pro.getHeatGrid().highlightNear(doub, rangeSpinValueFactory.getValue());
+                        pro.getHeatGrid().highlightNear(doub, rangeSpin.getRangeSpinValueFactory().getValue());
                         pro.getHeatOptionsPanel().rangeBox.setSelected(true);
                         pro.getHeatOptionsPanel().oldProb = doub;
                     }
                 }
                 else {
-                    project.getHeatGrid().highlightNear(doub, rangeSpinValueFactory.getValue());
+                    project.getHeatGrid().highlightNear(doub, rangeSpin.getRangeSpinValueFactory().getValue());
                     rangeBox.setSelected(true);
                     oldProb = doub; 
                 }
@@ -128,106 +120,7 @@ public class HeatOptionsPanel extends VBox{
                 }
             }
         });
-        
-        nearSpin.setEditable(true); 
-        
-        nearSpin.setMaxWidth(70.0);
-        
-        nearSpin.valueProperty().addListener(new ChangeListener<Double>() {
-            @Override
-            public void changed(ObservableValue<? extends Double> observable,
-                    Double oldValue, Double newValue) {
-                try {
-                    if(pairButton.isSelected()) {
-                        for(HeatProject pro : project.getChromosom().projectList) {
-                            pro.getHeatOptionsPanel().oldProb = newValue;//.doubleValue();
-                            if(pro != project) {
-                                pro.getHeatOptionsPanel().nearSpinValueFactory.setValue(newValue);
-                            }
-                            pro.getHeatGrid().highlightNear(newValue, rangeSpinValueFactory.getValue());//.doubleValue());
-                            pro.getHeatOptionsPanel().getRangeBox().setSelected(true);  
-                        }
-                    }
-                    else {
-                            oldProb = newValue;//.doubleValue();
-                            project.getHeatGrid().highlightNear(newValue, rangeSpinValueFactory.getValue());//.doubleValue());
-                    }
-                }
-                catch(Exception e) {
-                }
-            }
-        });      
-        
-        nearSpin.getEditor().setOnKeyPressed(event -> {
-           switch (event.getCode()) {
-                case UP:
-                    nearSpin.increment();
-                    break;
-                case DOWN:
-                    nearSpin.decrement();
-                    break;
-                case ENTER:
-                    if(!nearSpin.getEditor().getText().equals("")) {
-                        String text = nearSpin.getEditor().getText().replaceAll(",", ".");
-                        double doub = Double.parseDouble(text);
-                        if(oldProb == doub) {
-                            if(project.getHeatGrid().getHighlightedList() != null && !project.getHeatGrid().getHighlightedList().isEmpty()) {
-                                project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
-                            }
-                            project.getHeatGrid().resetHighlightedNukl();
-                            oldProb = oldProb + 2.0;
-                            rangeBox.setSelected(false);
-                        }
-                        else {
-                            project.getHeatGrid().highlightNear(doub, rangeSpinValueFactory.getValue());
-                            oldProb = doub;
-                            rangeBox.setSelected(true);
-                        }
-                    }
-                    else {
-                        nearSpin.getEditor().setText("0.0");
-                    }
-                    break;
-            }
-        });
-        
-        rangeSpinner.valueProperty().addListener(new ChangeListener<Double>() {
-            @Override
-            public void changed(ObservableValue<? extends Double> observable,
-                    Double oldValue, Double newValue) {
-//                nearSpinValueFactory.setAmountToStepBy(newValue);
-                if(pairButton.isSelected()) {
-                    for(HeatProject pro : project.getChromosom().projectList) {
-                        if(pro.getHeatOptionsPanel().getRangeBox().isSelected() == true) {
-                            pro.getHeatGrid().highlightNear(nearSpinValueFactory.getValue(), newValue);
-                        
-                        }    
-                        if(pro != project) {
-                            pro.getHeatOptionsPanel().rangeSpinValueFactory.setValue(newValue);
-                        }
-                    }
-                }
-                else {
-                    if(getRangeBox().isSelected() == true) {
-                        project.getHeatGrid().highlightNear(nearSpinValueFactory.getValue(), newValue);
-                    }
-                }
-            }
-        });
-        
-        rangeSpinner.getEditor().setOnKeyPressed(event -> {
-           switch (event.getCode()) {
-                case UP:
-                    rangeSpinner.increment();
-                    break;
-                case DOWN:
-                    rangeSpinner.decrement();
-                    break;
-           }
-        });
-        
-        rangeSpinner.setEditable(true);
-        rangeSpinner.setMaxWidth(70);
+
         hbox.setSpacing(18);
         
         pairButton = new HeatPairButton();
@@ -235,11 +128,11 @@ public class HeatOptionsPanel extends VBox{
         pairButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 for(HeatProject pro : project.getChromosom().projectList) {
-                    pro.getHeatOptionsPanel().pairButton.click();
+                    pro.getHeatOptionsPanel().getPairButton().click();
                     if(pro != project) {
                         pro.getHeatOptionsPanel().rangeBox.setSelected(rangeBox.isSelected());
-                        pro.getHeatOptionsPanel().nearSpinValueFactory.setValue(nearSpinValueFactory.getValue());
-                        pro.getHeatOptionsPanel().rangeSpinValueFactory.setValue(rangeSpinValueFactory.getValue());
+                        pro.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().setValue(nearSpin.getNearSpinValueFactory().getValue());
+                        pro.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().setValue(rangeSpin.getRangeSpinValueFactory().getValue());
                     } 
                 }
                 
@@ -261,10 +154,8 @@ public class HeatOptionsPanel extends VBox{
             hbox.getChildren().addAll(rangeBox, nearSpin);
         }
         
-        
-        
         rangeHBox = new HBox();
-        rangeHBox.getChildren().addAll(new Label("Range:"), rangeSpinner, play);
+        rangeHBox.getChildren().addAll(new Label("Range:"), rangeSpin, play);
         rangeHBox.setSpacing(3);
         
         getChildren().addAll(hbox, rangeHBox);
@@ -287,65 +178,34 @@ public class HeatOptionsPanel extends VBox{
                     table.getChildren().remove(nod);
                 }
                 
-                StackPane pane = new StackPane();
-                
-                pane.setPrefSize(28, 28);
-                pane.setAlignment(Pos.CENTER_LEFT);
-                
-                Color color = Color.GRAY;
+                if(nukl != null) {
+                    table.add(createSelectedPane(nukl, col, row), col, 0);
+                    table.add(new Label(String.valueOf(nukl.value).replace(".", ",")), col, 1);
 
-                if(col == 1 && row >= getStartRow()) {
-                    color = HeatProject.RED;
-                } 
-                else if(col > 1) {
-                    color = HeatProject.GREEN;
+                    //Nukleosom
+                    table.add(new Label(String.valueOf(nukl.x)), col, 2);
+
+                    //Für die Action
+    //                int y = (nukl.y/2);
+
+                    //Enzyme
+                    table.add(new Label(String.valueOf(project.getHeatReader().getChannelList().get(nukl.y))), col, 3);
+
+                    //Channel
+                    table.add(new Label(String.valueOf(nukl.y)), col, 4);
+
+    //                //Action
+    //                String action;
+    //                if(nukl.y%2 == 0) {
+    //                    action = "activation";
+    //                }
+    //                else {
+    //                    action = "deactivation";
+    //                }
+    //                
+    //                table.add(new Label(action), col, 5);
                 }
-
-                Rectangle bg = new Rectangle(28,28,color);
-                bg.setTranslateX(0);
-                bg.setTranslateY(0);
-
-
-                pane.getChildren().add(bg);
-
-                Rectangle fg = new Rectangle(24, 24, Color.WHITE);
-                fg.setTranslateX(2);
-//                fg.setTranslateY(1);
-
-                pane.getChildren().add(fg); 
-                
-                HeatNukleosom newNukl = new HeatNukleosom(nukl.value, nukl.x, nukl.y, 18, 18, false, false, "");
-                newNukl.setTranslateX(5);
-                newNukl.setTranslateY(5);
-                
-                pane.getChildren().add(newNukl);
-                
-                table.add(pane, col, 0);
-                table.add(new Label(String.valueOf(newNukl.value).replace(".", ",")), col, 1);
-               
-                //Nukleosom
-                table.add(new Label(String.valueOf(nukl.x)), col, 2);
-                
-                //Für die Action
-//                int y = (nukl.y/2);
-                
-                //Enzyme
-                table.add(new Label(String.valueOf(project.getHeatReader().getChannelList().get(nukl.y))), col, 3);
-                
-                //Channel
-                table.add(new Label(String.valueOf(nukl.y)), col, 4);
-                
-//                //Action
-//                String action;
-//                if(nukl.y%2 == 0) {
-//                    action = "activation";
-//                }
-//                else {
-//                    action = "deactivation";
-//                }
-//                
-//                table.add(new Label(action), col, 5);
-            }
+        }
         
     }
     
@@ -370,11 +230,11 @@ public class HeatOptionsPanel extends VBox{
         return startRow;
     }
 
-    private Spinner getRangeSpinner() {
-        return rangeSpinner;
+    public HeatRangeSpinner getRangeSpin() {
+        return rangeSpin;
     }
 
-    private Spinner getNearSpin() {
+    public HeatNearSpinner getNearSpin() {
        return nearSpin;
     }
     
@@ -413,6 +273,72 @@ public class HeatOptionsPanel extends VBox{
             } catch (LineUnavailableException ex) {
                     Logger.getLogger(HeatOptionsPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
+    }
+    
+    public StackPane createSelectedPane(HeatNukleosom nukl, int col, int row) {
+        StackPane pane = new StackPane();
+
+        pane.setPrefSize(28, 28);
+        pane.setAlignment(Pos.CENTER_LEFT);
+        
+        Color color = Color.GRAY;
+
+        if(col == 1 && row >= getStartRow()) {
+            color = HeatProject.RED;
+        } 
+        else if(col > 1) {
+            color = HeatProject.GREEN;
+        }
+
+        Rectangle bg = new Rectangle(28,28,color);
+        bg.setTranslateX(0);
+        bg.setTranslateY(0);
+
+        Rectangle fg = new Rectangle(24, 24, Color.WHITE);
+        fg.setTranslateX(2);
+
+        HeatNukleosom newNukl = new HeatNukleosom(nukl.value, nukl.x, nukl.y, 18, 18, "");
+        newNukl.setTranslateX(5);
+        newNukl.setTranslateY(5);
+
+        pane.getChildren().addAll(bg, fg, newNukl);
+        
+        return pane;
+    }
+
+    /**
+     * @return the pairButton
+     */
+    public HeatPairButton getPairButton() {
+        return pairButton;
+    }
+
+    /**
+     * @return the oldProb
+     */
+    public double getOldProb() {
+        return oldProb;
+    }
+
+    /**
+     * @param oldProb the oldProb to set
+     */
+    public void setOldProb(double oldProb) {
+        this.oldProb = oldProb;
+    }
+
+    /**
+     * @param rangeSpin the rangeSpinner to set
+     */
+    public void setRangeSpin(HeatRangeSpinner rangeSpin) {
+        this.rangeSpin = rangeSpin;
+    }
+
+    /**
+     * @param nearSpin the nearSpin to set
+     */
+    public void setNearSpin(HeatNearSpinner nearSpin) {
+        this.nearSpin = nearSpin;
     }
     
 }

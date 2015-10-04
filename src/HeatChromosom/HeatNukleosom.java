@@ -22,17 +22,18 @@ public class HeatNukleosom extends Pane {
     int width; 
     int height;
     double value;
-    HeatNukleosomGrid parent;
     Rectangle rect;
     Rectangle highlightRect;
     double oldStrokeWidth;
     int x, y;
+    private boolean selected;
     
-    public HeatNukleosom(double value, int x, int y, int width, int height, boolean showLabels, boolean showStrokes, String strokeType) {
+    public HeatNukleosom(double value, int x, int y, int width, int height, String strokeType) {
 
-        highlightRect = new Rectangle(width, height , Color.rgb(255,0,230)); 
+        //rosa Color.rgb(255,0,230)
+        
+        highlightRect = new Rectangle(width, height , Color.rgb(255,100,0)); 
         this.value = value;
-        this.parent = parent;
         this.width = width;
         this.height = height;
         this.x = x;
@@ -40,37 +41,29 @@ public class HeatNukleosom extends Pane {
 
         setPrefSize(width, height);
 
-        String histoneNumberString = "";
-
         Paint color;
 
         color = generateColorForValue(value);
 
         rect = new Rectangle(width, height , color); 
-//        rect.setOpacity(value);   
 
         rect.setX(0);
         rect.setY(0);
         
-//        if(strokeType)
+        double rectStrokeWidth = (HeatProject.GridLineStrokeWidth / HeatProject.HeatNukleosomWidth) * width;
         
-        if(showStrokes) {
-            rect.setStroke(Color.RED);
-            rect.setStrokeWidth(0.8);
-        }
-        else {
-            rect.setStroke(Color.GRAY);
-            rect.setStrokeWidth(0.2);
-        }
+        rect.setStroke(Color.GRAY);
+        rect.setStrokeWidth(rectStrokeWidth);
         
         oldStrokeWidth = rect.getStrokeWidth();
         
         rect.setStrokeType(StrokeType.INSIDE);
+        highlightRect.setStrokeType(StrokeType.INSIDE);
         
         getChildren().add(rect);
         
         Line line;
-        double strokeWidth = 1.0;
+        double strokeWidth = (0.8 / HeatProject.HeatNukleosomWidth) * width;
         double add = strokeWidth + rect.strokeWidthProperty().doubleValue();
         
         if(strokeType.equals("HORIZONTAL")){// || strokeType.equals("BOTH")) {
@@ -95,10 +88,10 @@ public class HeatNukleosom extends Pane {
             getChildren().add(line);
         }
 
-        if(showLabels == true) {
-            Label lab = new Label(String.valueOf(value));
-            getChildren().add(lab);
-        }
+//        if(showLabels == true) {
+//            Label lab = new Label(String.valueOf(value));
+//            getChildren().add(lab);
+//        }
     }
     
     public void highlight() {
@@ -141,6 +134,31 @@ public class HeatNukleosom extends Pane {
         double face = Math.floor(value/0.05);
         
         return face * 0.05;
+    }
+
+    /**
+     * @return the selected
+     */
+    public boolean isSelected() {
+        return selected;
+    }
+
+    /**
+     * @param selected the selected to set
+     */
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+    
+    public void select(Color color) {
+        setStrokeColor(color);
+        setStrokeWidth(2.0);
+    }
+    
+    public void deselect() {
+        setStrokeColor(Color.GRAY);
+        setStrokeWidth(oldStrokeWidth);
+        highlightRect.setStrokeWidth(0.0);
     }
     
 }

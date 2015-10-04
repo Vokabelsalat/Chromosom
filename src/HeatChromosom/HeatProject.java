@@ -31,6 +31,8 @@ public class HeatProject {
     private HeatLegend heatLegend;
     private boolean twoHeatMaps = false;
     private int ID = 0;
+    public static int HeatNukleosomWidth = 8;
+    public static double GridLineStrokeWidth = 0.2;
     
     public HeatProject(Chromosom chromosom, int ID) {
         this.chromosom = chromosom;
@@ -91,7 +93,7 @@ public class HeatProject {
         if(getHeatOptionsPanel().getRangeBox().isSelected()) {
             if(getHeatGrid() != null) {
                 getHeatGrid().setHighlightedList(new ArrayList<>());
-                getHeatGrid().highlightNear(getHeatOptionsPanel().nearSpinValueFactory.getValue(), getHeatOptionsPanel().rangeSpinValueFactory.getValue());
+                getHeatGrid().highlightNear(getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().getValue(), getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().getValue());
             }
         }
     }
@@ -137,6 +139,4 @@ public class HeatProject {
     public int getID() {
         return ID;
     }
-
-    
 }

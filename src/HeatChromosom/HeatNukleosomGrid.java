@@ -5,31 +5,17 @@
  */
 package HeatChromosom;
 
+import static HeatChromosom.HeatProject.GridLineStrokeWidth;
+import static HeatChromosom.HeatProject.HeatNukleosomWidth;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
 
 /**
  *
@@ -39,7 +25,6 @@ public class HeatNukleosomGrid extends GridPane{
     
     private HashMap<String,ArrayList<ArrayList<Double>>> timeMap;
     private HashMap<String, int[]> hitMap;
-    private int width = 8, height = 8;
     private BorderPane parent;
     private HeatNukleosom leftNode = null;
     private HeatNukleosom rightNode = null;
@@ -57,15 +42,14 @@ public class HeatNukleosomGrid extends GridPane{
         this.hitMap = hr.getHitMap();
         this.parent = project.getBorderPane();
         this.timeStep = timeStep;
-       
-//        ArrayList<Node> nodeList = new ArrayList<>();
         
+        int width = project.HeatNukleosomWidth;
+       
         if(timeMap.containsKey(timeStep) && timeMap.get(timeStep) == null) {
             hr.readLogFile(timeStep);
         }
         
         ArrayList<ArrayList<Double>> enzymeList = timeMap.get(timeStep);
-        
         
         for(int enzyme = 0; enzyme < enzymeList.size(); enzyme++) {
             ArrayList<Double> nukleosomList = enzymeList.get(enzyme);
@@ -73,17 +57,17 @@ public class HeatNukleosomGrid extends GridPane{
                 HeatNukleosom heatNukl;
                 
                 if(enzyme == hitMap.get(timeStep)[1] && nukleosom == hitMap.get(timeStep)[0]) {
-                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, height, false, false, "BOTH");
+                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "BOTH");
                     project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(heatNukl, 1, 1);
                 }
                 else if(enzyme == hitMap.get(timeStep)[1]) {
-                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, height, false, false, "HORIZONTAL");
+                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "HORIZONTAL");
                 }
                 else if(nukleosom == hitMap.get(timeStep)[0]) {
-                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, height, false, false, "VERTICAL");
+                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "VERTICAL");
                 }
                 else {
-                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, height, false, false, "");
+                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "");
                 }
                 
                 heatNukl.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -92,7 +76,7 @@ public class HeatNukleosomGrid extends GridPane{
                         if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                             for(HeatProject pro :project.getChromosom().projectList) {
                                 HeatNukleosom nop = heatNukl;
-                                if(pro != project) {
+                                if(pro != project && both == true) {
                                     nop = pro.getHeatGrid().findNukleosom(heatNukl.x, heatNukl.y);
                                 }
                                 pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().leftNode, true, HeatProject.RED);
@@ -101,7 +85,7 @@ public class HeatNukleosomGrid extends GridPane{
                         if(mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                             for(HeatProject pro :project.getChromosom().projectList) {
                                 HeatNukleosom nop = heatNukl;
-                                if(pro != project) {
+                                if(pro != project  && both == true) {
                                     nop = pro.getHeatGrid().findNukleosom(heatNukl.x, heatNukl.y);
                                 }
                                 pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().rightNode, false, HeatProject.GREEN);
@@ -167,26 +151,41 @@ public class HeatNukleosomGrid extends GridPane{
     
     private void resetAndStrokeNukleosom(HeatNukleosom newNukl, HeatNukleosom oldNukl, boolean left, Color color) {
         
-         if(oldNukl != null) {
-             oldNukl.setStrokeColor(Color.GRAY);
-             oldNukl.setStrokeWidth(oldNukl.oldStrokeWidth);
-             oldNukl.highlightRect.setStrokeWidth(0.0);
-         }
-
-         newNukl.setStrokeColor(color);
-         newNukl.setStrokeWidth(2.0);
-         
-         if(left == true) {
-//            setLeftNode(newNukl);
-            project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(newNukl, 1, project.getHeatOptionsPanel().getStartRow());
-            leftNode = newNukl;
-         }
-         else {
-//             setRightNode(newNukl);
-            project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(newNukl, 2, project.getHeatOptionsPanel().getStartRow());
-            rightNode = newNukl;
-         }
+        if(left == true) {
+            if(leftNode == newNukl) {
+                newNukl.deselect();
+                leftNode = null;
+            }
+            else {
+                newNukl.select(project.RED);
+                if(oldNukl != null) {
+                    oldNukl.deselect();
+                }
+                leftNode = newNukl;
+            }
+            if(rightNode != null && leftNode != rightNode) {
+                rightNode.select(project.GREEN);
+            }
+        }
+        else {
+            if(rightNode == newNukl) {
+                newNukl.deselect();
+                rightNode = null;
+            }
+            else {
+                newNukl.select(HeatProject.GREEN);
+                if(oldNukl != null) {
+                    oldNukl.deselect();
+                }
+                rightNode = newNukl;
+            }
+            if(leftNode != null  && leftNode != rightNode) {
+                leftNode.select(HeatProject.RED);
+            }
+        }
         
+        project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(leftNode, 1, project.getHeatOptionsPanel().getStartRow());
+        project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(rightNode, 2, project.getHeatOptionsPanel().getStartRow());
      }
     
     public HeatNukleosom findNukleosom(int x, int y) {

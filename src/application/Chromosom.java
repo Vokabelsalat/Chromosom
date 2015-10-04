@@ -72,18 +72,16 @@ public class Chromosom extends Application {
     public ChromosomTree tree;
     private BorderPane nukleosomBorderPane;
     private ScrollPane sp;
-//    public HeatProject heatProject;
-//    public HeatProject heatProject2;
     
     public ArrayList<HeatProject> projectList;
     
     public boolean sameRow, sameColumns;
     
-    
     @Override
     public void start(Stage primaryStage) {
         
-            startTwoHeatChromosom(primaryStage);
+//            startTwoHeatChromosom(primaryStage);
+            startHeatChromosom(primaryStage);
             
             Scene scene = new Scene(getRootLayout());
             primaryStage.setScene(scene);
