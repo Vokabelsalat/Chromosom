@@ -37,6 +37,8 @@ public class HeatTimeStepSpinner extends Spinner{
             public void changed(ObservableValue<? extends Integer> observable,
                     Integer oldValue, Integer newValue) {
                 
+                System.err.println(newValue);
+                
                 if(newValue < timeStepSpinnerValueFactory.getMin()) {
                     timeStepSpinnerValueFactory.setValue(timeStepSpinnerValueFactory.getMin());
                     showNewGrid(timeStepSpinnerValueFactory.getMin(), timeStepSpinnerValueFactory.getMin());

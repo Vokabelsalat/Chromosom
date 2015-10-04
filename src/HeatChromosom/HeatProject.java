@@ -46,7 +46,7 @@ public class HeatProject {
         
         File testFile = new File("test.txt");
         
-        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logs");
+        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "fastLogs");
     
         heatReader.searchForLogFiles(pazText);
         

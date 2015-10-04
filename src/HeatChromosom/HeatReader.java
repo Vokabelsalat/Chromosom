@@ -117,12 +117,15 @@ public class HeatReader {
     
     public void addLogFile(String fileName) {
         String timeStep = fileName.substring(fileName.lastIndexOf("\\")+1, fileName.indexOf("."));
+        String ending = fileName.substring(fileName.indexOf(".")+1);
         
-        if(getTimeMap().containsKey(timeStep)) {
-            return;
+        if(ending.equals("csv") || ending.equals("txt")) {
+            if(getTimeMap().containsKey(timeStep)) {
+                return;
+            }
+
+            getTimeMap().put(timeStep, null);
         }
-        
-        getTimeMap().put(timeStep, null);
     }
     
     public void readLogFile(String timeStep) {

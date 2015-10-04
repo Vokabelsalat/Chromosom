@@ -8,18 +8,14 @@ package HeatChromosom;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory.DoubleSpinnerValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -38,8 +34,8 @@ import javax.sound.sampled.SourceDataLine;
 public class HeatOptionsPanel extends VBox{
     
     private HeatProject project;
-    private double oldProb = 2.0;
-    private CheckBox rangeBox;
+    private double oldProb = 0.0;
+    private HeatRangeBox rangeBox;
     private HeatNearSpinner nearSpin;
     private HeatRangeSpinner rangeSpin;
     private int startRow = 4;
@@ -80,46 +76,7 @@ public class HeatOptionsPanel extends VBox{
         rangeSpin = new HeatRangeSpinner(project);
         nearSpin = new HeatNearSpinner(project);
         
-        rangeBox = new CheckBox();
-
-        rangeBox.selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
-            if(new_val == true) {
-                String text = nearSpin.getEditor().getText().replaceAll(",", ".");
-                double doub = Double.parseDouble(text);
-                
-                if(pairButton.isSelected()) {
-                    for(HeatProject pro : project.getChromosom().projectList) {
-                        pro.getHeatGrid().highlightNear(doub, rangeSpin.getRangeSpinValueFactory().getValue());
-                        pro.getHeatOptionsPanel().rangeBox.setSelected(true);
-                        pro.getHeatOptionsPanel().oldProb = doub;
-                    }
-                }
-                else {
-                    project.getHeatGrid().highlightNear(doub, rangeSpin.getRangeSpinValueFactory().getValue());
-                    rangeBox.setSelected(true);
-                    oldProb = doub; 
-                }
-            }
-            else {
-                if(pairButton.isSelected()) {
-                    for(HeatProject pro : project.getChromosom().projectList) {
-                        if(!pro.getHeatGrid().getHighlightedList().isEmpty()) {
-                            pro.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
-                        }
-                        pro.getHeatGrid().resetHighlightedNukl();
-                        pro.getHeatOptionsPanel().oldProb = pro.getHeatOptionsPanel().oldProb + 2.0;
-                        pro.getHeatOptionsPanel().rangeBox.setSelected(false);
-                    }
-                }
-                else {
-                    if(!project.getHeatGrid().getHighlightedList().isEmpty()) {
-                        project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
-                    }
-                    project.getHeatGrid().resetHighlightedNukl();
-                    oldProb = oldProb + 2.0;
-                }
-            }
-        });
+        rangeBox = new HeatRangeBox(project);
 
         hbox.setSpacing(18);
         
@@ -130,7 +87,7 @@ public class HeatOptionsPanel extends VBox{
                 for(HeatProject pro : project.getChromosom().projectList) {
                     pro.getHeatOptionsPanel().getPairButton().click();
                     if(pro != project) {
-                        pro.getHeatOptionsPanel().rangeBox.setSelected(rangeBox.isSelected());
+                        pro.getHeatOptionsPanel().getRangeBox().setSelected(getRangeBox().isSelected());
                         pro.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().setValue(nearSpin.getNearSpinValueFactory().getValue());
                         pro.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().setValue(rangeSpin.getRangeSpinValueFactory().getValue());
                     } 
@@ -219,7 +176,7 @@ public class HeatOptionsPanel extends VBox{
     /**
      * @return the rangeBox
      */
-    public CheckBox getRangeBox() {
+    public HeatRangeBox getRangeBox() {
         return rangeBox;
     }
 

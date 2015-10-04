@@ -104,8 +104,9 @@ public class HeatNukleosom extends Pane {
     }
     
     public void deHighlight() {
-       if(highlightRect != null)
-        getChildren().remove(highlightRect);
+       if(highlightRect != null) {
+            getChildren().remove(highlightRect);
+       }
     }
     
     public void setStrokeColor(Color col) {
