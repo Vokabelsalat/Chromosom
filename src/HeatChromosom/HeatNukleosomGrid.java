@@ -5,8 +5,6 @@
  */
 package HeatChromosom;
 
-import static HeatChromosom.HeatProject.GridLineStrokeWidth;
-import static HeatChromosom.HeatProject.HeatNukleosomWidth;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.event.EventHandler;
@@ -224,6 +222,10 @@ public class HeatNukleosomGrid extends GridPane{
      */
     public void setHighlightedList(ArrayList<HeatNukleosom> highlightedList) {
         this.highlightedList = highlightedList;
+    }
+    
+    public String getTimeStep() {
+        return timeStep;
     }
 
 }

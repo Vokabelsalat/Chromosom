@@ -46,7 +46,7 @@ public class HeatProject {
         
         File testFile = new File("test.txt");
         
-        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "fastLogs");
+        String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logs");
     
         heatReader.searchForLogFiles(pazText);
         
@@ -70,12 +70,10 @@ public class HeatProject {
             borderPane.setRight(heatOptionsPanel);
 //        }
         
-        
+        showNewHeatGrid(heatReader.getFirstItemInTimeMap());
         
         heatLegend = new HeatLegend(this);
         borderPane.setBottom(heatLegend);
-        
-        showNewHeatGrid(heatReader.getFirstItemInTimeMap());
         
         return getBorderPane();
     }

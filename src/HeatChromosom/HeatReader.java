@@ -115,6 +115,16 @@ public class HeatReader {
         return returnStr;
     }
     
+    public String getLastItemInTimeMap() {
+        int max = 0;
+        for(String key : timeMap.keySet()) {
+            if(Integer.parseInt(key) > max) {
+                max = Integer.parseInt(key);
+            }
+        }
+        return String.valueOf(max);
+    }
+    
     public void addLogFile(String fileName) {
         String timeStep = fileName.substring(fileName.lastIndexOf("\\")+1, fileName.indexOf("."));
         String ending = fileName.substring(fileName.indexOf(".")+1);

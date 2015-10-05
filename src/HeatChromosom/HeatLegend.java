@@ -8,6 +8,7 @@ package HeatChromosom;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.Spinner;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -28,14 +29,13 @@ public class HeatLegend extends HBox{
         this.project = project;
         
         HeatTimeStepSpinner spin = new HeatTimeStepSpinner(project);
-
         
         Separator sep = new Separator();
         sep.setOrientation(Orientation.VERTICAL);
 
         if(project.getID() == 0) {
 
-            ImageView imageView = new ImageView(createColorScaleImage(100, 20, Orientation.HORIZONTAL));
+            ImageView imageView = new ImageView(createColorScaleImage(120, 20, Orientation.HORIZONTAL));
         
             getChildren().addAll(spin, sep, new Label("0.0"), imageView, new Label("1.0"));
         }
