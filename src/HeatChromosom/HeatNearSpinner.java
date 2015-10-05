@@ -58,32 +58,8 @@ public class HeatNearSpinner extends Spinner{
                             triggerNear(doub, doub);
                         }
                         
-//                        System.err.println("DOUB:" + doub);
-//                        nearSpinValueFactory.setValue(doub);
                         getEditor().setText(text);
                         
-//                        triggerNear(doub, nearSpinValueFactory.getValue());
-                        
-//                        if(project.getHeatOptionsPanel().getOldProb() == doub) {
-//                            if(project.getHeatOptionsPanel().getRangeBox().isSelected() == true) {
-//                                if(project.getHeatGrid().getHighlightedList() != null && !project.getHeatGrid().getHighlightedList().isEmpty()) {
-//                                    project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
-//                                }
-//                                project.getHeatGrid().resetHighlightedNukl();
-//                                project.getHeatOptionsPanel().setOldProb(doub);
-//                                project.getHeatOptionsPanel().getRangeBox().setSelected(false);
-//                            }
-//                            else {
-//                                project.getHeatGrid().highlightNear(doub, project.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().getValue());
-//                                project.getHeatOptionsPanel().setOldProb(doub);
-//                                project.getHeatOptionsPanel().getRangeBox().setSelected(true);
-//                            }
-//                        }
-//                        else {
-//                            project.getHeatGrid().highlightNear(doub, project.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().getValue());
-//                            project.getHeatOptionsPanel().setOldProb(doub);
-//                            project.getHeatOptionsPanel().getRangeBox().setSelected(true);
-//                        }
                     }
                     else {
                         getEditor().setText("0,0");
@@ -91,35 +67,6 @@ public class HeatNearSpinner extends Spinner{
                     break;
             }
         });
-        
-//        getEditor().focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
-//            if(newValue) {
-//                
-//            }
-//            else {
-//                if(!getEditor().getText().equals("")) {
-//                    String text = getEditor().getText().replaceAll(",", ".");
-//                    double doub = Double.parseDouble(text);
-//                    
-//                    System.err.println(doub + " " + project.getHeatOptionsPanel().getOldProb());
-//                    
-//                    if(project.getHeatOptionsPanel().getOldProb() == doub) {
-//                        if(project.getHeatGrid().getHighlightedList() != null && !project.getHeatGrid().getHighlightedList().isEmpty()) {
-//                            project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
-//                        }
-//                        project.getHeatGrid().resetHighlightedNukl();
-//                        project.getHeatOptionsPanel().setOldProb(doub);
-//                    }
-//                    else {
-//                        project.getHeatGrid().highlightNear(doub, project.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().getValue());
-//                        project.getHeatOptionsPanel().setOldProb(doub);
-//                    }
-//                }
-//                else {
-//                    getEditor().setText("0.0");
-//                }
-//            }
-//        });
     }
 
     /**
@@ -141,13 +88,24 @@ public class HeatNearSpinner extends Spinner{
 //        System.err.println("triggerNear");
         
         try {
-            for(HeatProject pro : project.getChromosom().projectList) {
-                if(pro != project  && project.getHeatOptionsPanel().getPairButton().isSelected()) {
-                    pro.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().setValue(newValue);
+            if(project.getHeatOptionsPanel().getPairButton().isSelected()) {
+                for(HeatProject pro : project.getChromosom().projectList) {
+//                    if(pro != project) {
+                        pro.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().setValue(newValue);
+//                    }
+                    if(newValue != oldValue) {
+                        pro.getHeatOptionsPanel().getRangeBox().setHighlighted();
+                    }
+                    else if(project == pro){
+                        pro.getHeatOptionsPanel().getRangeBox().triggerRangeBox();
+                    }
                 }
+            }
+            else {
+                project.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().setValue(newValue);
+               
                 if(newValue != oldValue) {
-                    project.getHeatOptionsPanel().getRangeBox().setSelected(false);
-                    project.getHeatOptionsPanel().getRangeBox().setSelected(true);
+                    project.getHeatOptionsPanel().getRangeBox().setHighlighted();
                 }
                 else {
                     project.getHeatOptionsPanel().getRangeBox().triggerRangeBox();

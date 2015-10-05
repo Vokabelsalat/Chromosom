@@ -80,8 +80,8 @@ public class Chromosom extends Application {
     @Override
     public void start(Stage primaryStage) {
         
-//            startTwoHeatChromosom(primaryStage);
-            startHeatChromosom(primaryStage);
+            startTwoHeatChromosom(primaryStage);
+//            startHeatChromosom(primaryStage);
             
             Scene scene = new Scene(getRootLayout());
             primaryStage.setScene(scene);

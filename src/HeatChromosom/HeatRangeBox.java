@@ -23,69 +23,53 @@ public class HeatRangeBox extends CheckBox{
         
         selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean oldValue, Boolean newValue) -> {
             
-//            System.err.println("triggerRange");
-            
             if(newValue == true) {
-//                    for(HeatProject pro : project.getChromosom().projectList) {
-//                        pro.getHeatGrid().highlightNear(pro.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().getValue(), pro.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().getValue());
-//                        if(pro != project) {
-//                            pro.getHeatOptionsPanel().getRangeBox().setSelected(true);
-//                        }
-//                    }
-                project.getHeatGrid().highlightNear(project.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().getValue(), project.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().getValue());
+                if(project.getHeatOptionsPanel().getPairButton().isSelected()) {
+                    for(HeatProject pro : project.getChromosom().projectList) {
+                        pro.getHeatOptionsPanel().getRangeBox().setHighlighted();
+                    }
+                }
+                else {
+                    project.getHeatGrid().highlightNear(project.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().getValue(), project.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().getValue());
+                }
             }
             else {
-                if(!project.getHeatGrid().getHighlightedList().isEmpty()) {
-                    project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
+                if(project.getHeatOptionsPanel().getPairButton().isSelected()) {
+                    for(HeatProject pro : project.getChromosom().projectList) {
+                        pro.getHeatOptionsPanel().getRangeBox().setDehighlighted();
+                    }
                 }
-                project.getHeatGrid().resetHighlightedNukl();
+                else {
+                    if(!project.getHeatGrid().getHighlightedList().isEmpty()) {
+                        project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
+                    }
+                    project.getHeatGrid().resetHighlightedNukl();
+                }
             }
-//                
-//                if(pairButton.isSelected()) {
-//                    for(HeatProject pro : project.getChromosom().projectList) {
-//                        pro.getHeatGrid().highlightNear(doub, rangeSpin.getRangeSpinValueFactory().getValue());
-//                        pro.getHeatOptionsPanel().rangeBox.setSelected(true);
-//                        pro.getHeatOptionsPanel().oldProb = doub;
-//                    }
-//                }
-//                else {
-//                    project.getHeatGrid().highlightNear(doub, rangeSpin.getRangeSpinValueFactory().getValue());
-//                    rangeBox.setSelected(true);
-//                    oldProb = doub; 
-//                }
-//            }
-//            else {
-//                
-//                if(pairButton.isSelected()) {
-//                    for(HeatProject pro : project.getChromosom().projectList) {
-//                        if(!pro.getHeatGrid().getHighlightedList().isEmpty()) {
-//                            pro.getHeatGrid().getHighlightedList().removeAll(pro.getHeatGrid().getHighlightedList());
-//                        }
-//                        pro.getHeatGrid().resetHighlightedNukl();
-//                        pro.getHeatOptionsPanel().oldProb = pro.getHeatOptionsPanel().oldProb + 2.0;
-//                        pro.getHeatOptionsPanel().rangeBox.setSelected(false);
-//                    }
-//                }
-//                else {
-//                    if(!project.getHeatGrid().getHighlightedList().isEmpty()) {
-//                        project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
-//                    }
-//                    project.getHeatGrid().resetHighlightedNukl();
-//                    oldProb = oldProb + 2.0;
-//                }
-//            }
         });
-        
-        
+    }
+    
+    public void setHighlighted() {
+        setSelected(true);
+        project.getHeatGrid().highlightNear(project.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().getValue(), project.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().getValue());
+    }
+    
+    public void setDehighlighted() {
+        setSelected(false);
+        if(!project.getHeatGrid().getHighlightedList().isEmpty()) {
+            project.getHeatGrid().getHighlightedList().removeAll(project.getHeatGrid().getHighlightedList());
+        }
+        project.getHeatGrid().resetHighlightedNukl();
     }
     
     public void triggerRangeBox() {
-            if(isSelected() == true) {
-                setSelected(false);
-            }
-            else {
-                setSelected(true);
-            }
+        
+        if(isSelected() == true) {
+            setSelected(false);
+        }
+        else {
+            setSelected(true);
+        }
     }
     
 }

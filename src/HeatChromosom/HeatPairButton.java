@@ -47,24 +47,20 @@ public class HeatPairButton extends Button{
      */
     public void setSelected(boolean selected) {
         this.selected = selected;
-        if(selected == false) {
-            selected = true;
+        if(selected == true) {
             setGraphic(pair);
         }
         else {
-            selected = false;
             setGraphic(depair);
         }
     }
     
     public void click() {
-        if(selected == false) {
-            selected = true;
-            setGraphic(pair);
+        if(isSelected() == false) {
+            setSelected(true);
         }
         else {
-            selected = false;
-            setGraphic(depair);
+            setSelected(false);
         }
     }
     

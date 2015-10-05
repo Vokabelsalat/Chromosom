@@ -31,22 +31,17 @@ public class HeatRangeSpinner extends Spinner{
             @Override
             public void changed(ObservableValue<? extends Double> observable,
                     Double oldValue, Double newValue) {
-//                nearSpinValueFactory.setAmountToStepBy(newValue);
+                
                 if(project.getHeatOptionsPanel().getPairButton().isSelected()) {
                     for(HeatProject pro : project.getChromosom().projectList) {
-                        if(pro.getHeatOptionsPanel().getRangeBox().isSelected() == true) {
-                            pro.getHeatGrid().highlightNear(project.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().getValue(), newValue);
-                        
-                        }    
                         if(pro != project) {
-                            pro.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().setValue(newValue);
+                            pro.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().setValue(newValue);
                         }
+                        pro.getHeatOptionsPanel().getRangeBox().setHighlighted();
                     }
                 }
                 else {
-                    if(project.getHeatOptionsPanel().getRangeBox().isSelected() == true) {
-                        project.getHeatGrid().highlightNear(project.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().getValue(), newValue);
-                    }
+                    project.getHeatOptionsPanel().getRangeBox().setHighlighted();
                 }
             }
         });
@@ -59,6 +54,21 @@ public class HeatRangeSpinner extends Spinner{
                 case DOWN:
                     decrement();
                     break;
+                case ENTER:
+                    if(!getEditor().getText().equals("")) {
+                        String text = getEditor().getText().replace(".", ",");
+                        double doub = Double.parseDouble(text.replace(",", "."));
+
+                        if(rangeSpinValueFactory.getValue() == doub) {
+                            project.getHeatOptionsPanel().getRangeBox().triggerRangeBox();
+                        }
+
+                        getEditor().setText(text);
+                    }
+                    else {
+                        getEditor().setText("0,0");
+                    }
+                break;
            }
         });
         
@@ -66,6 +76,7 @@ public class HeatRangeSpinner extends Spinner{
         setMaxWidth(70);
         
     }
+    
 
     /**
      * @return the rangeSpinValueFactory
