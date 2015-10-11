@@ -48,7 +48,7 @@ public class HeatOptionsPanel extends VBox{
     public HeatOptionsPanel(HeatProject project) {
         
         this.project = project;
-        this.setSpacing(3);
+        this.setSpacing(2);
         this.setMinSize(220, 0);
         
 //        setStyle("-fx-border: 3px solid; -fx-border-color: black;");
@@ -112,7 +112,8 @@ public class HeatOptionsPanel extends VBox{
         }
         
         rangeHBox = new HBox();
-        rangeHBox.getChildren().addAll(new Label("Range:"), rangeSpin, play);
+//        rangeHBox.getChildren().addAll(new Label("Range:"), rangeSpin, play);
+        rangeHBox.getChildren().addAll(new Label("Range:"), rangeSpin);
         rangeHBox.setSpacing(3);
         
         getChildren().addAll(hbox, rangeHBox);

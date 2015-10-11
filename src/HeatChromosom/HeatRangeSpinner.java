@@ -46,6 +46,33 @@ public class HeatRangeSpinner extends Spinner{
             }
         });
         
+        
+        focusedProperty().addListener(new ChangeListener<Boolean>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+            {
+                if (newPropertyValue)
+                {
+                }
+                else
+                {
+                    if(!getEditor().getText().equals("")) {
+                        String text = getEditor().getText().replace(".", ",");
+                        double doub = Double.parseDouble(text.replace(",", "."));
+                        
+                        if(doub != rangeSpinValueFactory.getValue()) {
+                            rangeSpinValueFactory.setValue(doub);
+                            project.getHeatOptionsPanel().getNearSpin().triggerNear(project.getHeatOptionsPanel().getNearSpin().getNearSpinValueFactory().getValue(), doub);
+                        }
+                    }
+                    else {
+                        getEditor().setText("0,0");
+                    }
+                }
+            }
+        });
+        
         getEditor().setOnKeyPressed(event -> {
            switch (event.getCode()) {
                 case UP:

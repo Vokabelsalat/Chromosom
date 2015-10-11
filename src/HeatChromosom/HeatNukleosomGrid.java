@@ -111,9 +111,10 @@ public class HeatNukleosomGrid extends GridPane{
 //                    nukl.setStrokeColor(Color.rgb(255, 0, 255));
 //                    nukl.setStrokeWidth(2.3);
                     
-                    nukl.highlight();
-                    
-                    getHighlightedList().add(nukl);
+                    if(nukl.value != 0.0) {
+                        nukl.highlight();
+                        getHighlightedList().add(nukl);
+                    }
                 }
             }
         }

@@ -35,8 +35,6 @@ public class HeatOptionsGrid extends GridPane{
         this.add(emptyPane, 0, 0);
         
         this.setMinSize(150, 0);
-        
-        
     }
     
 }

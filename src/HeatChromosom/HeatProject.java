@@ -31,7 +31,8 @@ public class HeatProject {
     private HeatLegend heatLegend;
     private boolean twoHeatMaps = false;
     private int ID = 0;
-    public static int HeatNukleosomWidth = 8;
+//    public static int HeatNukleosomWidth = 8;
+    public static int HeatNukleosomWidth = 7;
     public static double GridLineStrokeWidth = 0.2;
     
     public HeatProject(Chromosom chromosom, int ID) {
@@ -49,7 +50,6 @@ public class HeatProject {
         String pazText = testFile.getAbsolutePath().replaceAll(testFile.getName(), "logs");
     
         heatReader.searchForLogFiles(pazText);
-        
     }
     
     public BorderPane createHeatMainPanel() {
@@ -136,5 +136,9 @@ public class HeatProject {
      */
     public int getID() {
         return ID;
+    }
+
+    public HeatLegend getHeatLegend() {
+        return heatLegend;
     }
 }

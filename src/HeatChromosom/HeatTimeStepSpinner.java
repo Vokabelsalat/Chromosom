@@ -27,8 +27,6 @@ public class HeatTimeStepSpinner extends Spinner{
         
         this.project = project;
         
-        
-        
         timeStepSpinnerValueFactory = new IntegerSpinnerValueFactory(0, project.getHeatReader().getTimeMap().size()-1, Integer.parseInt(project.getHeatGrid().getTimeStep()), 1);
 //        
 //        setValueFactory(timeStepSpinnerValueFactory);
@@ -60,7 +58,18 @@ public class HeatTimeStepSpinner extends Spinner{
 //                    showNewGrid(newValue, oldValue);
 //                }
                 try {
-                    project.showNewHeatGrid(String.valueOf(newValue));
+                    if(project.getHeatLegend().getTimePairButton().isSelected()) {
+                        for(HeatProject pro : project.getChromosom().projectList) {
+                            pro.showNewHeatGrid(String.valueOf(newValue));
+                            if(pro != project) {
+                                pro.getHeatLegend().getHeatTimeSpinner().getEditor().setText(String.valueOf(newValue));
+                            }
+                        }
+                    }
+                    else {
+                        project.showNewHeatGrid(String.valueOf(newValue));
+                    }
+                    
                 }
                 catch(Exception e) {
                 }

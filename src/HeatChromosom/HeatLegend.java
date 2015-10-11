@@ -5,6 +5,8 @@
  */
 package HeatChromosom;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -23,12 +25,34 @@ import javafx.scene.paint.Color;
 public class HeatLegend extends HBox{
     
     HeatProject project;
+    private HeatTimeStepSpinner spin;
+    private HeatPairButton timePairButton;
     
     public HeatLegend(HeatProject project) {
         
         this.project = project;
         
-        HeatTimeStepSpinner spin = new HeatTimeStepSpinner(project);
+        spin = new HeatTimeStepSpinner(project);
+        
+        timePairButton = new HeatPairButton();
+        
+        timePairButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                timePairButton.click();
+//                if(project.getHeatLegend().getTimePairButton().isSelected()) {
+                    for(HeatProject pro : project.getChromosom().projectList) {
+                        if(pro != project) {
+                            pro.getHeatLegend().getTimePairButton().setSelected(timePairButton.isSelected());
+                            project.showNewHeatGrid(spin.getEditor().getText());
+                            if(timePairButton.isSelected()) {
+                                pro.showNewHeatGrid(spin.getEditor().getText());
+                                pro.getHeatLegend().getHeatTimeSpinner().getEditor().setText(spin.getEditor().getText());
+                            }
+                        } 
+                    }
+//                }
+            }
+        });
         
         Separator sep = new Separator();
         sep.setOrientation(Orientation.VERTICAL);
@@ -37,10 +61,15 @@ public class HeatLegend extends HBox{
 
             ImageView imageView = new ImageView(createColorScaleImage(120, 20, Orientation.HORIZONTAL));
         
-            getChildren().addAll(spin, sep, new Label("0.0"), imageView, new Label("1.0"));
+            if(project.getChromosom().projectList.size() > 1) {
+                getChildren().addAll(spin, timePairButton, sep, new Label("0.0"), imageView, new Label("1.0"));
+            }
+            else {
+                getChildren().addAll(spin, sep, new Label("0.0"), imageView, new Label("1.0"));
+            }
         }
         else {
-            getChildren().add(spin); 
+            getChildren().addAll(spin, timePairButton); 
         }
         
         setSpacing(5.0);
@@ -89,7 +118,7 @@ public class HeatLegend extends HBox{
 //                    oldValue = oldValue + step;
 //                }
                 
-                Color color = HeatNukleosom.generateColorForValue(value);
+                Color color = HeatNukleosom.generateHighlightColorForValue(value);
                 
                 if(y==0 || y == height-1) {
                     color = Color.BLACK;
@@ -100,6 +129,17 @@ public class HeatLegend extends HBox{
             }
         }
         return image ;
+    }
+
+    /**
+     * @return the timePairButton
+     */
+    public HeatPairButton getTimePairButton() {
+        return timePairButton;
+    }
+    
+    public HeatTimeStepSpinner getHeatTimeSpinner() {
+        return spin;
     }
     
 }

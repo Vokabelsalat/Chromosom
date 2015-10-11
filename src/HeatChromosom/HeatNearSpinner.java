@@ -39,6 +39,31 @@ public class HeatNearSpinner extends Spinner{
                 triggerNear(newValue, oldValue);
             }
         });      
+
+        focusedProperty().addListener(new ChangeListener<Boolean>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue)
+            {
+                if (newPropertyValue)
+                {
+                }
+                else
+                {
+                    if(!getEditor().getText().equals("")) {
+                        String text = getEditor().getText().replace(".", ",");
+                        double doub = Double.parseDouble(text.replace(",", "."));
+                        
+                        if(doub != nearSpinValueFactory.getValue()) {
+                            triggerNear(doub, project.getHeatOptionsPanel().getRangeSpin().getRangeSpinValueFactory().getValue());
+                        }
+                    }
+                    else {
+                        getEditor().setText("0,0");
+                    }
+                }
+            }
+        });
         
         getEditor().setOnKeyPressed(event -> {
            switch (event.getCode()) {

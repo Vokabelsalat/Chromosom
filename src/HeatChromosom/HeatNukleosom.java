@@ -5,7 +5,6 @@
  */
 package HeatChromosom;
 
-import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -28,17 +27,18 @@ public class HeatNukleosom extends Pane {
     int x, y;
     private boolean selected;
     
+    private double BLUE_HUE = Color.rgb(200,180,0).getHue();;
+    private double RED_HUE = Color.rgb(215,170,0).getHue();
+    
     public HeatNukleosom(double value, int x, int y, int width, int height, String strokeType) {
 
-        //rosa Color.rgb(255,0,230)
-        
-        highlightRect = new Rectangle(width, height , Color.rgb(255,100,0)); 
+        highlightRect = new Rectangle(width, height , Color.rgb(255,150,0)); 
         this.value = value;
         this.width = width;
         this.height = height;
         this.x = x;
         this.y = y;
-
+        
         setPrefSize(width, height);
 
         Paint color;
@@ -66,7 +66,7 @@ public class HeatNukleosom extends Pane {
         double strokeWidth = (0.8 / HeatProject.HeatNukleosomWidth) * width;
         double add = strokeWidth + rect.strokeWidthProperty().doubleValue();
         
-        if(strokeType.equals("HORIZONTAL")){// || strokeType.equals("BOTH")) {
+        if(strokeType.equals("HORIZONTAL")){
             line = new Line(0,0,width,0);
             line.setStroke(Color.GRAY);
             line.setStrokeWidth(strokeWidth);
@@ -77,7 +77,7 @@ public class HeatNukleosom extends Pane {
             getChildren().add(line);
         }
         
-        if(strokeType.equals("VERTICAL")){// || strokeType.equals("BOTH")) {
+        if(strokeType.equals("VERTICAL")){
             line = new Line(0,0,0,height);
             line.setStrokeWidth(strokeWidth);
             line.setStroke(Color.GRAY);
@@ -87,21 +87,34 @@ public class HeatNukleosom extends Pane {
             line.setStroke(Color.GRAY);
             getChildren().add(line);
         }
-
-//        if(showLabels == true) {
-//            Label lab = new Label(String.valueOf(value));
-//            getChildren().add(lab);
-//        }
     }
     
     public void highlight() {
         
-        highlightRect.setOpacity(value + 0.15);
+        highlightRect.setOpacity(0.9);
         highlightRect.setStrokeWidth(rect.getStrokeWidth());
         highlightRect.setStroke(rect.getStroke());
-        
+
+        highlightRect.setFill(getColorForValue(value)); 
         getChildren().add(highlightRect);
     }
+    
+//    public void highlight() {
+//        highlightRect.setOpacity(value + 0.25);
+//        highlightRect.setStrokeWidth(rect.getStrokeWidth());
+//        highlightRect.setStroke(rect.getStroke());
+//
+//        getChildren().add(highlightRect);
+//    }
+    
+    private Color getColorForValue(double value) {
+        if (value < 0.0 || value > 1.0) {
+            return Color.BLACK ;
+        }
+        double hue = BLUE_HUE + (RED_HUE - BLUE_HUE) * (value - 0.0) / (1.0 - 0.0) ;
+        return Color.hsb(hue, 1.0, 1.0);
+    }
+
     
     public void deHighlight() {
        if(highlightRect != null) {
@@ -124,16 +137,20 @@ public class HeatNukleosom extends Pane {
 //        if(orgValue != 0.0) {
 //            cool = cool.deriveColor(0.0, 1.0, 0.95, 1.0);
 //        }
+        return cool;
+    }
+    
+    public static Color generateHighlightColorForValue(double orgValue) {
+        Color cool = Color.hsb(180,1.0,categorizeValue(orgValue),1.0).invert();
+//        if(orgValue != 0.0) {
+//            cool = cool.deriveColor(0.0, 1.0, 0.95, 1.0);
+//        }
         
         return cool;
     }
     
     public static double categorizeValue(double value) {
-        
-//        double returnDouble;
-        
         double face = Math.floor(value/0.05);
-        
         return face * 0.05;
     }
 
@@ -153,7 +170,7 @@ public class HeatNukleosom extends Pane {
     
     public void select(Color color) {
         setStrokeColor(color);
-        setStrokeWidth(2.0);
+        setStrokeWidth(15.0);
     }
     
     public void deselect() {
