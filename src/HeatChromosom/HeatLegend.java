@@ -45,8 +45,10 @@ public class HeatLegend extends HBox{
                             pro.getHeatLegend().getTimePairButton().setSelected(timePairButton.isSelected());
                             project.showNewHeatGrid(spin.getEditor().getText());
                             if(timePairButton.isSelected()) {
-                                pro.showNewHeatGrid(spin.getEditor().getText());
-                                pro.getHeatLegend().getHeatTimeSpinner().getEditor().setText(spin.getEditor().getText());
+                                if(pro.getHeatReader().getTimeMap().containsKey(spin.getEditor().getText())) {
+                                    pro.showNewHeatGrid(spin.getEditor().getText());
+                                    pro.getHeatLegend().getHeatTimeSpinner().getEditor().setText(spin.getEditor().getText());
+                                }
                             }
                         } 
                     }
@@ -61,12 +63,11 @@ public class HeatLegend extends HBox{
 
             ImageView imageView = new ImageView(createColorScaleImage(120, 20, Orientation.HORIZONTAL));
         
-            if(project.getChromosom().projectList.size() > 1) {
-                getChildren().addAll(spin, timePairButton, sep, new Label("0.0"), imageView, new Label("1.0"));
+            if(project.getChromosom().projectList.size() < 2) {
+                timePairButton.setVisible(false);
             }
-            else {
-                getChildren().addAll(spin, sep, new Label("0.0"), imageView, new Label("1.0"));
-            }
+            
+            getChildren().addAll(spin, timePairButton, sep, new Label("0.0"), imageView, new Label("1.0"));
         }
         else {
             getChildren().addAll(spin, timePairButton); 
@@ -123,6 +124,7 @@ public class HeatLegend extends HBox{
                 if(y==0 || y == height-1) {
                     color = Color.BLACK;
                 }
+                
                 for (int x=0; x<width; x++) {
                     pixelWriter.setColor(x, y, color);
                 }

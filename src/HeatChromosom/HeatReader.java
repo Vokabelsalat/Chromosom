@@ -25,6 +25,7 @@ public class HeatReader {
     private HashMap<String, ArrayList<ArrayList<Double>>> timeMap;
     private HashMap<String, int[]> hitMap;
     private ArrayList<Integer> channelList;
+    private String path;
     
     double max;
     double min;
@@ -94,6 +95,8 @@ public class HeatReader {
     }
     
     public void searchForLogFiles(String path) {
+        this.path = path;
+        
         File[] files = new File(path).listFiles();
         //If this pathname does not denote a directory, then listFiles() returns null. 
 
@@ -148,7 +151,7 @@ public class HeatReader {
         BufferedReader br = null;
         
         try {
-            fin = new FileInputStream("logs/" + timeStep + ".csv");
+            fin = new FileInputStream(path + timeStep + ".csv");
             br = new BufferedReader(new InputStreamReader(fin));
             
             ArrayList<ArrayList<Double>> enzymeList = new ArrayList<>();

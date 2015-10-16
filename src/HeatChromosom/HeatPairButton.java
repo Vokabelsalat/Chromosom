@@ -40,25 +40,25 @@ public class HeatPairButton extends Button{
         this.setWidth(15.0);
         this.setHeight(15.0);
         
-        // new BackgroundSize(width, height, widthAsPercentage, heightAsPercentage, contain, cover)
-        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
-        // new BackgroundImage(image, repeatX, repeatY, position, size)
-        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
-        // new Background(images...)
-        background = new Background(backgroundImage);
-        
-        this.setBackground(background);
-        
-        BackgroundImage backgroundImagePair = new BackgroundImage(imagePair, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
-        // new Background(images...)
-        backgroundPair = new Background(backgroundImagePair);
-        
-        this.setBackground(background);
+//        // new BackgroundSize(width, height, widthAsPercentage, heightAsPercentage, contain, cover)
+//        BackgroundSize backgroundSize = new BackgroundSize(100, 100, true, true, true, false);
+//        // new BackgroundImage(image, repeatX, repeatY, position, size)
+//        BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+//        // new Background(images...)
+//        background = new Background(backgroundImage);
+//        
+//        this.setBackground(background);
+//        
+//        BackgroundImage backgroundImagePair = new BackgroundImage(imagePair, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+//        // new Background(images...)
+//        backgroundPair = new Background(backgroundImagePair);
+//        
+//        this.setBackground(background);
         
 //        depair.setFitHeight(15.0);
 //        depair.setFitWidth(15.0);
         
-//        setGraphic(depair);
+        setGraphic(depair);
 //        
 //        depair.fitWidthProperty().bind(widthProperty()); 
 //        pair.fitWidthProperty().bind(widthProperty()); 
@@ -79,12 +79,12 @@ public class HeatPairButton extends Button{
     public void setSelected(boolean selected) {
         this.selected = selected;
         if(selected == true) {
-            this.setBackground(backgroundPair);
-//            setGraphic(pair);
+//            this.setBackground(backgroundPair);
+            setGraphic(pair);
         }
         else {
-            this.setBackground(background);
-//            setGraphic(depair);
+//            this.setBackground(background);
+            setGraphic(depair);
         }
     }
     

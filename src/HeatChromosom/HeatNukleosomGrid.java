@@ -28,13 +28,11 @@ public class HeatNukleosomGrid extends GridPane{
     private HeatNukleosom rightNode = null;
     private HeatReader hr;
     private ArrayList<HeatNukleosom> highlightedList;
-    private boolean both;
     private HeatProject project;
     public String timeStep;
      
-    public HeatNukleosomGrid(HeatProject project, String timeStep, boolean both) {
+    public HeatNukleosomGrid(HeatProject project, String timeStep) {
         this.project = project;
-        this.both = both;
         this.hr = project.getHeatReader();
         this.timeMap = hr.getTimeMap();
         this.hitMap = hr.getHitMap();
@@ -74,19 +72,30 @@ public class HeatNukleosomGrid extends GridPane{
                         if(mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
                             for(HeatProject pro :project.getChromosom().projectList) {
                                 HeatNukleosom nop = heatNukl;
-                                if(pro != project && both == true) {
-                                    nop = pro.getHeatGrid().findNukleosom(heatNukl.x, heatNukl.y);
+                                
+                                if(pro != project) {
+                                    if(project.isSameHeatMaps() == true) { 
+                                        nop = pro.getHeatGrid().findNukleosom(heatNukl.x, heatNukl.y);
+                                        pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().leftNode, true, HeatProject.RED);
+                                    }
                                 }
-                                pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().leftNode, true, HeatProject.RED);
+                                else {
+                                    pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().leftNode, true, HeatProject.RED);
+                                }
                             }
                         }
                         if(mouseEvent.getButton().equals(MouseButton.SECONDARY)) {
                             for(HeatProject pro :project.getChromosom().projectList) {
                                 HeatNukleosom nop = heatNukl;
-                                if(pro != project  && both == true) {
-                                    nop = pro.getHeatGrid().findNukleosom(heatNukl.x, heatNukl.y);
+                                if(pro != project) {
+                                    if(project.isSameHeatMaps() == true) {
+                                        nop = pro.getHeatGrid().findNukleosom(heatNukl.x, heatNukl.y);
+                                        pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().rightNode, false, HeatProject.GREEN);
+                                    }
                                 }
-                                pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().rightNode, false, HeatProject.GREEN);
+                                else {
+                                    pro.getHeatGrid().resetAndStrokeNukleosom(nop, pro.getHeatGrid().rightNode, false, HeatProject.GREEN);
+                                }
                             }
                         }
                     }

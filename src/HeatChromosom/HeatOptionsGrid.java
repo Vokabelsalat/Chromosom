@@ -20,8 +20,8 @@ public class HeatOptionsGrid extends GridPane{
     
     public HeatOptionsGrid() {
 
-        this.setHgap(7);
-        this.setVgap(7);
+        this.setHgap(5);
+        this.setVgap(2);
         
         this.add(new Label("Probability:"), 0, 1);
         this.add(new Label("Nukleosom:"), 0, 2);

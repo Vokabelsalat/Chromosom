@@ -23,7 +23,7 @@ public class HeatTimeStepSpinner extends Spinner{
     int max, min;
     
     public HeatTimeStepSpinner(HeatProject project) {
-        super(Integer.parseInt(project.getHeatReader().getFirstItemInTimeMap()),Integer.parseInt(project.getHeatReader().getLastItemInTimeMap()),Integer.parseInt(project.getHeatReader().getFirstItemInTimeMap()));
+        super(Integer.parseInt(project.getHeatReader().getFirstItemInTimeMap()),Integer.parseInt(project.getHeatReader().getLastItemInTimeMap()),Integer.parseInt(project.getStep()));
         
         this.project = project;
         
@@ -60,9 +60,11 @@ public class HeatTimeStepSpinner extends Spinner{
                 try {
                     if(project.getHeatLegend().getTimePairButton().isSelected()) {
                         for(HeatProject pro : project.getChromosom().projectList) {
-                            pro.showNewHeatGrid(String.valueOf(newValue));
-                            if(pro != project) {
-                                pro.getHeatLegend().getHeatTimeSpinner().getEditor().setText(String.valueOf(newValue));
+                            if(pro.getHeatReader().getTimeMap().containsKey(String.valueOf(newValue))) {
+                                    pro.showNewHeatGrid(String.valueOf(newValue));
+                                    if(pro != project) {
+                                        pro.getHeatLegend().getHeatTimeSpinner().getEditor().setText(String.valueOf(newValue));
+                                    }
                             }
                         }
                     }

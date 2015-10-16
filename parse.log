@@ -1,0 +1,357 @@
+XML sucessfully read. 
+
+Simparams: 
+ 
+number of nucleosomes: 120 
+cyclic nucleosomes: 0 
+replicationFrequency: 15 
+initial state: {H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]H4[4.1]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]H4[4.2]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]}{H3[4.0]H3[27.0]} 
+
+Parsing enzymes: 
+ 
+Enzyme 0:  
+	Name: sK4MT0-1|2 
+	Size: 1 
+	Concentration: 100 
+	Rule: 
+		Name: sK4MT0-1 
+		Enabled: 1 
+		Recognition: ({H4[4.1]H3[4.0]}) 
+		Rewrite: ({H4[4.1]H3[4.1]}) 
+		Rate: 200 
+	Rule: 
+		Name: sK4MT0-2 
+		Enabled: 1 
+		Recognition: ({H4[4.1]H3[4.0]}) 
+		Rewrite: ({H4[4.1]H3[4.2]}) 
+		Rate: 200 
+	Dissociation: 10 
+Enzyme 1:  
+	Name: sK27MT0-1|2 
+	Size: 1 
+	Concentration: 100 
+	Rule: 
+		Name: sK27MT0-1 
+		Enabled: 1 
+		Recognition: ({H4[4.2]H3[27.0]}) 
+		Rewrite: ({H4[4.2]H3[27.1]}) 
+		Rate: 200 
+	Rule: 
+		Name: sK4MT0-2 
+		Enabled: 1 
+		Recognition: ({H4[4.2]H3[27.0]}) 
+		Rewrite: ({H4[4.2]H3[27.2]}) 
+		Rate: 200 
+	Dissociation: 10 
+Enzyme 2:  
+	Name: K4MT0-1|2 
+	Size: 1 
+	Concentration: 10 
+	Rule: 
+		Name: K4MT0-1 
+		Enabled: 0 
+		Recognition: ({H3[4.0]}) 
+		Rewrite: ({H3[4.1]}) 
+		Rate: 5 
+	Rule: 
+		Name: K4MT0-2 
+		Enabled: 0 
+		Recognition: ({H3[4.0]}) 
+		Rewrite: ({H3[4.2]}) 
+		Rate: 5 
+	Dissociation: 10 
+Enzyme 3:  
+	Name: K4MT1|2-3 
+	Size: 1 
+	Concentration: 10 
+	Rule: 
+		Name: K4MT1-3 
+		Enabled: 1 
+		Recognition: ({H3[4.1]}) 
+		Rewrite: ({H3[4.3]}) 
+		Rate: 5 
+	Rule: 
+		Name: K4MT2-3 
+		Enabled: 1 
+		Recognition: ({H3[4.2]}) 
+		Rewrite: ({H3[4.3]}) 
+		Rate: 5 
+	Dissociation: 10 
+Enzyme 4:  
+	Name: K4DM1|2-0 
+	Size: 1 
+	Concentration: 10 
+	Rule: 
+		Name: K4DM1-0 
+		Enabled: 0 
+		Recognition: ({H3[4.1]}) 
+		Rewrite: {H3[4.0]} 
+		Rate: 1 
+	Rule: 
+		Name: K4MT2-0 
+		Enabled: 0 
+		Recognition: ({H3[4.2]}) 
+		Rewrite: ({H3[4.0]}) 
+		Rate: 1 
+	Dissociation: 10 
+Enzyme 5:  
+	Name: K4DM3-1|2 
+	Size: 1 
+	Concentration: 10 
+	Rule: 
+		Name: K4DM3-1 
+		Enabled: 1 
+		Recognition: ({H3[4.3]}) 
+		Rewrite: ({H3[4.1]}) 
+		Rate: 1 
+	Rule: 
+		Name: K4MT3-2 
+		Enabled: 1 
+		Recognition: ({H3[4.3]}) 
+		Rewrite: ({H3[4.2]}) 
+		Rate: 1 
+	Dissociation: 10 
+Enzyme 6:  
+	Name: K27MT0-1|2 
+	Size: 1 
+	Concentration: 10 
+	Rule: 
+		Name: K27MT0-1 
+		Enabled: 0 
+		Recognition: ({H3[27.0]}) 
+		Rewrite: ({H3[27.1]}) 
+		Rate: 5 
+	Rule: 
+		Name: K27MT0-2 
+		Enabled: 0 
+		Recognition: ({H3[27.0]}) 
+		Rewrite: ({H3[27.2]}) 
+		Rate: 5 
+	Dissociation: 10 
+Enzyme 7:  
+	Name: K27MT1|2-3 
+	Size: 1 
+	Concentration: 10 
+	Rule: 
+		Name: K27MT1-3 
+		Enabled: 1 
+		Recognition: ({H3[27.1]}) 
+		Rewrite: ({H3[27.3]}) 
+		Rate: 5 
+	Rule: 
+		Name: K27MT2-3 
+		Enabled: 1 
+		Recognition: ({H3[27.2]}) 
+		Rewrite: ({H3[27.3]}) 
+		Rate: 5 
+	Dissociation: 10 
+Enzyme 8:  
+	Name: K27DM1|2-0 
+	Size: 1 
+	Concentration: 10 
+	Rule: 
+		Name: K27DM1-0 
+		Enabled: 0 
+		Recognition: ({H3[27.1]}) 
+		Rewrite: ({H3[27.0]}) 
+		Rate: 1 
+	Rule: 
+		Name: K27MT2-0 
+		Enabled: 0 
+		Recognition: ({H3[27.2]}) 
+		Rewrite: ({H3[27.0]}) 
+		Rate: 1 
+	Dissociation: 10 
+Enzyme 9:  
+	Name: K27DM3-1|2 
+	Size: 1 
+	Concentration: 10 
+	Rule: 
+		Name: K27DM3-1 
+		Enabled: 1 
+		Recognition: ({H3[27.3]}) 
+		Rewrite: ({H3[27.1]}) 
+		Rate: 1 
+	Rule: 
+		Name: K27MT3-2 
+		Enabled: 1 
+		Recognition: ({H3[27.3]}) 
+		Rewrite: ({H3[27.2]}) 
+		Rate: 1 
+	Dissociation: 10 
+Enzyme 10:  
+	Name: C(3)K4MT 
+	Size: 1 
+	Concentration: 100 
+	Rule: 
+		Name: C(3)K4MT0-2 
+		Enabled: 1 
+		Recognition: {H3[4.3]}({H3[4.0]}) 
+		Rewrite: {H3[4.3]}({H3[4.2]} 
+		Rate: 15 
+	Rule: 
+		Name: C(3)K4MT0-1 
+		Enabled: 1 
+		Recognition: {H3[4.3]}({H3[4.0]}) 
+		Rewrite: {H3[4.3]}({H3[4.1]}) 
+		Rate: 15 
+	Rule: 
+		Name: C(3)K4MT1-2 
+		Enabled: 0 
+		Recognition: {H3[4.3]}({H3[4.1]}) 
+		Rewrite: {H3[4.3]}({H3[4.2]}) 
+		Rate: 15 
+	Rule: 
+		Name: C(3)K4MT2-3 
+		Enabled: 0 
+		Recognition: {H3[4.3]}({H3[4.2]}) 
+		Rewrite: {H3[4.3]}({H3[4.3]}) 
+		Rate: 15 
+	Rule: 
+		Name: C(3)K4MT1-3 
+		Enabled: 0 
+		Recognition: {H3[4.3]}({H3[4.1]}) 
+		Rewrite: {H3[4.3]}({H3[4.3]}) 
+		Rate: 15 
+	Dissociation: 10 
+Enzyme 11:  
+	Name: K27MTc(3) 
+	Size: 1 
+	Concentration: 100 
+	Rule: 
+		Name: K27MT0-2C(3) 
+		Enabled: 1 
+		Recognition: ({H3[27.0]}){H3[27.3]} 
+		Rewrite: ({H3[27.2]}){H3[27.3]} 
+		Rate: 15 
+	Rule: 
+		Name: K27MT0-1C(3) 
+		Enabled: 1 
+		Recognition: ({H3[27.0]}){H3[27.3]} 
+		Rewrite: ({H3[27.1]}){H3[27.3]} 
+		Rate: 15 
+	Rule: 
+		Name: K27MT1-2C(3) 
+		Enabled: 0 
+		Recognition: ({H3[27.1]}){H3[27.3]} 
+		Rewrite: ({H3[27.2]}){H3[27.3]} 
+		Rate: 15 
+	Rule: 
+		Name: K27MT2-3C(3) 
+		Enabled: 0 
+		Recognition: ({H3[27.2]}){H3[27.3]} 
+		Rewrite: ({H3[27.3]}){H3[27.3]} 
+		Rate: 15 
+	Rule: 
+		Name: K27MT1-3C(3) 
+		Enabled: 0 
+		Recognition: ({H3[27.1]}){H3[27.3]} 
+		Rewrite: ({H3[27.3]}){H3[27.3]} 
+		Rate: 15 
+	Dissociation: 10 
+Enzyme 12:  
+	Name: aC(3)K4MT 
+	Size: 1 
+	Concentration: 100 
+	Rule: 
+		Name: C(3)K4MT0-1 
+		Enabled: 0 
+		Recognition: {H3[27.0]H3[4.3]}({H3[4.0]}) 
+		Rewrite: {H3[27.0]H3[4.3]}({H3[4.1]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K4MT0-1 
+		Enabled: 0 
+		Recognition: {H3[27.1]H3[4.3]}({H3[4.0]}) 
+		Rewrite: {H3[27.1]H3[4.3]}({H3[4.1]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K4MT1-2 
+		Enabled: 0 
+		Recognition: {H3[27.0]H3[4.3]}({H3[4.1]}) 
+		Rewrite: {H3[27.0]H3[4.3]}({H3[4.2]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K4MT1-2 
+		Enabled: 0 
+		Recognition: {H3[27.1]H3[4.3]}({H3[4.1]}) 
+		Rewrite: {H3[27.1]H3[4.3]}({H3[4.2]}) 
+		Rate: 5 
+	Rule: 
+		Name: C(3)K4MT2-3 
+		Enabled: 1 
+		Recognition: {H3[27.0]H3[4.3]}({H3[4.2]}) 
+		Rewrite: {H3[27.0]H3[4.3]}({H3[4.3]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K4MT1-3 
+		Enabled: 1 
+		Recognition: {H3[27.0]H3[4.3]}({H3[4.1]}) 
+		Rewrite: {H3[27.0]H3[4.3]}({H3[4.3]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K4MT2-3 
+		Enabled: 1 
+		Recognition: {H3[27.1]H3[4.3]}({H3[4.2]}) 
+		Rewrite: {H3[27.1]H3[4.3]}({H3[4.3]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K4MT1-3 
+		Enabled: 1 
+		Recognition: {H3[27.1]H3[4.3]}({H3[4.1]}) 
+		Rewrite: {H3[27.1]H3[4.3]}({H3[4.3]}) 
+		Rate: 5 
+	Dissociation: 10 
+Enzyme 13:  
+	Name: aC(3)K27MT 
+	Size: 1 
+	Concentration: 100 
+	Rule: 
+		Name: C(3)K27MT0-1 
+		Enabled: 0 
+		Recognition: {H3[4.0]H3[27.3]}({H3[27.0]}) 
+		Rewrite: {H3[4.0]H3[27.3]}({H3[27.1]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K27MT0-1 
+		Enabled: 0 
+		Recognition: {H3[4.1]H3[27.3]}({H3[27.0]}) 
+		Rewrite: {H3[4.1]H3[27.3]}({H3[27.1]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K27MT1-2 
+		Enabled: 0 
+		Recognition: {H3[4.0]H3[27.3]}({H3[27.1]}) 
+		Rewrite: {H3[4.0]H3[27.3]}({H3[27.2]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K27MT1-2 
+		Enabled: 0 
+		Recognition: {H3[4.1]H3[27.3]}({H3[27.1]}) 
+		Rewrite: {H3[4.1]H3[27.3]}({H3[27.2]}) 
+		Rate: 5 
+	Rule: 
+		Name: C(3)K27MT2-3 
+		Enabled: 1 
+		Recognition: {H3[4.0]H3[27.3]}({H3[27.2]}) 
+		Rewrite: {H3[4.0]H3[27.3]}({H3[27.3]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K27MT1-3 
+		Enabled: 1 
+		Recognition: {H3[4.0]H3[27.3]}({H3[27.1]}) 
+		Rewrite: {H3[4.0]H3[27.3]}({H3[27.3]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K27MT2-3 
+		Enabled: 1 
+		Recognition: {H3[4.1]H3[27.3]}({H3[27.2]}) 
+		Rewrite: {H3[4.1]H3[27.3]}({H3[27.3]}) 
+		Rate: 5 
+	Rule: 
+		Name: aC(3)K27MT1-3 
+		Enabled: 1 
+		Recognition: {H3[4.1]H3[27.3]}({H3[27.1]}) 
+		Rewrite: {H3[4.1]H3[27.3]}({H3[27.3]}) 
+		Rate: 5 
+	Dissociation: 10 

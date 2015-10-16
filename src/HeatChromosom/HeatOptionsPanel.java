@@ -8,7 +8,6 @@ package HeatChromosom;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -26,6 +25,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
+import org.controlsfx.control.RangeSlider;
 
 /**
  *
@@ -44,6 +44,7 @@ public class HeatOptionsPanel extends VBox{
     private HeatPairButton pairButton;
     private HBox rangeHBox;
     private HBox hbox;
+    private RangeSlider rangeSlider;
     
     public HeatOptionsPanel(HeatProject project) {
         
@@ -103,16 +104,14 @@ public class HeatOptionsPanel extends VBox{
                 playArray();
             }
         });
-        
-        if(project.getChromosom().projectList.size() > 1) {
-            hbox.getChildren().addAll(rangeBox, nearSpin, pairButton);
-        }
-        else {
-            hbox.getChildren().addAll(rangeBox, nearSpin);
+                
+        if(project.isTwoHeatMaps() == false) {
+            pairButton.setVisible(false);
         }
         
+        hbox.getChildren().addAll(rangeBox, nearSpin, pairButton);
+
         rangeHBox = new HBox();
-//        rangeHBox.getChildren().addAll(new Label("Range:"), rangeSpin, play);
         rangeHBox.getChildren().addAll(new Label("Range:"), rangeSpin);
         rangeHBox.setSpacing(3);
         
@@ -143,7 +142,7 @@ public class HeatOptionsPanel extends VBox{
                     //Nukleosom
                     table.add(new Label(String.valueOf(nukl.x)), col, 2);
 
-                    //Für die Action
+                    //F�r die Action
     //                int y = (nukl.y/2);
 
                     //Enzyme
