@@ -1,209 +1,175 @@
-///*
-// * To change this license header, choose License Headers in Project Properties.
-// * To change this template file, choose Tools | Templates
-// * and open the template in the editor.
-// */
-//package test;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package test;
+
+import ChromosomEditor.AttributeTextfield;
+import javafx.application.Application;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+
+
+/** 
+ *
+ * @author Jakob
+ */
+public class HistoneSetter extends Application{
+
+    GridPane root;
+    
+    BorderPane zwischen;
+    BorderPane clip;
+    int zwischenX, zwischenY, clipX, clipY;
+            
+    @Override
+    public void start(Stage primaryStage) {
+            root = new GridPane();
+            
+            int x = 0;
+            int y = 0;
+            
+            for(int i = 0; i < 4; i++) {
+                
+                BorderPane borderPane = new BorderPane();
+                
+                borderPane.setCenter(new AttributeTextfield(""));
+                borderPane.setPadding(new Insets(20,20,20,20));
+                
+                borderPane.setOnDragDetected(new EventHandler <MouseEvent>() {
+                    public void handle(MouseEvent event) {
+                        /* drag was detected, start drag-and-drop gesture*/
+
+                        /* allow any transfer mode */
+                        Dragboard db = borderPane.startDragAndDrop(TransferMode.ANY);
 //
-//import javafx.application.Application;
-//import javafx.beans.value.ChangeListener;
-//import javafx.beans.value.ObservableValue;
-//import javafx.event.ActionEvent;
-//import javafx.event.EventHandler;
-//import javafx.scene.Node;
-//import javafx.scene.Scene;
-//import javafx.scene.control.Button;
-//import javafx.scene.control.Spinner;
-//import javafx.scene.control.SpinnerValueFactory;
-//import javafx.scene.control.SplitPane;
-//import javafx.scene.layout.BorderPane;
-//import javafx.scene.layout.GridPane;
-//import javafx.scene.layout.Pane;
-//import javafx.stage.Stage;
-//
-//
-///** 
-// *
-// * @author Jakob
-// */
-//public class HistoneSetter extends Application{
-//
-//    public static String zwischen = "";
-//    int maxX = 5;
-//    int maxY = 5;
-//    GridPane grid1 = new GridPane();
-//    GridPane grid2 = new GridPane();
-//            
-//    @Override
-//    public void start(Stage primaryStage) {
-//            SplitPane root = new SplitPane();
-//            
-//            BorderPane leftPane = new BorderPane();
-//            
-//            int x = 0;
-//            int y = 0;
-//
-//            addEmptyAttributes(grid1, maxX, maxY);
-//            
-//            String attributeArray[] = {"H2A", "H2B", "H3", "H4"};
-//            x=0;
-//            y=0;
-//            
-//            addEmptyAttributes(grid2, 2, 2);
-//            
-//            //attriibuteArray zum Grid2 hinzufügen
-//            for(int i = 0; i < attributeArray.length; i++) {
-//                grid2.add(new AttributeLabel(attributeArray[i]), x, y);
-//                
-//                if(x % (maxX-1) == 0 && x > 0) {
-//                    y++;
-//                    x = 0;
-//                }
-//                else {
-//                    x++;
-//                }
-//            }
-//            
-//            Spinner spinX = new Spinner(0,0,3);
-//            Spinner spinY = new Spinner(0,0,3);
-//            
-//            spinX.setPrefSize(50, 10);
-//            spinY.setPrefSize(50, 10);
-//            
-//            SpinnerValueFactory svfX = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100,3,1);
-//            spinX.setValueFactory(svfX);
-//            spinX.setEditable(true);
-//            
-//            SpinnerValueFactory svfY = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 100,3,1);
-//            spinY.setValueFactory(svfY);
-//            spinY.setEditable(true);
-//
-//            
-//            svfX.valueProperty().addListener(new ChangeListener<Integer>() {
-//                public void changed(ObservableValue<? extends Integer> ov,
-//                    Integer old_val, Integer new_val) {
-//                        int value = Integer.parseInt(svfX.valueProperty().getValue().toString());
-//                        if(maxX < value) {
-////                            for(int u = 0; u < maxY; u++) {
-////                                grid1.add(new AttributeLabel(""), value-1, u);
-////                            } 
-//                            
-//                            Node nodes[] = new Node[maxY];
-//                            for(int z = 0; z < maxY; z++) {
-//                                nodes[z] = new AttributeLabel("");
-//                            }
-//                            
-//                            grid1.addColumn(value, nodes);
+//                        /* put a string on dragboard */
+                        ClipboardContent content = new ClipboardContent();
+                        content.putString(borderPane.getClass().getName());
+                        db.setContent(content);
+                        
+                        clip = borderPane;
+                        clipX = root.getColumnIndex(clip);
+                        clipY = root.getRowIndex(clip);
+
+                        event.consume();
+                    }
+                });
+                
+                borderPane.setOnDragOver(new EventHandler <DragEvent>() {
+                    public void handle(DragEvent event) {
+                        /* data is dragged over the target */
+//                        System.out.println("onDragOver");
+                        /* accept it only if it is  not dragged from the same node 
+                         * and if it has a string data */
+//                        if (event.getGestureSource() != text &&
+//                                event.getDragboard().hasString()) {
+//                            /* allow for both copying and moving, whatever user chooses */
+                            event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
 //                        }
-//                        else {
-//                            for(int u = 1; u < grid1.getChildren().size(); u++) {
-//                                if(grid1.getChildren().get(u) instanceof AttributeLabel) {
-//                                    AttributeLabel lab = (AttributeLabel)grid1.getChildren().get(u);
-////                                    if(!lab.getText().equals("")) {
-////                                        for(int t = 1; t < grid2.getChildren().size(); t++) {
-////                                            AttributeLabel label = (AttributeLabel)grid2.getChildren().get(t);
-////                                            if(label.getText().equals("")) {
-////                                                label.setText(lab.getText());
-////                                                break;
-////                                            }
-////                                        }
-////                                    }
-////                                    grid1.getChildren().
-//                                    
-////                                    System.err.println("TEXT. " + lab.getText() + " " + u);
-//                                }
-////                                System.err.println(grid1.getChildren().size());
-////                                grid1.getChildren().remove(grid1.getChildren().get(u));
-////                                System.err.println(u);
-//                            } 
+
+                        event.consume();
+                    }
+                });
+                
+                borderPane.setOnDragEntered(new EventHandler <DragEvent>() {
+                    public void handle(DragEvent event) {
+                        /* the drag-and-drop gesture entered the target */
+
+//                        System.out.println("onDragEntered");
+                        /* show to the user that it is an actual gesture target */
+//                        if (event.getGestureSource() != text)
+//                                event.getDragboard().hasString()) {
+//        //                    textField.seColor.GREEN);
 //                        }
-//                        maxX = value;
-//                }
-//             });            
-//            
-//            svfY.valueProperty().addListener(new ChangeListener<Integer>() {
-//                public void changed(ObservableValue<? extends Integer> ov,
-//                    Integer old_val, Integer new_val) {
-//                        int value = Integer.parseInt(svfY.valueProperty().getValue().toString());
-//                        
-//                        for(int u = 1; u < (maxX * maxY); u++) {
-//                            if(grid1.getChildren().get(u) instanceof AttributeLabel) {
-//                                AttributeLabel lab = (AttributeLabel)grid1.getChildren().get(u);
-//                                if(!lab.getText().equals("")) {
-//                                    for(int t = 1; t < grid2.getChildren().size(); t++) {
-//                                        AttributeLabel label = (AttributeLabel)grid2.getChildren().get(t);
-//                                        if(label.getText().equals("")) {
-//                                            label.setText(lab.getText());
-//                                            break;
-//                                        }
-//                                    }
-//                                }
-//                            }
-//                        } 
-////                        grid1.getChildren().removeAll(grid1.getChildren());
-//                        
-//                        addEmptyAttributes(grid1, maxX, value);
-//
-//                        maxY = value;
-//                }
-//             });
-//            
-//            leftPane.setLeft(spinY);
-//            leftPane.setTop(spinX);
-//            leftPane.setCenter(grid1);
-//            
-//            Button submit = new Button();
-//            submit.setText("Bestätigen");
-//            submit.setOnAction(new EventHandler<ActionEvent>() {     
-//                @Override public void handle(ActionEvent e) {         
-//                 
-//                    addEmptyAttributes(grid1,3 ,3);
-//                    leftPane.setCenter(grid1);
-//                    
-//                } 
-//            });
-//            Pane buttonPane = new Pane();
-//            buttonPane.getChildren().add(submit);
-//            leftPane.setBottom(buttonPane);
-//            
-//            
-//            root.getItems().addAll(leftPane, grid2);
-//            
-//            Scene scene = new Scene(root, 500, 500);
-//            primaryStage.setTitle("HistoneSetter");
-//            primaryStage.setScene(scene);
-//            primaryStage.show();
-//
-//    }
-//
-//    private void addEmptyAttributes(GridPane grid, int x, int y) {
-//        
-//         for(int i = 1; i < grid.getChildren().size();i++) {
-//             grid.getChildren().remove(i);
-//         }
-//        
-////         grid = new GridPane();
-//         
-//        int countX = 0, countY = 0;
-//        
-//        for(int i = 0; i < x*y; i++) {
-//            grid.add(new AttributeLabel(""), countX, countY);
-//            
-//            if(countX % (x-1) == 0 && countX > 0) {
-//                countY++;
-//                countX = 0;
-//            }
-//            else {
-//                countX++;
-//            }
-//        }
-//        
-//        grid.setGridLinesVisible(true);
-//    }
-//
-//    public static void main(String[] args) {
-//            launch(args);
-//    }
-//    
-//}
-// 
+
+                        event.consume();
+                    }
+                });
+                
+                borderPane.setOnDragExited(new EventHandler <DragEvent>() {
+                    public void handle(DragEvent event) {
+                        /* mouse moved away, remove the graphical cues */
+        //                textField.setFill(Color.BLACK);
+//                        System.out.println("onDragExited");
+                        event.consume();
+                    }
+                });
+                
+                borderPane.setOnDragDropped(new EventHandler <DragEvent>() {
+                    public void handle(DragEvent event) {
+                        /* data dropped */
+//                        System.out.println("onDragDropped");
+                        /* if there is a string data on dragboard, read it and use it */
+                        Dragboard db = event.getDragboard();
+                        boolean success = false;
+                        if (db.hasString()) {
+
+                            zwischen = borderPane;
+                            zwischenX = root.getColumnIndex(zwischen);
+                            zwischenY = root.getRowIndex(zwischen);
+                            
+                            root.getChildren().remove(zwischen);
+                            root.getChildren().remove(clip);
+                            root.add(clip, zwischenX, zwischenY);
+                            
+                            success = true;
+                        }
+                        /* let the source know whether the string was successfully 
+                         * transferred and used */
+                        event.setDropCompleted(success);
+
+                        event.consume();
+                    }
+                });
+                
+                borderPane.setOnDragDone(new EventHandler <DragEvent>() {
+                    public void handle(DragEvent event) {
+                        /* the drag-and-drop gesture ended */
+                        System.out.println("onDragDone");
+                        /* if the data was successfully moved, clear it */
+                        if (event.getTransferMode() == TransferMode.MOVE) {
+                            root.add(zwischen, clipX, clipY);
+                        }
+
+                        event.consume();
+                    }
+                });
+                
+                root.add(borderPane, x, y);
+            
+                if((i+1)%2 == 0) {
+                    y++;
+                    x = 0;
+                }
+                else {
+                    x++;
+                }
+            }
+            
+            root.setGridLinesVisible(true);
+            
+            Scene scene = new Scene(root, 500, 500);
+            primaryStage.setTitle("HistoneSetter");
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+    }
+
+
+    public static void main(String[] args) {
+            launch(args);
+    }
+    
+}
+ 

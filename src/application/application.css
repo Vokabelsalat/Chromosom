@@ -1,1 +1,35 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+/*.root{
+    -fx-font-size: 16pt;
+    -fx-font-family: "Courier New";
+    -fx-base: rgb(132, 145, 47);
+    -fx-background: rgb(225, 228, 203);
+}*/
+
+.root{
+    -fx-font-size: 8pt;
+/*    -fx-font-family: "Courier New";
+    -fx-base: rgb(132, 145, 47);
+    -fx-background: rgb(225, 228, 203);*/
+}
+
+.combo-box-base  
+{
+/*-fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";*/
+-fx-background-color: white, white, white, white;
+/*-fx-background-radius: 5, 5, 4, 3;
+-fx-background-insets: 0 0 -1 0, 0, 1, 2;*/
+-fx-padding: 0;
+}
+
+.combo-box > .list-cell {
+    -fx-padding: 0 0 0 0;
+    -fx-border-insets: 0 0 0 0;
+}
+
+.combo-box-base > *.arrow-button {
+    -fx-padding: 0 0 0 0;
+    -fx-background-color: white, white, white, white;
+}
+

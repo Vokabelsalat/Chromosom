@@ -3,57 +3,62 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package test;
+package ChromosomEditor;
 
 import javafx.event.EventHandler;
+import javafx.scene.Cursor;
+import javafx.scene.control.TextField;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
+import javafx.scene.layout.GridPane;
 
 /**
  *
  * @author Jakob
  */
-public class AttributeLabel extends BorderPane{
+public class AttributeTextfield extends BorderPane{
     
-    static String zwischen;
-    Text label;
+    TextField textField;
     
-    public AttributeLabel(String text) {
-        this.label = new Text(text);
+    String clip;
+    public static String zwischen;
+    GridPane parent;
+    
+    public AttributeTextfield(String text) {
+        this.textField = new TextField(text);
+        textField.setEditable(true);
+        textField.setMinSize(70, 20);
         
-        label.setFill(Color.BLACK);
-        
-        this.setOnDragDetected(new EventHandler <MouseEvent>() {
+        textField.setOnDragDetected(new EventHandler <MouseEvent>() {
             public void handle(MouseEvent event) {
                 /* drag was detected, start drag-and-drop gesture*/
 //                System.out.println("onDragDetected");
 
                 /* allow any transfer mode */
-                Dragboard db = label.startDragAndDrop(TransferMode.ANY);
+                Dragboard db = textField.startDragAndDrop(TransferMode.ANY);
 
                 /* put a string on dragboard */
                 ClipboardContent content = new ClipboardContent();
-                content.putString(label.getText());
+                content.putString(textField.getText());
                 db.setContent(content);
 
                 event.consume();
             }
         });
         
-        this.setOnDragOver(new EventHandler <DragEvent>() {
+        textField.setOnDragOver(new EventHandler <DragEvent>() {
             public void handle(DragEvent event) {
                 /* data is dragged over the target */
 //                System.out.println("onDragOver");
                 /* accept it only if it is  not dragged from the same node 
                  * and if it has a string data */
                 if (event.getGestureSource() != text &&
-                        event.getDragboard().hasString()) {
+                        event.getDragboard().hasString() &&
+                             !event.getDragboard().getString().equals("ChromosomEditor.SiteBorderPane")) {
                     /* allow for both copying and moving, whatever user chooses */
                     event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
                 }
@@ -62,7 +67,7 @@ public class AttributeLabel extends BorderPane{
             }
         });
         
-        this.setOnDragEntered(new EventHandler <DragEvent>() {
+        textField.setOnDragEntered(new EventHandler <DragEvent>() {
             public void handle(DragEvent event) {
                 /* the drag-and-drop gesture entered the target */
                 
@@ -70,24 +75,23 @@ public class AttributeLabel extends BorderPane{
                 /* show to the user that it is an actual gesture target */
                 if (event.getGestureSource() != text &&
                         event.getDragboard().hasString()) {
-                    label.setFill(Color.GREEN);
+//                    textField.seColor.GREEN);
                 }
                 
                 event.consume();
             }
         });
 
-        this.setOnDragExited(new EventHandler <DragEvent>() {
+        textField.setOnDragExited(new EventHandler <DragEvent>() {
             public void handle(DragEvent event) {
                 /* mouse moved away, remove the graphical cues */
-                label.setFill(Color.BLACK);
+//                textField.setFill(Color.BLACK);
                 
                 event.consume();
             }
         });
         
-        this.setOnDragDropped(new EventHandler <DragEvent>() {
-            
+        textField.setOnDragDropped(new EventHandler <DragEvent>() {
             
             public void handle(DragEvent event) {
                 /* data dropped */
@@ -97,9 +101,10 @@ public class AttributeLabel extends BorderPane{
                 boolean success = false;
                 if (db.hasString()) {
                     
-                    
-                    zwischen = label.getText();
-                    label.setText(db.getString());
+                    zwischen = textField.getText();
+                    textField.setText(db.getString());
+                    textField.requestFocus();
+                    textField.positionCaret(textField.getText().length());
                     
                     success = true;
                 }
@@ -111,30 +116,31 @@ public class AttributeLabel extends BorderPane{
             }
         });
 
-        this.setOnDragDone(new EventHandler <DragEvent>() {
+        textField.setOnDragDone(new EventHandler <DragEvent>() {
             public void handle(DragEvent event) {
                 /* the drag-and-drop gesture ended */
-//                System.out.println("onDragDone");
                 /* if the data was successfully moved, clear it */
                 if (event.getTransferMode() == TransferMode.MOVE) {
-                    label.setText(zwischen);
+                    textField.setText(zwischen);
                 }
                 
                 event.consume();
             }
         });
-     this.setPrefSize(30,30);
-     this.setCenter(label);
+        
+        this.setPrefSize(30,30);
+        this.setCenter(textField);
      
-        setStyle("-fx-border: 2px solid; -fx-border-color: black;");
+        setStyle("-fx-border: 0.5px solid; -fx-border-color: black;");
         
     }
     
     public String getText() {
-        return label.getText();
+        return textField.getText();
     }
     
     public void setText(String labelText) {
-        label.setText(labelText);
+        textField.setText(labelText);
     }
+    
 }

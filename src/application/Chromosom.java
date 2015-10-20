@@ -1,6 +1,8 @@
 package application;
 
-import HeatChromosom.HeatPairButton;
+import ChromosomEditor.ChromosomEditor;
+import ChromosomEditor.EditorBottomPane;
+import ChromosomEditor.EditorOptions;
 import HeatChromosom.HeatProject;
 import Nukleosom.BigNukleosomNew;
 import java.util.ArrayList;
@@ -33,17 +35,13 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javax.imageio.ImageIO;
@@ -90,7 +88,10 @@ public class Chromosom extends Application {
         
         MenuBar menuBar = createMenu(primaryStage);
         rootLayout.setTop(menuBar);
+
         
+        startChromosomEditor();
+//        primaryStage.setMaximized(true);
         
         
 //            startTwoHeatChromosom(primaryStage);
@@ -99,9 +100,25 @@ public class Chromosom extends Application {
 //            startChromosom(primaryStage);
         
             Scene scene = new Scene(getRootLayout());
+            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.setResizable(true);
             show(primaryStage);
+    }
+    
+    private void startChromosomEditor() {
+        
+        ChromosomEditor chromosomEditor = new ChromosomEditor(this);
+        rootLayout.setCenter(chromosomEditor);
+        
+        EditorBottomPane editorBottomPane = new EditorBottomPane(chromosomEditor);
+        chromosomEditor.setBottom(editorBottomPane);
+        rootLayout.setBottom(editorBottomPane);
+        
+        EditorOptions options = new EditorOptions(chromosomEditor);
+        chromosomEditor.setOptions(options);
+        rootLayout.setRight(options);
+        
     }
 
     private void startChromosom() {
@@ -300,35 +317,36 @@ public class Chromosom extends Application {
         screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
         tabPane = new TabPane();
         
-        VBox vbox = new VBox();
         
-        splitPane = new SplitPane();
-        
-        splitPane.setOrientation(Orientation.VERTICAL);
-        
-        Button plus = new Button("+");
-        
-        heatPlus = new Button("+");
-        
-        heatPlus.setOnAction((ActionEvent actionEvent) -> {
-            
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open Resource File");
-            File file = fileChooser.showOpenDialog(primaryStage);
-            
-            if(file != null) {
-                startHeatChromosom(file);
-                heatCounter++;
-                rootLayout.getChildren().remove(vbox);
-                primaryStage.sizeToScene();
-                primaryStage.centerOnScreen();
-            }
-        });
-        
-        vbox.setSpacing(5);
-        vbox.getChildren().addAll(new Label("Chromosom:"), plus, new Separator(), new Label("HeatChromosom:"), heatPlus);
-        
-        rootLayout.setLeft(vbox);
+//        VBox vbox = new VBox();
+//        
+//        splitPane = new SplitPane();
+//        
+//        splitPane.setOrientation(Orientation.VERTICAL);
+//        
+//        Button plus = new Button("+");
+//        
+//        heatPlus = new Button("+");
+//        
+//        heatPlus.setOnAction((ActionEvent actionEvent) -> {
+//            
+//            FileChooser fileChooser = new FileChooser();
+//            fileChooser.setTitle("Open Resource File");
+//            File file = fileChooser.showOpenDialog(primaryStage);
+//            
+//            if(file != null) {
+//                startHeatChromosom(file);
+//                heatCounter++;
+//                rootLayout.getChildren().remove(vbox);
+//                primaryStage.sizeToScene();
+//                primaryStage.centerOnScreen();
+//            }
+//        });
+//        
+//        vbox.setSpacing(5);
+//        vbox.getChildren().addAll(new Label("Chromosom:"), plus, new Separator(), new Label("HeatChromosom:"), heatPlus);
+//        
+//        rootLayout.setLeft(vbox);
         
     }
 
