@@ -26,11 +26,13 @@ public class HeatNukleosom extends Pane {
     double oldStrokeWidth;
     int x, y;
     private boolean selected;
+    private double probability;
+    private double originalValue;
     
     private double BLUE_HUE = Color.rgb(200,180,0).getHue();;
     private double RED_HUE = Color.rgb(215,170,0).getHue();
     
-    public HeatNukleosom(double value, int x, int y, int width, int height, String strokeType) {
+    public HeatNukleosom(double value, int x, int y, int width, int height, String strokeType, double probability, double originalValue) {
 
         highlightRect = new Rectangle(width, height , Color.rgb(255,150,0)); 
         this.value = value;
@@ -38,6 +40,8 @@ public class HeatNukleosom extends Pane {
         this.height = height;
         this.x = x;
         this.y = y;
+        this.probability = probability;
+        this.originalValue = originalValue;
         
         setPrefSize(width, height);
 
@@ -177,6 +181,34 @@ public class HeatNukleosom extends Pane {
         setStrokeColor(Color.GRAY);
         setStrokeWidth(oldStrokeWidth);
         highlightRect.setStrokeWidth(0.0);
+    }
+
+    /**
+     * @return the probability
+     */
+    public double getProbability() {
+        return probability;
+    }
+
+    /**
+     * @param probability the probability to set
+     */
+    public void setProbability(double probability) {
+        this.probability = probability;
+    }
+
+    /**
+     * @return the originalValue
+     */
+    public double getOriginalValue() {
+        return originalValue;
+    }
+
+    /**
+     * @param originalValue the originalValue to set
+     */
+    public void setOriginalValue(double originalValue) {
+        this.originalValue = originalValue;
     }
     
 }

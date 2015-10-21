@@ -8,10 +8,10 @@ package ChromosomEditor;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 
 /**
  *
@@ -41,7 +41,9 @@ public class StateComboBox extends BorderPane{
 //        box = new ComboBox(options);
         box = new TextField();
     
-        setTop(new Label(title));
+        Label lab = new Label(title);
+        lab.setFont(new Font(10));
+        setTop(lab);
         
         if(title.equals("")) {
             box.setVisible(false);

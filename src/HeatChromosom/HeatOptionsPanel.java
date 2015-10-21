@@ -5,6 +5,7 @@
  */
 package HeatChromosom;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -137,30 +138,33 @@ public class HeatOptionsPanel extends VBox{
                 
                 if(nukl != null) {
                     table.add(createSelectedPane(nukl, col, row), col, 0);
-                    table.add(new Label(String.valueOf(nukl.value).replace(".", ",")), col, 1);
+                    DecimalFormat df = new DecimalFormat("#.####");
+                    table.add(new Label(df.format(nukl.getProbability()).replace(".", ",")), col, 1);
 
+                    //Value
+                    table.add(new Label(String.valueOf(nukl.getOriginalValue())), col, 2);
+                    
                     //Nukleosom
-                    table.add(new Label(String.valueOf(nukl.x)), col, 2);
+                    table.add(new Label(String.valueOf(nukl.x)), col, 3);
 
-                    //F�r die Action
-    //                int y = (nukl.y/2);
+//                    Für die Action
+//                    int y = (nukl.y/2);
 
                     //Enzyme
-                    table.add(new Label(String.valueOf(project.getHeatReader().getChannelList().get(nukl.y))), col, 3);
+                    table.add(new Label(String.valueOf(project.getHeatReader().getChannelList().get(nukl.y))), col, 4);
 
                     //Channel
-                    table.add(new Label(String.valueOf(nukl.y)), col, 4);
+                    table.add(new Label(String.valueOf(nukl.y)), col, 5);
 
-    //                //Action
-    //                String action;
-    //                if(nukl.y%2 == 0) {
-    //                    action = "activation";
-    //                }
-    //                else {
-    //                    action = "deactivation";
-    //                }
-    //                
-    //                table.add(new Label(action), col, 5);
+                    //Action
+                    String action;
+                    if(nukl.y%2 == 0) {
+                        action = "association";
+                    }
+                    else {
+                        action = "dissociation";
+                    }
+                    table.add(new Label(action), col, 6);
                 }
         }
         
@@ -254,7 +258,7 @@ public class HeatOptionsPanel extends VBox{
         Rectangle fg = new Rectangle(24, 24, Color.WHITE);
         fg.setTranslateX(2);
 
-        HeatNukleosom newNukl = new HeatNukleosom(nukl.value, nukl.x, nukl.y, 18, 18, "");
+        HeatNukleosom newNukl = new HeatNukleosom(nukl.value, nukl.x, nukl.y, 18, 18, "", nukl.getProbability(), nukl.getOriginalValue());
         newNukl.setTranslateX(5);
         newNukl.setTranslateY(5);
 

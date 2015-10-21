@@ -6,7 +6,12 @@
 package ChromosomEditor;
 
 import java.util.ArrayList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -108,6 +113,7 @@ class RuleDesignerRow extends HBox {
     private EditorNukleosomRow firstRow;
     private EditorNukleosomRow secondRow;
     private String rule = "";
+    private Button minusButton;
     
             
     public RuleDesignerRow(ChromosomEditor editor) {
@@ -117,15 +123,22 @@ class RuleDesignerRow extends HBox {
 //        arrow = new ImageView(image);
         
         StackPane stackPane = new StackPane();
-        
         stackPane.setMinSize(60, 60);
-        
         stackPane.setBackground(new Background(new BackgroundImage(image, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
         
+        minusButton = new Button("-");
+        GridPane minusPane = new GridPane();
+        minusPane.setAlignment(Pos.CENTER);
+        minusPane.getChildren().add(minusButton);
+
         firstRow = new EditorNukleosomRow(editor);
         secondRow = new EditorNukleosomRow(editor);
         
-        getChildren().addAll(firstRow, stackPane, secondRow);
+        getChildren().addAll(minusPane, firstRow, stackPane, secondRow);
+        
+        setPadding(new Insets(5,5,5,5));
+        setSpacing(8);
+        setStyle("-fx-border: 1px solid; -fx-border-color: black;");
         
     }
 
@@ -165,34 +178,48 @@ class RuleDesignerRow extends HBox {
     }
     
     public void setRule() {
-        for(EditorNukleosom nukl : firstRow.getNukleosomList()) {
-            rule += " {";
-            for(StateBorderPane state : nukl.getStateList()) {
-                rule += state.getTitle() + ":";
-                for(StateComboBox box : state.comboList) {
-                    if(!box.getValue().equals("")) {
-                        rule += box.title + "[" + box.getValue() + "] ";
-                    }
-                }
-            }
-            rule += "} ";
-        }
+        
+        
+        
+        rule += getRuleNukleosomString(firstRow);
         
         rule += "-->";
         
-        for(EditorNukleosom nukl : secondRow.getNukleosomList()) {
-            rule += " {";
-            for(StateBorderPane state : nukl.getStateList()) {
-                    rule += state.getTitle() + ":";
-                    for(StateComboBox box : state.comboList) {
-                        if(!box.getValue().equals("")) {
-                            rule += box.title + "[" + box.getValue() + "] ";
-                        }
-                    }
-            }
-            rule += "} ";
-        }
+        rule += getRuleNukleosomString(secondRow);
         
         System.err.println(rule);
+    }
+    
+    public String getRuleNukleosomString(EditorNukleosomRow nukleosomRow) {
+        String returnStr = "";
+        
+        for(EditorNukleosom nukl : nukleosomRow.getNukleosomList()) {
+            returnStr += " {";
+            for(StateBorderPane state : nukl.getStateList()) {
+                boolean empty = true;
+                for(StateComboBox box : state.comboList) {
+                    if(!box.getValue().equals("")) {
+                        empty = false;
+                    }
+                }
+                if(empty == false) {
+                    returnStr += state.getTitle() + ":";
+                    for(StateComboBox box : state.comboList) {
+                        if(!box.getValue().equals("")) {
+                            returnStr += box.title + "[" + box.getValue() + "] ";
+                        }
+                    }
+                }
+            }
+            returnStr += "} ";
+        }
+        return returnStr;
+    }
+
+    /**
+     * @return the minusButton
+     */
+    public Button getMinusButton() {
+        return minusButton;
     }
 }

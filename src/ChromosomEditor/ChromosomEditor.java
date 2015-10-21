@@ -7,13 +7,15 @@ package ChromosomEditor;
 
 import application.Chromosom;
 import java.util.HashMap;
+import javafx.geometry.Pos;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
 /**
  *
  * @author Jakob
  */
-public class ChromosomEditor extends Pane{
+public class ChromosomEditor extends GridPane{
     
     private Chromosom chromosom;
     private Pane[] paneArray;
@@ -34,6 +36,7 @@ public class ChromosomEditor extends Pane{
         histoneMap = new HashMap<>();
         
         this.setMinSize(500,400);
+//        this.setAlignment(Pos.CENTER);
         
         showSiteSetter();
     }
@@ -69,14 +72,14 @@ public class ChromosomEditor extends Pane{
 
 //        }
         switch(index) {
-            case 0: 
-                siteSetter.histoneArray = new String[4];
+            case 0:
+                chromosom.getRootLayout().setRight(options);
                 break;
             case 1:
                 ruleDesigner = new EditorRuleDesigner(this);
                 this.getChildren().removeAll(this.getChildren());
                 paneArray[index] = ruleDesigner;
-//                this.getChildren().add(ruleDesigner);
+                chromosom.getRootLayout().getChildren().remove(options);
                 break;
         }
         

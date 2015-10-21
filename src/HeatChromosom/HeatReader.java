@@ -23,6 +23,8 @@ import java.util.logging.Logger;
 public class HeatReader {
     
     private HashMap<String, ArrayList<ArrayList<Double>>> timeMap;
+    private HashMap<String, ArrayList<ArrayList<Double>>> originalTimeMap;
+    private HashMap<String, ArrayList<ArrayList<Double>>> probabilityTimeMap;
     private HashMap<String, int[]> hitMap;
     private ArrayList<Integer> channelList;
     private String path;
@@ -30,9 +32,13 @@ public class HeatReader {
     double max;
     double min;
     
+    double sum = 0;
+    
     public HeatReader() {
         
         timeMap = new HashMap<>();
+        originalTimeMap = new HashMap<>();
+        probabilityTimeMap = new HashMap<>();
         hitMap = new HashMap<>();
         channelList = new ArrayList<>();
         
@@ -160,6 +166,7 @@ public class HeatReader {
             String line = "";
             max = 0.0;
             min = 0.0;
+            sum = 0.0;
             
             while ((line = br.readLine()) != null) {
                 if(line.equals("")) {
@@ -170,9 +177,11 @@ public class HeatReader {
                     String strArray[] = line.split(";");
                     nukleosomList = new ArrayList<>();
                     double value;
-                    for(int i = 0; i < strArray.length - 1; i++) {
+                    
+                    for(int i = 0; i < strArray.length; i++) {
                         value = Double.parseDouble(strArray[i]);
                         nukleosomList.add(i, value);
+                        sum += value;
                         
                         if(value > max) {
                             max = value;
@@ -198,6 +207,7 @@ public class HeatReader {
             }
             
             getTimeMap().replace(timeStep, enzymeList);
+            getOriginalTimeMap().put(timeStep, enzymeList);
             
 //            for(ArrayList<ArrayList<Double>> entry : timeMap.values()) {
 //                for(int enzyme = 0; enzyme < entry.size(); enzyme++) {
@@ -208,6 +218,7 @@ public class HeatReader {
 //                }
 //            }
             
+            generateProbabilities(timeStep);
             scaleValues(timeStep);
             
         } catch (FileNotFoundException ex) {
@@ -290,6 +301,58 @@ public class HeatReader {
      */
     public void setChannelList(ArrayList<Integer> channelList) {
         this.channelList = channelList;
+    }
+
+    private void generateProbabilities(String timeStep) {
+        if(getOriginalTimeMap().get(timeStep) != null) {
+            ArrayList<ArrayList<Double>> entry = getOriginalTimeMap().get(timeStep); 
+            
+            ArrayList<ArrayList<Double>> newEnzymeList = new ArrayList<>();
+            ArrayList<Double> newNukleosomList;
+            
+            for(int enzyme = 0; enzyme < entry.size(); enzyme++) {
+                newNukleosomList = new ArrayList<>();
+                for(int nukleosom = 0; nukleosom < entry.get(enzyme).size(); nukleosom++) {
+                    double newValue = entry.get(enzyme).get(nukleosom);
+
+                    newValue = newValue / sum;
+                    
+                    newNukleosomList.add(nukleosom, newValue);
+                }
+                
+                newEnzymeList.add(enzyme, newNukleosomList);
+            }
+            
+            getProbabilityTimeMap().put(timeStep, newEnzymeList);
+        }
+    }
+
+    /**
+     * @return the originalTimeMap
+     */
+    public HashMap<String, ArrayList<ArrayList<Double>>> getOriginalTimeMap() {
+        return originalTimeMap;
+    }
+
+    /**
+     * @param originalTimeMap the originalTimeMap to set
+     */
+    public void setOriginalTimeMap(HashMap<String, ArrayList<ArrayList<Double>>> originalTimeMap) {
+        this.originalTimeMap = originalTimeMap;
+    }
+
+    /**
+     * @return the probabilityTimeMap
+     */
+    public HashMap<String, ArrayList<ArrayList<Double>>> getProbabilityTimeMap() {
+        return probabilityTimeMap;
+    }
+
+    /**
+     * @param probabilityTimeMap the probabilityTimeMap to set
+     */
+    public void setProbabilityTimeMap(HashMap<String, ArrayList<ArrayList<Double>>> probabilityTimeMap) {
+        this.probabilityTimeMap = probabilityTimeMap;
     }
     
 }

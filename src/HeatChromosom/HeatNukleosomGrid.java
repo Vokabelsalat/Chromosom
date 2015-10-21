@@ -21,7 +21,7 @@ import javafx.scene.paint.Color;
  */
 public class HeatNukleosomGrid extends GridPane{
     
-    private HashMap<String,ArrayList<ArrayList<Double>>> timeMap;
+//    private HashMap<String,ArrayList<ArrayList<Double>>> timeMap;
     private HashMap<String, int[]> hitMap;
     private BorderPane parent;
     private HeatNukleosom leftNode = null;
@@ -34,36 +34,40 @@ public class HeatNukleosomGrid extends GridPane{
     public HeatNukleosomGrid(HeatProject project, String timeStep) {
         this.project = project;
         this.hr = project.getHeatReader();
-        this.timeMap = hr.getTimeMap();
+//        this.timeMap = hr.getTimeMap();
         this.hitMap = hr.getHitMap();
         this.parent = project.getBorderPane();
         this.timeStep = timeStep;
         
         int width = project.HeatNukleosomWidth;
        
-        if(timeMap.containsKey(timeStep) && timeMap.get(timeStep) == null) {
+        if(hr.getTimeMap().containsKey(timeStep) && hr.getTimeMap().get(timeStep) == null) {
             hr.readLogFile(timeStep);
         }
         
-        ArrayList<ArrayList<Double>> enzymeList = timeMap.get(timeStep);
+        ArrayList<ArrayList<Double>> enzymeList = hr.getTimeMap().get(timeStep);
         
         for(int enzyme = 0; enzyme < enzymeList.size(); enzyme++) {
             ArrayList<Double> nukleosomList = enzymeList.get(enzyme);
             for(int nukleosom = 0; nukleosom < nukleosomList.size(); nukleosom++) {
                 HeatNukleosom heatNukl;
                 
+                double prob =  hr.getProbabilityTimeMap().get(timeStep).get(enzyme).get(nukleosom);
+                double org = hr.getOriginalTimeMap().get(timeStep).get(enzyme).get(nukleosom);
+                
                 if(enzyme == hitMap.get(timeStep)[1] && nukleosom == hitMap.get(timeStep)[0]) {
-                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "BOTH");
+                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "BOTH", prob, org);
                     project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(heatNukl, 1, 1);
                 }
                 else if(enzyme == hitMap.get(timeStep)[1]) {
-                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "HORIZONTAL");
+                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "HORIZONTAL", prob, org);
                 }
                 else if(nukleosom == hitMap.get(timeStep)[0]) {
-                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "VERTICAL");
+                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "VERTICAL", prob, org);
                 }
                 else {
-                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "");
+                    
+                    heatNukl = new HeatNukleosom(nukleosomList.get(nukleosom), nukleosom, enzyme, width, width, "", prob, org);
                 }
                 
                 heatNukl.setOnMouseClicked(new EventHandler<MouseEvent>() {

@@ -35,13 +35,17 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javax.imageio.ImageIO;
@@ -90,11 +94,11 @@ public class Chromosom extends Application {
         rootLayout.setTop(menuBar);
 
         
-        startChromosomEditor();
-//        primaryStage.setMaximized(true);
+//        startChromosomEditor();
+        primaryStage.setMaximized(true);
         
         
-//            startTwoHeatChromosom(primaryStage);
+            startTwoHeatChromosom(primaryStage);
 //            startHeatChromosom(primaryStage);
             
 //            startChromosom(primaryStage);
@@ -144,41 +148,36 @@ public class Chromosom extends Application {
         options.getChildren().add(tree);
     }
 
-        private void startTwoHeatChromosom() {
-//        
-//        projectList = new ArrayList<>();
-//        
-//        HeatProject heatProject = new HeatProject(this, 0);
-//        HeatProject heatProject2 = new HeatProject(this, 1);
-//        
-//        projectList.add(heatProject);
-//        projectList.add(heatProject2);
-//        
-//        String first = heatProject.getHeatReader().getFirstItemInTimeMap();
-//        String first2 = heatProject2.getHeatReader().getFirstItemInTimeMap();
-//        heatProject.getHeatReader().readLogFile(first);
-//        heatProject2.getHeatReader().readLogFile(first2);
-//        
-//        sameRow = false;
-//        sameColumns = false;
-//        
-//        if(heatProject.getHeatReader().getTimeMap().get(first).size() == 
-//                heatProject2.getHeatReader().getTimeMap().get(first2).size()) {
-//                sameRow = true;
-//            if(heatProject.getHeatReader().getTimeMap().get(first).get(0).size() == 
-//                heatProject2.getHeatReader().getTimeMap().get(first2).get(0).size()) {
-//                sameColumns = true;
-//            }
-//        }
-//        
-//        SplitPane splitPane = new SplitPane();
-//        
-//        splitPane.setOrientation(Orientation.VERTICAL);
-//        
-//        splitPane.getItems().addAll(heatProject.createHeatMainPanel(), heatProject2.createHeatMainPanel());
-//        
-//        getRootLayout().setCenter(splitPane);
-//        
+        private void startTwoHeatChromosom(Stage primaryStage) {
+            VBox vbox = new VBox();
+
+            splitPane = new SplitPane();
+
+            splitPane.setOrientation(Orientation.VERTICAL);
+
+            Button plus = new Button("+");
+
+            heatPlus = new Button("+");
+
+            heatPlus.setOnAction((ActionEvent actionEvent) -> {
+
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Open Resource File");
+                File file = fileChooser.showOpenDialog(primaryStage);
+
+                if(file != null) {
+                    startHeatChromosom(file);
+                    heatCounter++;
+                    rootLayout.getChildren().remove(vbox);
+                    primaryStage.sizeToScene();
+                    primaryStage.centerOnScreen();
+                }
+            });
+
+            vbox.setSpacing(5);
+            vbox.getChildren().addAll(new Label("Chromosom:"), plus, new Separator(), new Label("HeatChromosom:"), heatPlus);
+
+            rootLayout.setLeft(vbox);
     }
     
     private void startHeatChromosom(File file) {
@@ -316,38 +315,6 @@ public class Chromosom extends Application {
         screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
         screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
         tabPane = new TabPane();
-        
-        
-//        VBox vbox = new VBox();
-//        
-//        splitPane = new SplitPane();
-//        
-//        splitPane.setOrientation(Orientation.VERTICAL);
-//        
-//        Button plus = new Button("+");
-//        
-//        heatPlus = new Button("+");
-//        
-//        heatPlus.setOnAction((ActionEvent actionEvent) -> {
-//            
-//            FileChooser fileChooser = new FileChooser();
-//            fileChooser.setTitle("Open Resource File");
-//            File file = fileChooser.showOpenDialog(primaryStage);
-//            
-//            if(file != null) {
-//                startHeatChromosom(file);
-//                heatCounter++;
-//                rootLayout.getChildren().remove(vbox);
-//                primaryStage.sizeToScene();
-//                primaryStage.centerOnScreen();
-//            }
-//        });
-//        
-//        vbox.setSpacing(5);
-//        vbox.getChildren().addAll(new Label("Chromosom:"), plus, new Separator(), new Label("HeatChromosom:"), heatPlus);
-//        
-//        rootLayout.setLeft(vbox);
-        
     }
 
     private MenuBar createMenu(Stage primaryStage) {
