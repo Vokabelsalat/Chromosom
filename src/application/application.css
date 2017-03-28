@@ -14,6 +14,39 @@
     -fx-background: rgb(225, 228, 203);*/
 }
 
+.button {
+    -fx-background-color: orange;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.buttonPlus {
+    -fx-background-color: green;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.buttonRemove {
+    -fx-background-color: red;
+    -fx-cursor: hand;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/*.BigNukleosomNew {
+    -fx-background-color: red;
+}*/
+
+/*.rectPane {
+    -fx-background-color: green;
+}*/
+
+.text-area {
+    -fx-font-size: 14;
+}
+
 .combo-box-base  
 {
 /*-fx-skin: "com.sun.javafx.scene.control.skin.ComboBoxBaseSkin";*/
@@ -33,3 +66,61 @@
     -fx-background-color: white, white, white, white;
 }
 
+.split-pane-divider {
+/*   -fx-background-color: transparent;*/
+    -fx-width: 2;
+}
+
+#address .scroll-bar
+{
+    -fx-padding: 0;
+    -fx-width: 0;
+    -fx-height: 0;
+    -fx-opacity: 0;
+    -fx-background-color: transparent;
+    -fx-visibility: hidden;
+    visibility: hidden;
+}
+
+#address .scroll-bar .increment-button {
+  visibility: hidden;
+}
+
+#address .scroll-bar .decrement-button {
+  visibility: hidden;
+}
+
+#address .scroll-bar:horizontal {
+  -fx-background-color: transparent;
+}
+
+#address .scroll-bar:horizontal .track {
+  visibility: hidden;
+}
+
+#address .scroll-bar:horizontal .track-background {
+  visibility: hidden;
+}
+
+#address .hide-thumb .scroll-bar:horizontal .thumb {
+  -fx-background-color: transparent;
+}
+
+#fancytext {
+    /*-fx-font: 100px Tahom;*/
+    /*-fx-fill: linear-gradient(from 0% 0% to 100% 200%, repeat, aqua 0%, red 50%);*/
+/*    -fx-font-size: 11pt;
+    -fx-fill: black;
+    -fx-font-weight: bold;
+    -fx-stroke: white;*/
+    /*-fx-stroke-width: 1;*/
+    -fx-background-color: rgba(255,255,255,0.7);
+}
+
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+   -fx-background-color: white;
+}

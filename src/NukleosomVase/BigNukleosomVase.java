@@ -8,7 +8,7 @@ package NukleosomVase;
 import javafx.scene.layout.GridPane;
 
 /**
- *
+ * NucleosomeVase mit einer Unterteilung für die Histone und die entsprechenden Sites
  * @author Jakob
  */
 public class BigNukleosomVase extends GridPane{

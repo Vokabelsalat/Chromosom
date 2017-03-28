@@ -11,8 +11,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,93 +25,248 @@ import java.util.logging.Logger;
  */
 public class HeatReader {
     
+    HeatProject heatProject;
     private HashMap<String, ArrayList<ArrayList<Double>>> timeMap;
     private HashMap<String, ArrayList<ArrayList<Double>>> originalTimeMap;
     private HashMap<String, ArrayList<ArrayList<Double>>> probabilityTimeMap;
+    private final LinkedHashMap<String, HashMap<String, HashMap<String, ArrayList<Integer>>>> allSectionMap;
     private HashMap<String, int[]> hitMap;
-    private ArrayList<Integer> channelList;
     private String path;
-    
+    boolean first = true;
     double max;
     double min;
     
     double sum = 0;
     
-    public HeatReader() {
-        
+    public HeatReader(HeatProject heatProject) {
+        this.heatProject = heatProject;
         timeMap = new HashMap<>();
         originalTimeMap = new HashMap<>();
         probabilityTimeMap = new HashMap<>();
         hitMap = new HashMap<>();
-        channelList = new ArrayList<>();
+        allSectionMap = new LinkedHashMap<>();
         
-        readChannelInfo("channelinfo.log");
-        
-//        readLogFile(fileName);
+//        readChannelInfo("channelinfo.log");
     }
     
-    public void readChannelInfo(String fileName) {
-        FileInputStream fin = null;
-        BufferedReader br = null;
+    public LinkedHashMap<String, ArrayList<Integer>> categorizeAssociation(ArrayList<Integer> parentList) {
+        LinkedHashMap<String, ArrayList<Integer>> sectionMap = new LinkedHashMap<>();
         
-        int enzyme = 0;
-        int channel = 0;
-//        int rowNumber = 0;
+        ArrayList<Integer> firstSection = new ArrayList<>();
+        ArrayList<Integer> secondSection = new ArrayList<>();
         
-        try {
-            fin = new FileInputStream(fileName);
-            br = new BufferedReader(new InputStreamReader(fin));
-            
-            String line = "";
-            
-            while((line = br.readLine()) != null) {
-                
-                if(line.equals("")) {
-                    
-                }
-                else if(line.contains("Enzyme")) {
-                    if(line.contains(" ")) {
-                        
-                        String splitArray[] = line.split(" ");
-                        enzyme = Integer.parseInt(splitArray[1]);
-                    }
-                }
-                else if(line.contains("Channel")) {
-                    if(line.contains(" ")) {
-                        
-                        String splitArray[] = line.split(" ");
-                        
-                        channel = Integer.parseInt(splitArray[1]);
-                        
-                        getChannelList().add(channel, enzyme);
-//                        channel++;
-                    }
-                }
+        for(int channel : parentList) {
+            if(channel%2 == 0) {
+                firstSection.add(channel);
             }
-            
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(HeatReader.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(HeatReader.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                br.close();
-                fin.close();
-            } catch (IOException ex) {
-                Logger.getLogger(HeatReader.class.getName()).log(Level.SEVERE, null, ex);
+            else {
+                secondSection.add(channel);
             }
         }
+        
+        sectionMap.put("Association", firstSection);
+        sectionMap.put("Dissociation", secondSection);        
+//        addEnzymeSection("Association", firstSection);
+//        addEnzymeSection("Dissociation", secondSection);
+        
+//        getAllSectionMap().put("Association", sectionMap);
+        return sectionMap;
+    }
+    
+    public LinkedHashMap<String, ArrayList<Integer>> categorizeEnzyme(ArrayList<Integer> parentList) {
+        
+        LinkedHashMap<String, ArrayList<Integer>> sectionList = new LinkedHashMap<>();
+        
+        ArrayList<Integer> section;
+        for(int channel : parentList) {
+            String enzyme = heatProject.getChromosom().getEditorRuleList().get(channel/2).getEnzymeName();
+            if(sectionList.containsKey(enzyme)) {
+                section = sectionList.get(enzyme);
+            }
+            else {
+                section = new ArrayList<>();
+            }
+            
+            section.add(channel);
+            sectionList.put(enzyme, section);
+        }
+        
+        return sectionList;
+    }
+    
+    public LinkedHashMap<String, ArrayList<Integer>> categorizeByTagName(ArrayList<Integer> parentList, String tagName) {
+        
+        LinkedHashMap<String, ArrayList<Integer>> sectionList = new LinkedHashMap<>();
+        
+        ArrayList<Integer> section;
+        for(int channel : parentList) {
+            String tagValue = heatProject.getChromosom().getEditorRuleList().get(channel/2).getTagValue(tagName);
+            
+            if(sectionList.containsKey(tagValue)) {
+                section = sectionList.get(tagValue);
+            }
+            else {
+                section = new ArrayList<>();
+            }
+            
+            section.add(channel);
+            sectionList.put(tagValue, section);
+        }
+        
+        return sectionList;
+    }
+    
+    public LinkedHashMap<String, ArrayList<Integer>> categorizeProcess(ArrayList<Integer> parentList) {
+        
+        LinkedHashMap<String, ArrayList<Integer>> sectionList = new LinkedHashMap<>();
+        
+        ArrayList<Integer> section;
+        for(int channel : parentList) {
+            String process = heatProject.getChromosom().getEditorRuleList().get(channel).getTagValue("process");
+            
+            if(sectionList.containsKey(process)) {
+                section = sectionList.get(process);
+            }
+            else {
+                section = new ArrayList<>();
+            }
+            
+            section.add(channel);
+            sectionList.put(process, section);
+        }
+        
+        return sectionList;
+    }
+    
+    public LinkedHashMap<String, ArrayList<Integer>> categorizeSite(ArrayList<Integer> parentList) {
+        
+        LinkedHashMap<String, ArrayList<Integer>> sectionList = new LinkedHashMap<>();
+        
+        ArrayList<Integer> section;
+        for(int channel : parentList) {
+            
+            String site = "";
+            
+            String target = heatProject.getChromosom().getEditorRuleList().get(channel/2).getTarget();
+            String rule = heatProject.getChromosom().getEditorRuleList().get(channel/2).getRule();
+            
+            target = target.replaceAll("\\{", "").replaceAll("\\}", "").replaceAll("\\(", "").replaceAll("\\)", "");
+            
+            rule = rule.replaceAll("\\{", "").replaceAll("\\}", "").replaceAll("\\(", "").replaceAll("\\)", "");
+            
+            String targetSplit[] = target.split("H");
+            String ruleSplit[] = rule.split("H");
+            
+            ArrayList<String> tar = new ArrayList(Arrays.asList(ruleSplit));
+            
+            String longArray[] = null;
+            String shortArray[] = null;
+            
+            if(targetSplit.length > ruleSplit.length) {
+                longArray = targetSplit;
+                shortArray = ruleSplit;
+            }
+            else {
+                longArray = ruleSplit;
+                shortArray = targetSplit;
+            }
+            
+            ArrayList<String> shortList = new ArrayList(Arrays.asList(shortArray));
+            
+            for(String longString : longArray) {
+                if(!shortList.contains(longString)) {
+                    if(longString.contains(".")) {
+                        String targetStringSplit[] = longString.split("\\.");
+                        site = "H" + targetStringSplit[0];
+                        site = site.replaceAll("\\[", " ");
+                    }
+                }
+                else {
+                    shortList.remove(longString);
+                }
+            }
+            
+            if(sectionList.containsKey(site)) {
+                section = sectionList.get(site);
+            }
+            else {
+                section = new ArrayList<>();
+            }
+            
+            section.add(channel);
+            sectionList.put(site, section);
+        }
+        
+        return sectionList;
+    }
+    
+    public LinkedHashMap<String, ArrayList<Integer>> categorizeHistone(ArrayList<Integer> parentList) {
+        
+        LinkedHashMap<String, ArrayList<Integer>> sectionList = new LinkedHashMap<>();
+        
+        ArrayList<Integer> section;
+        for(int channel : parentList) {
+            
+            String histone = "";
+            
+            String target = heatProject.getChromosom().getEditorRuleList().get(channel/2).getTarget();
+            String rule = heatProject.getChromosom().getEditorRuleList().get(channel/2).getRule();
+            
+            target = target.replaceAll("\\{", "").replaceAll("\\}", "").replaceAll("\\(", "").replaceAll("\\)", "");
+            
+            rule = rule.replaceAll("\\{", "").replaceAll("\\}", "").replaceAll("\\(", "").replaceAll("\\)", "");
+            
+            String targetSplit[] = target.split("H");
+            String ruleSplit[] = rule.split("H");
+            
+            String longArray[] = null;
+            String shortArray[] = null;
+            
+            if(targetSplit.length > ruleSplit.length) {
+                longArray = targetSplit;
+                shortArray = ruleSplit;
+            }
+            else {
+                longArray = ruleSplit;
+                shortArray = targetSplit;
+            }
+            
+            ArrayList<String> shortList = new ArrayList(Arrays.asList(shortArray));
+            
+            for(String longString : longArray) {
+                if(!shortList.contains(longString)) {
+                    histone = "H" + longString.substring(0, longString.indexOf("["));
+                }
+                else {
+                    shortList.remove(longString);
+                }
+            }
+            
+            if(sectionList.containsKey(histone)) {
+                section = sectionList.get(histone);
+            }
+            else {
+                section = new ArrayList<>();
+            }
+            
+            section.add(channel);
+            sectionList.put(histone, section);
+        }
+        
+        return sectionList;
     }
     
     public void searchForLogFiles(String path) {
-        this.path = path;
+        this.setPath(path);
         
         File[] files = new File(path).listFiles();
         //If this pathname does not denote a directory, then listFiles() returns null. 
-
-        for (File file : files) {
-            if (file.isFile()) {
-                addLogFile(file.getPath());
+                
+        if(files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".csv")) {
+                    addLogFile(file.getAbsolutePath());
+                }
             }
         }
     }
@@ -135,7 +293,7 @@ public class HeatReader {
     }
     
     public void addLogFile(String fileName) {
-        String timeStep = fileName.substring(fileName.lastIndexOf("\\")+1, fileName.indexOf("."));
+        String timeStep = fileName.substring(fileName.lastIndexOf(File.separator)+1, fileName.indexOf("."));
         String ending = fileName.substring(fileName.indexOf(".")+1);
         
         if(ending.equals("csv") || ending.equals("txt")) {
@@ -157,7 +315,7 @@ public class HeatReader {
         BufferedReader br = null;
         
         try {
-            fin = new FileInputStream(path + timeStep + ".csv");
+            fin = new FileInputStream(getPath() + File.separator + timeStep + ".csv");
             br = new BufferedReader(new InputStreamReader(fin));
             
             ArrayList<ArrayList<Double>> enzymeList = new ArrayList<>();
@@ -209,15 +367,6 @@ public class HeatReader {
             getTimeMap().replace(timeStep, enzymeList);
             getOriginalTimeMap().put(timeStep, enzymeList);
             
-//            for(ArrayList<ArrayList<Double>> entry : timeMap.values()) {
-//                for(int enzyme = 0; enzyme < entry.size(); enzyme++) {
-//                    for(int nukleosom = 0; nukleosom < entry.get(enzyme).size(); nukleosom++) {
-//                        System.err.print(entry.get(enzyme).get(nukleosom) + ";");
-//                    }
-//                    System.err.println();
-//                }
-//            }
-            
             generateProbabilities(timeStep);
             scaleValues(timeStep);
             
@@ -235,7 +384,6 @@ public class HeatReader {
         }
         
         System.out.println(timeStep + ".csv was added to timeMap");
-        
     }
     
     public void scaleValues(String timeStep) {
@@ -289,19 +437,6 @@ public class HeatReader {
         this.hitMap = hitMap;
     }
 
-    /**
-     * @return the channelList
-     */
-    public ArrayList<Integer> getChannelList() {
-        return channelList;
-    }
-
-    /**
-     * @param channelList the channelList to set
-     */
-    public void setChannelList(ArrayList<Integer> channelList) {
-        this.channelList = channelList;
-    }
 
     private void generateProbabilities(String timeStep) {
         if(getOriginalTimeMap().get(timeStep) != null) {
@@ -354,5 +489,26 @@ public class HeatReader {
     public void setProbabilityTimeMap(HashMap<String, ArrayList<ArrayList<Double>>> probabilityTimeMap) {
         this.probabilityTimeMap = probabilityTimeMap;
     }
-    
+
+    /**
+     * @return the allSectionMap
+     */
+    public HashMap<String, HashMap<String, HashMap<String, ArrayList<Integer>>>> getAllSectionMap() {
+        return allSectionMap;
+    }
+
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
+
 }

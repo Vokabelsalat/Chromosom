@@ -5,9 +5,6 @@
  */
 package HeatChromosom;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -23,19 +20,20 @@ public class HeatOptionsGrid extends GridPane{
         this.setHgap(5);
         this.setVgap(2);
         
-        this.add(new Label("Probability:"), 0, 1);
-        this.add(new Label("Value:"), 0, 2);
-        this.add(new Label("Nukleosom:"), 0, 3);
-        this.add(new Label("Enzyme:"), 0, 4);
-        this.add(new Label("Channel:"), 0, 5);
-        this.add(new Label("Action:"), 0, 6);
+        this.add(new Label("Scalevalue:"), 0, 1);
+        this.add(new Label("Probability:"), 0, 2);
+        this.add(new Label("Value:"), 0, 3);
+        this.add(new Label("Nukleosom:"), 0, 4);
+        this.add(new Label("Enzyme:"), 0, 5);
+        this.add(new Label("Rule:"), 0, 6);
+        this.add(new Label("Action:"), 0, 7);
         
         Pane emptyPane = new Pane();
         emptyPane.setMinSize(28,28);
         
         this.add(emptyPane, 0, 0);
         
-        this.setMinSize(150, 0);
+        this.setMinSize(270, 0);
     }
     
 }

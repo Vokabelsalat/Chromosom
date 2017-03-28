@@ -6,260 +6,575 @@
 package Nukleosom;
 
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import application.ChromosomProject;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Translate;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
 
-public class BigNukleosomNew extends GridPane {
+/**
+ * Aktuelles Nukleosom mit einer Unterteilung für die verschiedenen Histone
+ * @author Jakob
+ */
+public class BigNukleosomNew extends StackPane {
+
+        public Rectangle firstRect;
+        public Rectangle lastRect;
 	
+        private boolean showLabels;
+        
 	HashMap<String,Integer> attributeMap;
-//	int width, height;
 	double angleWidth;
-//        private String svgExportString = "<g transform=\"translate(%X,%Y)\">\n";
 	
-        HashMap<String,HashMap<String,Integer>> histoneMap;
+        private HashMap<String,HashMap<String,String>> histoneMap;
         ChromosomProject project;
         int width; 
         int height;
+        private int x;
+        private int y;
+//        Pane pan;
+        int maxX = 0;
+        int maxY = 0;
         
-	public BigNukleosomNew(ChromosomProject project, HashMap<String,HashMap<String,Integer>> histoneMap, int width, int height, boolean showLabels) {
-            
+        public int nuklWidth = 0;
+        public int nuklHeight = 0;
+        Rectangle highRect;
+        private boolean changed = false;
+        private boolean enzymeWaiting;
+        private Rectangle enzymeRectangle;
+        
+        Stage hoverStage;
+        Popup hoverPopup;
+        
+	public BigNukleosomNew(ChromosomProject project, HashMap<String,HashMap<String,String>> histoneMap, int x, int y, int width, int height, boolean showLabels, boolean hover) {
+            getStyleClass().add("BigNukleosomNew");
+            this.showLabels = showLabels;
             this.histoneMap = histoneMap;
             this.project = project;
             this.width = width;
             this.height = height;
+            this.x = x;
+            this.y = y;
+            this.setAlignment(Pos.TOP_LEFT);
+            highRect = new Rectangle();
             
-                Map<String,HashMap<String,int[]>> histoneProperties = project.getHistoneProperties();
-               
-                int maxX = project.getMaxX();
-                int maxY = project.getMaxY();
+//            this.setPadding(new Insets(5,5,5,5));
+//            setStyle("-fx-border: 1px solid; -fx-border-color: black;");
+            
+            LinkedHashMap<String, String[][]> histoneProperties = project.getHistoneMap();
+            
+//                maxX = project.getMaxX();
+//                maxY = project.getMaxY();
                 
 //                //TODO ind die Höhe und Breite noch die Lücken zwischen den Histonen einberechnen (gaps)
 //		this.width = maxX * width;
 //		this.height = maxY * height;
                 
-                int gridX = 0;
-                int gridY = 0;
-                
-                setPrefSize(width * maxX, height * maxY);
-                
-                int x = 0;
-                int y = 0;
-                String histoneNumberString = "";
-                
-                Pane pan = new Pane();                
-                this.setHgap(5);
-                this.setVgap(2);
-                
-                int value;
-                Paint color;
-                
-                for(String histone : histoneProperties.keySet()) {
-                    pan = new Pane(); 
-                    x = 0;
-                    y = 0;
-                    histoneNumberString = histone;
-                    
-                    for(Map.Entry<String, int[]> attribute : histoneProperties.get(histone).entrySet()) {
-                            
-                        if(histoneMap.containsKey(histone)) {
+            int gridX = 0;
+            int gridY = 0;
 
-                            if(histoneMap.get(histone).containsKey(attribute.getKey())) {
-                            
-                                value = histoneMap.get(histone).get(attribute.getKey());
-                                
-                                color = Color.BLACK;
+            int attrMaxX = 0;
+            int attrMaxY = 0;
 
-                                if(value == 0) {
-                                        color = ChromosomProject.color0;
-                                }
-                                else if(value == 1) {
-                                        color = ChromosomProject.color1;
-                                }
-                                else if(value == 2) {
-                                        color = ChromosomProject.color2;
-                                }
-                                else if(value == 3) {
-                                        color = ChromosomProject.color3;
-                                }
-                                else if(value == 4) {
-                                        color = ChromosomProject.color4;
-                                }
+            String histoneNumberString = "";
 
-                                Rectangle rect = new Rectangle(width, height , color); 
-                                rect.setOpacity(1.0);   
-                                
-                                x = histoneProperties.get(histoneNumberString).get(attribute.getKey())[0];
-                                y = histoneProperties.get(histoneNumberString).get(attribute.getKey())[1];
+            GridPane grid = new GridPane();
+            grid.setHgap(width / (6./2.));
+            grid.setVgap(height / (6./2.));
 
-                                rect.setX(x * width);
-                                rect.setY(y * height);
-                                
-                                rect.setStroke(Color.BLACK);
-                                rect.setStrokeWidth(0.3);
-//                                rect.setAttributeValue(value);
-                                pan.getChildren().add(rect);
-                                
-                                if(showLabels == true) {
-                                    Label lab = new Label(String.valueOf(value));
-//                                    lab.setTranslateX(x * width);
-                                    lab.getTransforms().add(new Translate(x*width,0.0));
-                                    pan.getChildren().add(lab);
-                                }
-                            }
-                            else {
-                               Rectangle rect = new Rectangle(width, height , Color.WHITE); 
-                               rect.setOpacity(1.0);   
-                                
-                                x = histoneProperties.get(histoneNumberString).get(attribute.getKey())[0];
-                                y = histoneProperties.get(histoneNumberString).get(attribute.getKey())[1];
+            String value;
+            Color color;
 
-                                rect.setX(x * width);
-                                rect.setY(y * height);
-                                rect.setStroke(Color.BLACK);
-                                rect.setStrokeWidth(0.3);
-//                                rect.setAttributeValue(value);
-                                pan.getChildren().add(rect);                                
-                            }
-                            
-                        }
-//                        else {
-//                               Rectangle rect = new Rectangle(width, height , Color.WHITE); 
-//                               rect.setOpacity(1.0);   
-//                                
-//                                x = histoneProperties.get(histoneNumberString).get(attribute.getKey())[0];
-//                                y = histoneProperties.get(histoneNumberString).get(attribute.getKey())[1];
-//
-//                                rect.setX(x * width);
-//                                rect.setY(y * height);
-//                                rect.setStroke(Color.BLACK);
-//                                rect.setStrokeWidth(0.3);
-////                                rect.setAttributeValue(value);
-//                            
-//                                pan.getChildren().add(rect);                                
-//                        }
+            for(String histone : histoneProperties.keySet()) {
+
+                histoneNumberString = histone;
+
+                boolean histoneHit = false;
+
+                String[][] attributeArray = histoneProperties.get(histone);
+
+                if(attributeArray != null) {
+
+                    if(attrMaxX < attributeArray.length) {
+                        attrMaxX = attributeArray.length;
                     }
-                        this.add(pan, gridX, gridY); 
-                        gridY++;
+
+                    if(attrMaxY < attributeArray[0].length) {
+                        attrMaxY = attributeArray[0].length;
+                    }
+
+                    GridPane sitePane = new GridPane();
+                    sitePane.setHgap(0);
+                    sitePane.setVgap(0);
+
+                    for(int innerY = 0; innerY < attributeArray[0].length; innerY++) {
+
+                        for(int innerX = 0; innerX < attributeArray.length; innerX++) {
+
+                            if(histoneMap.containsKey(histone)) {
+                                
+                                if(histoneMap.get(histone).containsKey(attributeArray[innerX][innerY])) {
+
+                                    value = histoneMap.get(histone).get(attributeArray[innerX][innerY]);
+                                    histoneHit = true;
+                                    
+                                    String siteName = project.getHistoneMap().get(histone)[innerX][innerY];
+                                    String histSite = histone + siteName;
+
+                                    color = Color.BLACK;
+                                    for(String colorKey : project.getModificationColors().getColorMap().keySet()) {
+                                        if(colorKey.contains(":")) {
+                                            String split[] = colorKey.split(":");
+                                            if(attributeArray[innerX][innerY].contains(split[0]) && value.contains(split[1])) {
+
+                                                color = project.getModificationColors().getColorMap().get(colorKey);
+                                                break;
+                                            }
+
+                                            if(histSite.contains(split[0]) && value.contains(split[1])) {
+                                                color = project.getModificationColors().getColorMap().get(colorKey);
+                                                break;
+                                            }
+
+                                        }
+                                        else if(value.contains(colorKey)) {
+                                            color = project.getModificationColors().getColorMap().get(value);
+                                        }
+                                    }
+
+                                    try {
+                                        color = Color.web(project.getSpecialColorMap().get(histone).get(attributeArray[innerX][innerY]).get("undefined"));
+                                    }
+                                    catch(Exception e) {
+                                    }
+
+                                    try {
+                                        color = Color.web(project.getSpecialColorMap().get("undefined").get("undefined").get(value));
+                                    }
+                                    catch(Exception e) {
+                                    }
+
+                                    try {
+                                        color = Color.web(project.getSpecialColorMap().get(histone).get("undefined").get(value));
+                                    }
+                                    catch(Exception e) {
+                                    }
+
+                                    try {
+                                        color = Color.web(project.getSpecialColorMap().get("undefined").get(attributeArray[innerX][innerY]).get(value));
+                                    }
+                                    catch(Exception e) {
+                                    }
+
+                                    try {
+                                        color = Color.web(project.getSpecialColorMap().get(histone).get(attributeArray[innerX][innerY]).get(value));
+                                    }
+                                    catch(Exception e) {
+                                    }
+
+
+                                    StackPane rectPane = new StackPane();
+                                    Rectangle rect = new Rectangle(width, height , color); 
+                                    rect.setOpacity(1.0);   
+
+                                    rect.setStroke(new Color(0,0,0,0.6));
+                                    rect.setStrokeWidth(0.3);
+
+                                    if(firstRect == null) {
+                                        firstRect = rect;
+                                    }
+                                    lastRect = rect;
+
+                                    rectPane.getChildren().add(rect);
+                                    rectPane.getStyleClass().add("rectPane");
+
+                                    if(showLabels == true) {
+                                        Label lab;
+                                        if(hover == true) {
+                                            lab = new Label(siteName);
+                                        }
+                                        else {
+                                            lab = new Label(histone + "\n" + siteName + "\n" + String.valueOf(value));
+                                        }
+
+                                        lab.setId("fancytext");
+
+                                        lab.setPadding(new Insets(0,2,0,2));
+
+                                        lab.setAlignment(Pos.CENTER);
+                                        rectPane.setAlignment(Pos.CENTER);
+
+                                        rectPane.getChildren().add(lab);
+                                    }
+
+                                    sitePane.add(rectPane, innerX, innerY);
+
+                                }
+                                else if (project.isShowEmptySites()) {
+                                    StackPane rectPane = new StackPane();
+                                    Rectangle rect = new Rectangle(width, height , Color.WHITE); 
+                                    rect.setOpacity(1);   
+
+                                    rect.setStroke(new Color(0,0,0,0.6));
+                                    rect.setStrokeWidth(0.3);
+                                    rectPane.getChildren().add(rect);
+                                    sitePane.add(rectPane, innerX, innerY);
+                                    lastRect=rect;
+
+                                    if(showLabels == true) {
+                                        String siteName = project.getHistoneMap().get(histone)[innerX][innerY];
+                                        Label lab;
+                                        if(hover == true) {
+                                            lab = new Label(siteName);
+                                        }
+                                        else {
+                                            lab = new Label(histone + "\n" + siteName + "\nun");
+                                        }
+
+                                        lab.setId("fancytext");
+
+                                        lab.setPadding(new Insets(0,2,0,2));
+
+                                        lab.setAlignment(Pos.CENTER);
+                                        rectPane.setAlignment(Pos.CENTER);
+
+                                        rectPane.getChildren().add(lab);
+                                    }
+                                }
+                                else {
+                                    StackPane rectPane = new StackPane();
+                                    Rectangle rect = new Rectangle(width, height , Color.WHITE); 
+
+                                    rect.setStroke(new Color(0,0,0,0.6));
+                                    rect.setStrokeWidth(0.3);
+                                    rectPane.getChildren().add(rect);
+                                    sitePane.add(rectPane, innerX, innerY);
+                                    lastRect=rect;
+
+                                    if(showLabels == true) {
+                                        Label lab = new Label("un");
+
+                                        lab.setId("fancytext");
+
+                                        lab.setPadding(new Insets(0,2,0,2));
+
+                                        lab.setAlignment(Pos.CENTER);
+                                        rectPane.setAlignment(Pos.CENTER);
+
+                                        rectPane.getChildren().add(lab);
+                                    }
+                                    else {
+                                        // Damit die Rectangles nur in der Seitenansicht zu sehen sind
+                                        rect.setOpacity(0); 
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    grid.add(sitePane, gridX, gridY); 
                 }
-                
-//                for(Map.Entry<String,HashMap<String,Integer>> histone : histoneMap.entrySet()) {
-//                    pan = new Pane(); 
-//                    x = 0;
-//                    y = 0;
-//                    histoneNumberString = histone.getKey();
-////                    /* 
-//                    
-//                    for(Map.Entry<String,Integer> attribute : histone.getValue().entrySet()) {
-//                            value = attribute.getValue();
-//
-//                            color = Color.BLACK;
-//
-//                            if(value == 0) {
-//        //					color = Color.web("#FF9933");
-//                                    color = ChromosomProject.color0;
-//                            }
-//                            else if(value == 1) {
-//        //					color = Color.web("#3333FF");
-//                                    color = ChromosomProject.color1;
-//                            }
-//                            else if(value == 2) {
-//        //					color = Color.web("#3333FF");
-//                                    color = ChromosomProject.color2;
-//                            }
-//                            else if(value == 3) {
-//        //					color = Color.web("#FF9933");
-//                                    color = ChromosomProject.color3;
-//                            }
-//                            else if(value == 4) {
-//        //					color = Color.web("#E84C3C");
-//                                    color = ChromosomProject.color4;
-//                            }
-//
-//                            Rectangle rect = new Rectangle(width, height , color); rect.setOpacity(1.0);
-//                            rect = new AttributeRectangle(width, height, color);
-//                            
-//                            x = histoneProperties.get(histoneNumberString).get(attribute.getKey())[0];
-//                            y = histoneProperties.get(histoneNumberString).get(attribute.getKey())[1];
-//                            
-//                            rect.setX(x * width);
-//                            rect.setY(y * height);
-//                            rect.setStroke(Color.BLACK);
-//                            rect.setStrokeWidth(0.3);
-////                            rect.setAttributeValue(value);
-//                            
-//
-////                            Tooltip t = new Tooltip(String.valueOf(value));
-////                            Tooltip.install(rect, t);
-//                            
-////                            Color col  = Color.BLACK;
-////                            Color strokeCol = Color.BLACK;
-////
-////                            if(rect.getFill()!=null) {
-////                                col = Color.web(rect.getFill().toString());
-////                            }
-////
-////                            String colString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
-////
-////                            if(rect.getStroke()!=null) {
-////                                col = Color.web(rect.getStroke().toString());
-////                            }
-////
-////                            String strokeColString = (int)(col.getRed() * 255) + "," + (int)(col.getGreen() * 255) + "," + (int)(col.getBlue() * 255);
-////
-////                            String pointString = "";
-////
-////                            svgExportString += "<rect x=\"" + rect.getX() + "\" y=\"" + rect.getY() + "\" width=\"" + width + "\" height=\"" + height + "\" style=\"fill:rgb(" + colString + ");stroke:rgb(" + strokeColString + ");stroke-width:" + rect.getStrokeWidth() + ";\" />";
-////                            svgExportString += "\n";
-//
-//                            pan.getChildren().add(rect);
-//
-//
-////                            if(x % maxX == 0 && x > 0) {
-////                                    y++;
-////                                    x = 0;
-////                            }
-////                            else
-////                                x++;
-//                            
-//
-//                            
-////                            System.err.println(attribute.getKey() + " : " + x + " ; " + y);
-//                            
-//                        }
-//                       
-//                        this.add(pan, gridX, gridY); 
-//                        gridY++;
-//                    }
-                        
-//                    this.setGridLinesVisible(true);
-                    
-//                    svgExportString += "</g>";
-                    
-                    
-                    x = 0;
-                    y = 0;
-//                    */
-                    
+
+                if((gridX+1) % 2 == 0) {
+                    if(project.maxY < gridY && histoneHit == true) {
+                        project.maxY++;
+                    }
+                    gridX = 0;
+                    gridY++;
+                }
+                else {
+                    gridX++;                        
+                    if(project.maxX < gridX && histoneHit == true) {
+                        project.maxX++;
+                    }
+                }
+            }
+
+            if(showLabels == false) {
+                BigNukleosomNew give = this;
+                if(project.getChromosom().getOptions()!= null) {
                     this.setOnMouseClicked(new EventHandler<MouseEvent>() {
                         @Override
                         public void handle(MouseEvent mouseEvent) {
-                           project.addNukleosomToOptions(new BigNukleosomNew(project, histoneMap, project.nukleosomMinWidth * 4, project.nukleosomMinHeight * 4, true));
+                            int col = 1;
+                            if(mouseEvent.getButton() == MouseButton.PRIMARY) {
+                                if(null != project.getLeftNukleosom()) {
+                                    project.getLeftNukleosom().deHighlight();
+                                }
+                                selectNukls(1, project.getLeftNukleosom());
+                                col = 1;
+                            }
+                            else if(mouseEvent.getButton() == MouseButton.SECONDARY) {
+                                if(null != project.getRightNukleosom()) {
+                                    project.getRightNukleosom().deHighlight();
+                                }
+                                selectNukls(2, project.getRightNukleosom());
+                                col = 2;
+                            }
+                           project.chromosom.getOptions().addNukleosom(give, col);
                         }
                     });
-                    
+                }
+            }
+
+            this.getChildren().add(grid);
+
+            String str = String.valueOf(x) + " " + String.valueOf(y);
+
+            if(!project.nukList.contains(str)) {
+                project.nukList.add(str);
+            }
+            else {
+                project.copyList.add(str);
+            }
+
+            project.count = project.count + 1;
+            
+            if(hover == true) {
+                
+                hoverPopup = new Popup();
+                hoverPopup.getContent().add(new BigNukleosomNew(project, histoneMap, x, y, width * 2, height * 2, true, false));
+                
+                this.setOnMouseEntered(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent t) {
+                        hoverPopup.show(project.chromosom.getPrimaryStage(), t.getScreenX(), t.getScreenY());
+                    }
+                });
+                
+                this.setOnMouseExited(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent t) {
+                        hoverPopup.hide();
+                    }
+                });
+
+            }
+            
+            this.heightProperty().addListener(new ChangeListener<Number>() {
+                public void changed(ObservableValue<? extends Number> ov,
+                    Number old_val, Number new_val) {
+//                        if(project.maxNuclHeight < new_val.doubleValue()) {
+                            project.maxNuclHeight = new_val.doubleValue();
+                            highRect.setHeight(new_val.doubleValue());
+//                        }
+                }
+            });
+            
+            this.widthProperty().addListener(new ChangeListener<Number>() {
+                public void changed(ObservableValue<? extends Number> ov,
+                    Number old_val, Number new_val) {
+//                        if(project.maxNuclWidth < new_val.doubleValue()) {
+                            project.maxNuclWidth = new_val.doubleValue() ;
+                            highRect.setWidth(new_val.doubleValue());
+//                        }
+                }
+            });
+            
+        }
+        
+        public void highlight(int col, double width, double height) {
+            
+            width = this.getWidth();
+            height = this.getHeight();
+            
+//            width = project.maxNuclWidth;
+//            height = project.maxNuclHeight;
+            
+            Color color = Color.BLUE;
+            highRect.setOpacity(0.15);
+            switch (col) {
+                case 0:
+                    setChanged(true);
+                    break;
+                case 1:
+                    color = Color.RED;
+                    highRect.setOpacity(0.3);
+                    break;
+                case 2:
+                    color = Color.GREEN;
+                    highRect.setOpacity(0.3);
+                    break;
+                default:
+                    break;
+            }
+            
+            highRect.setWidth(width);
+            highRect.setHeight(height);
+            
+            highRect.setFill(color);
+            
+            if(!this.getChildren().contains(highRect)) {
+                this.getChildren().add(highRect);
+            }
+        }
+        
+        public void deHighlight() {
+            if(this.getChildren().contains(highRect)) {
+                this.getChildren().remove(highRect);
+            }
+            if(Integer.parseInt(project.getMetaInformations().get(String.valueOf(y))[1]) == x && project.stepSize.peek() == 1) {
+                highlight(0, this.getWidth(), this.getHeight());
+            }
+        }
+        
+        public void selectNukls(int col, BigNukleosomNew oldNukl) {
+            if(col == 1) {
+                if(project.getLeftNukleosom() == this) {
+                    this.deHighlight();
+                    project.setLeftNukleosom(null);
+                }
+                else {
+                    this.highlight(1, this.getWidth(), this.getHeight());
+                    if(oldNukl != null) {
+                        oldNukl.deHighlight();
+                    }
+                    project.setLeftNukleosom(this);
+                }
+                if(project.getRightNukleosom() != null && project.getLeftNukleosom() != project.getRightNukleosom()) {
+                    project.getRightNukleosom().highlight(2, this.getWidth(), this.getHeight());
+                }
+            }
+            else {
+                if(project.getRightNukleosom() == this) {
+                    this.deHighlight();
+                    project.setRightNukleosom(null);
+                }
+                else {
+                    this.highlight(2, this.getWidth(), this.getHeight());
+                    if(oldNukl != null) {
+                        oldNukl.deHighlight();
+                    }
+                    project.setRightNukleosom(this);
+                }
+                if(project.getLeftNukleosom() != null  && project.getLeftNukleosom() != project.getRightNukleosom()) {
+                    project.getLeftNukleosom().highlight(1, this.getWidth(), this.getHeight());
+                }
+            }
+
+//            project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(leftNode, 2, project.getHeatOptionsPanel().getStartRow());
+//            project.getHeatOptionsPanel().addHeatNukleosomToOptionPanel(rightNode, 3, project.getHeatOptionsPanel().getStartRow());
         }
         
         public String getSVGExportString() {
             return ""; //svgExportString;
         }
+
+    /**
+     * @return the x
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * @param x the x to set
+     */
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    /**
+     * @return the y
+     */
+    public int getY() {
+        return y;
+    }
+
+    /**
+     * @param y the y to set
+     */
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    /**
+     * @return the histoneMap
+     */
+    public HashMap<String,HashMap<String,String>> getHistoneMap() {
+        return histoneMap;
+    }
+
+    /**
+     * @param histoneMap the histoneMap to set
+     */
+    public void setHistoneMap(HashMap<String,HashMap<String,String>> histoneMap) {
+        this.histoneMap = histoneMap;
+    }
+
+    /**
+     * @return the showLabels
+     */
+    public boolean isShowLabels() {
+        return showLabels;
+    }
+
+    /**
+     * @param showLabels the showLabels to set
+     */
+    public void setShowLabels(boolean showLabels) {
+        this.showLabels = showLabels;
+    }
+
+    /**
+     * @return the changed
+     */
+    public boolean isChanged() {
+        return changed;
+    }
+
+    /**
+     * @param changed the changed to set
+     */
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
+
+    /**
+     * @return the enzymeWaiting
+     */
+    public boolean isEnzymeWaiting() {
+        return enzymeWaiting;
+    }
+
+    /**
+     * @param enzymeWaiting the enzymeWaiting to set
+     */
+    public void setEnzymeWaiting(boolean enzymeWaiting) {
+        this.enzymeWaiting = enzymeWaiting;
+    }
+
+    void deHighlightEnzyme() {
+        getEnzymeRectangle().setVisible(false);
+    }
+
+    void highlightEnzyme() {
+        getEnzymeRectangle().setVisible(true);
+    }
+    
+    /**
+     * @return the enzymeRectangle
+     */
+    public Rectangle getEnzymeRectangle() {
+        return enzymeRectangle;
+    }
+
+    /**
+     * @param enzymeRectangle the enzymeRectangle to set
+     */
+    public void setEnzymeRectangle(Rectangle enzymeRectangle) {
+        this.enzymeRectangle = enzymeRectangle;
+    }
 }
 

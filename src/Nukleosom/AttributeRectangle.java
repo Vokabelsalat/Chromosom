@@ -11,7 +11,7 @@ import javafx.scene.shape.Rectangle;
 
 /**
  *
- * @author jakob
+ * @author Jakob
  */
 public class AttributeRectangle extends Rectangle{
     

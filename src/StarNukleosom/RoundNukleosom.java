@@ -111,15 +111,9 @@ public class RoundNukleosom extends Pane{
 			
 		}	
 		
-//		polygonGroup.getTransforms().add(bigger);
-//		outLineGroup.getTransforms().add(bigger);
-//		axisGroup.getTransforms().add(bigger);
-		
 		getChildren().add(netGroup);
 		
 		getChildren().add(polygonGroup);
-		
-//		getChildren().add(outLineGroup);
 		
 		getChildren().add(axisGroup);	
 		

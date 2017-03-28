@@ -21,14 +21,14 @@ public class SiteBorderPane extends BorderPane {
     private GridPane innerGrid;
     private SiteSetter parent;
     
-    boolean showGrid = true;
+    private boolean showGrid = true;
     
     private String title;
     
     private int x;
     private int y;
     
-    String[] emptyText = {"K4","Z3","O24","T9"};
+    String[][] emptyText = {{"",""},{"",""}};
     
     public SiteBorderPane(String title, SiteSetter parent, GridPane outerGrid) {
         super();
@@ -41,30 +41,37 @@ public class SiteBorderPane extends BorderPane {
         innerGrid = addAttributeTextfields(emptyText);
 
         setPadding(new Insets(10,10,10,10));
-        setStyle("-fx-border: 1px solid; -fx-border-color: black;");
+        setStyle("-fx-border-width: 1px; -fx-border-color: black;");
+        setCenter(innerGrid);
+    }
+    
+    public SiteBorderPane(String title, SiteSetter parent, GridPane outerGrid, String[][] emptyText) {
+        super();
+
+        this.title = title;
+        this.parent = parent;
+        this.outerGrid = outerGrid;
+        this.emptyText = emptyText;
+        
+        setTop(new Label(title));
+        innerGrid = addAttributeTextfields(emptyText);
+
+        setPadding(new Insets(10,10,10,10));
+        setStyle("-fx-border-width: 1px; -fx-border-color: black;");
         setCenter(innerGrid);
     }
         
-    public GridPane addAttributeTextfields(String[] array) {
+    public GridPane addAttributeTextfields(String[][] array) {
             
         GridPane pan = new GridPane();
 
         int countX = 0, countY = 0;
 
-        for(String text : array) {
-            pan.add(new AttributeTextfield(text), countX, countY);
-
-            if(countX % (parent.maxX-1) == 0 && countX > 0) {
-                countY++;
-                countX = 0;
-            }
-            else {
-                countX++;
+        for(countY = 0; countY < array[0].length; countY++) {
+            for(countX = 0; countX < array.length; countX++) {
+                pan.add(new AttributeTextfield(array[countX][countY]), countX, countY);
             }
         }
-        
-//        pan.setPadding(new Insets(1,1,1,1));
-//        pan.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
         
         return pan;
     }
@@ -86,11 +93,11 @@ public class SiteBorderPane extends BorderPane {
     public void showGrid(boolean bool) {
         if(bool == true && !title.equals("")) {
             setCenter(innerGrid);
-            showGrid = true;
+            setShowGrid(true);
         }
         else {
             setCenter(null);
-            showGrid = false;
+            setShowGrid(false);
         }
     }
     
@@ -150,11 +157,13 @@ public class SiteBorderPane extends BorderPane {
         this.title = title;
     }
 
-    String[][] getEntries() {
+    public String[][] getEntries() {
         
         int x = 0, y = 0;
         
         String[][] returnArray = new String[parent.maxX][parent.maxY];
+        
+        boolean hit = false;
         
         for(int i = 0; i < innerGrid.getChildren().size(); i++) {
             for(Node nod : innerGrid.getChildren()) {
@@ -165,6 +174,9 @@ public class SiteBorderPane extends BorderPane {
                     if(outerGrid.getColumnIndex(attributeTextfield) == x &&
                             outerGrid.getRowIndex(attributeTextfield) == y) {
                         returnArray[x][y] = attributeTextfield.textField.getText();
+                        if(!returnArray[x][y].equals("")) {
+                            hit = true;
+                        }
                     }
                 }
             }
@@ -178,7 +190,25 @@ public class SiteBorderPane extends BorderPane {
             }
         } 
         
+        if(hit == false) {
+            return null;
+        }
+        
         return returnArray;
+    }
+
+    /**
+     * @return the showGrid
+     */
+    public boolean isShowGrid() {
+        return showGrid;
+    }
+
+    /**
+     * @param showGrid the showGrid to set
+     */
+    public void setShowGrid(boolean showGrid) {
+        this.showGrid = showGrid;
     }
     
 }

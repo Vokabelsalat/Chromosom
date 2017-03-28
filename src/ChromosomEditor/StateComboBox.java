@@ -20,7 +20,7 @@ import javafx.scene.text.Font;
 public class StateComboBox extends BorderPane{
     
 //    ComboBox box;
-    TextField box;
+    private TextField box;
     String title;
     
     public StateComboBox(String title) {
@@ -45,27 +45,42 @@ public class StateComboBox extends BorderPane{
         lab.setFont(new Font(10));
         setTop(lab);
         
-        if(title.equals("")) {
-            box.setVisible(false);
-        }
-
-//        box.setValue("0");
-//        box.setEditable(true);
-        
 //        box.setMinWidth(32);
 //        box.setPrefWidth(32);
         
-        box.setPrefWidth(32);
+        box.setPrefWidth(38);
         box.setMinHeight(20);
         box.setPrefHeight(20);
         
         setCenter(box);
         setPadding(new Insets(1,1,1,1));
-        setStyle("-fx-border: 0.5px solid; -fx-border-color: black;");
+        setStyle("-fx-border-width: 0.5px; -fx-border-color: black;");
+        
+        if(title.equals(""))  {
+            setVisible(false);
+        }
     }
     
     public String getValue() {
-        return box.getText();
+        return getBox().getText();
     }
     
+    public void setValue(String text) {
+        getBox().setText(text);
+    }
+
+    /**
+     * @return the box
+     */
+    public TextField getBox() {
+        return box;
+    }
+
+    /**
+     * @param box the box to set
+     */
+    public void setBox(TextField box) {
+        this.box = box;
+    }
+
 }

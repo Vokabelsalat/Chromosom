@@ -1,19 +1,16 @@
 package NukleosomVase;
 
 import Nukleosom.AttributeRectangle;
-import static application.ChromosomExport.pane;
-import static application.ChromosomExport.posX;
-import static application.ChromosomExport.posY;
-
-import application.ChromosomProject;
-import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 
+/**
+ * NukleosomVase
+ * @author Jakob
+ */
 public class NukleosomVase extends Pane{
     
         String exportString = "";
@@ -56,19 +53,19 @@ public class NukleosomVase extends Pane{
 			AttributeRectangle rect = null; 
 			
 			if(value == 0) {
-				color = ChromosomProject.color0;
+//				color = ChromosomProject.color0;
 			}
 			else if(value == 1) {
-				color = ChromosomProject.color1;
+//				color = ChromosomProject.color1;
 			}
 			else if(value == 2) {
-				color = ChromosomProject.color2;
+//				color = ChromosomProject.color2;
 			}
 			else if(value == 3) {
-				color = ChromosomProject.color3;
+//				color = ChromosomProject.color3;
 			}
 			else if(value == 4) {
-				color = ChromosomProject.color4;
+//				color = ChromosomProject.color4;
 			}
 			
 			double doub = 0.0;

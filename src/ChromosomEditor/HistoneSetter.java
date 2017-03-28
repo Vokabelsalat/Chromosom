@@ -5,19 +5,31 @@
  */
 package ChromosomEditor;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import static javafx.scene.input.KeyCode.A;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import test.AttributeLabel;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Element;
 
 /**
  *
@@ -54,11 +66,11 @@ public class HistoneSetter extends BorderPane{
             
 //            histoneList = new ArrayList<>();
 
-            leftInnerGrid = addAttributeLabels(emptyText);
+            leftInnerGrid = addAttributeLabels(emptyText, maxX);
             leftInnerGrid.setHgap(5);
             leftInnerGrid.setVgap(5);
             
-            rightInnerGrid = addAttributeLabels(histoneArray);
+            rightInnerGrid = addAttributeLabels(histoneArray, maxX);
             
             rightInnerGrid.setHgap(5);
             rightInnerGrid.setVgap(5);
@@ -84,12 +96,12 @@ public class HistoneSetter extends BorderPane{
                         String text = "";
                         
                         for(Node nod : leftInnerGrid.getChildren()) {
-                            if(nod instanceof test.AttributeLabel && leftInnerGrid.getColumnIndex(nod) == x && 
+                            if(nod instanceof AttributeLabel && leftInnerGrid.getColumnIndex(nod) == x && 
                                      leftInnerGrid.getRowIndex(nod) == y) {
                                 AttributeLabel lab = (AttributeLabel)nod;
                                 text = lab.getText();
                             }
-                        }       
+                        }     
                         
                         histoneArray[i] = text;
                         
@@ -103,7 +115,7 @@ public class HistoneSetter extends BorderPane{
                     }
                     
                     chromosomEditor.setHistoneArray(histoneArray);
-                    chromosomEditor.showEditorPane(1);
+                    chromosomEditor.showEditorPane(1,+1);
                 } 
             });
             back.setVisible(false);
@@ -121,30 +133,35 @@ public class HistoneSetter extends BorderPane{
             
             setBottom(bottomPane);
             setCenter(outerGrid);
-            
     }
     
-    public GridPane addAttributeLabels(String[] array) {
+    public static GridPane addAttributeLabels(String[] array, int maxX) {
             
         GridPane pan = new GridPane();
-
         int countX = 0, countY = 0;
 
         for(String text : array) {
-            pan.add(new AttributeLabel(text), countX, countY);
+            AttributeLabel lab = new AttributeLabel(text);
+            lab.setPadding(new Insets(7,7,7,7));
+            pan.add(lab, countX, countY);
 
-            if(countX % (maxX-1) == 0 && countX > 0) {
+            
+            if(maxX <= 1) {
                 countY++;
-                countX = 0;
             }
             else {
-                countX++;
+                if(countX % (maxX-1) == 0 && countX > 0) {
+                    countY++;
+                    countX = 0;
+                }
+                else {
+                    countX++;
+                }
             }
         }
         pan.setPadding(new Insets(1,1,1,1));
-        pan.setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+//        pan.setStyle("-fx-border-width: 1px; -fx-border-color: black;");
         
         return pan;
     }
-
 }

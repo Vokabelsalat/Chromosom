@@ -6,12 +6,14 @@ import java.util.Vector;
 
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
-import NukleosomReader.NukleosomGenerator;
-import SunburstNukleosom.SunburstNukleosom;
 import application.ChromosomProject;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 
+/**
+ * Verschiedene Arten der Grids, bestehend aus den NukleosomVases
+ * @author Jakob
+ */
 public class NukleosomVaseGrid extends GridPane {
 
 	ChromosomProject project;
@@ -36,7 +38,7 @@ public class NukleosomVaseGrid extends GridPane {
 		this.auswahl = auswahl;
                 this.setPadding(new Insets(10,10,10,10));
                 
-		Vector<ArrayList<ArrayList<int[]>>> timeVector = NukleosomGenerator.getGeneratedData();
+		Vector<ArrayList<ArrayList<int[]>>> timeVector = null;
 		int zeitSchritt = 0;
 
 		
@@ -238,25 +240,6 @@ public class NukleosomVaseGrid extends GridPane {
 				int valueArray[] = timeVector.get(zeitSchritt).get(nukleosom).get(0);
 				
 				BigNukleosomVase innerGrid = new BigNukleosomVase(valueArray, horizontal, "", width, height);
-				
-                                
-                                
-//				for(int mod = 0; mod < valueArray.length; mod++) {
-//					
-//					if(horizontal) {
-//						innerX = 0;
-//						innerY = mod;
-//					}
-//					else {
-//						innerX = mod;
-//						innerY = 0;
-//					}
-//                                        NukleosomVase nuklVase = new NukleosomVase(valueArray[mod], horizontal, width, height);
-//					innerGrid.add(nuklVase, innerX, innerY);
-//                                        nuklWidth = (nuklVase.getPrefWidth() * innerX);
-//                                        nuklHeight = (nuklVase.getPrefHeight());
-//                                        nuklList.add(nuklVase);
-//				}
 				
 				if(horizontal) {
 					innerX = nukleosom;

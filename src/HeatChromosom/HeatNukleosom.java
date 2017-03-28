@@ -28,6 +28,7 @@ public class HeatNukleosom extends Pane {
     private boolean selected;
     private double probability;
     private double originalValue;
+    private Rectangle critRectangle;
     
     private double BLUE_HUE = Color.rgb(200,180,0).getHue();;
     private double RED_HUE = Color.rgb(215,170,0).getHue();
@@ -35,6 +36,7 @@ public class HeatNukleosom extends Pane {
     public HeatNukleosom(double value, int x, int y, int width, int height, String strokeType, double probability, double originalValue) {
 
         highlightRect = new Rectangle(width, height , Color.rgb(255,150,0)); 
+        critRectangle = new Rectangle(width, height , Color.BEIGE); 
         this.value = value;
         this.width = width;
         this.height = height;
@@ -209,6 +211,34 @@ public class HeatNukleosom extends Pane {
      */
     public void setOriginalValue(double originalValue) {
         this.originalValue = originalValue;
+    }
+
+    public void critHighlight() {
+        critRectangle.setOpacity(0.7);
+        if(!this.getChildren().contains(critRectangle)) {
+            this.getChildren().add(critRectangle);
+        }
+    }
+    
+    public void critDehighlight() {
+        if(this.getChildren().contains(critRectangle)) {
+            this.getChildren().remove(critRectangle);
+        }
+        
+    }
+
+    /**
+     * @return the critRectangle
+     */
+    public Rectangle getCritRectangle() {
+        return critRectangle;
+    }
+
+    /**
+     * @param critRectangle the critRectangle to set
+     */
+    public void setCritRectangle(Rectangle critRectangle) {
+        this.critRectangle = critRectangle;
     }
     
 }

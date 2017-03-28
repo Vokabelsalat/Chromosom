@@ -8,6 +8,8 @@ package ChromosomEditor;
 import java.util.ArrayList;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
@@ -20,17 +22,26 @@ import javafx.scene.layout.VBox;
  */
 public class EditorOptions extends VBox{
     
-    ChromosomEditor chromosomEditor;
+    private final ChromosomEditor chromosomEditor;
+    private GridPane storage;
+    private Spinner rowSpinner;
+    private Spinner colSpinner;
+    private ChangeListener colListener;
+    private ChangeListener rowListener;
     
     public EditorOptions(ChromosomEditor chromosomEditor) {
         this.chromosomEditor = chromosomEditor;
+        this.setSpacing(8);
+        this.setPadding(new Insets(0,0,0,10));
+        this.setAlignment(Pos.CENTER_LEFT);
+        this.setMinWidth(120);
         
-            getChildren().add(new Label("Cols:"));
+            getChildren().add(new Label("Site Colums:"));
             
-            Spinner colSpinner = new Spinner(1,30,2);
+            colSpinner = new Spinner(1,30,2);
             colSpinner.setMaxWidth(70);
             
-            colSpinner.valueProperty().addListener(new ChangeListener<Integer>() {
+            colListener = new ChangeListener<Integer>() {
                 @Override
                 public void changed(ObservableValue<? extends Integer> observable,
                         Integer oldValue, Integer newValue) {
@@ -42,7 +53,7 @@ public class EditorOptions extends VBox{
                         }
                         chromosomEditor.getSiteSetter().maxX = newValue;
                     }
-                    else if(chromosomEditor.getSiteSetter().maxX > 1){
+                    else if(newValue < oldValue && chromosomEditor.getSiteSetter().maxX > 1){
                         for(GridPane innerGrid : chromosomEditor.getSiteSetter().getGridList()) {
                             ArrayList<Node> nodeList = new ArrayList<>();
 
@@ -56,18 +67,26 @@ public class EditorOptions extends VBox{
                         }
                         chromosomEditor.getSiteSetter().maxX = newValue;
                     }
-                    
+                    //Resize the scene after adding oder deleting cols
+                    if(chromosomEditor.getSiteSetter().getGridList() != null && chromosomEditor.getSiteSetter().getCenter() != null) {
+                        if(chromosomEditor.getSiteSetter().getGridList().get(0).getWidth() * 3 > chromosomEditor.getSiteSetter().getCenter().getLayoutX()
+                                 && !chromosomEditor.getChromosom().getPrimaryStage().isMaximized()) {
+                           chromosomEditor.getChromosom().getPrimaryStage().sizeToScene();
+                        }
+                    }
                 }
-            });
+            };
+            
+            colSpinner.valueProperty().addListener(colListener);
             
             getChildren().add(colSpinner);
             
-            getChildren().add(new Label("Rows:"));
+            getChildren().add(new Label("Site Rows:"));
             
-            Spinner rowSpinner = new Spinner(1,30,2);
+            rowSpinner = new Spinner(1,30,2);
             rowSpinner.setMaxWidth(70);
             
-            rowSpinner.valueProperty().addListener(new ChangeListener<Integer>() {
+            rowListener = new ChangeListener<Integer>() {
                 @Override
                 public void changed(ObservableValue<? extends Integer> observable,
                         Integer oldValue, Integer newValue) {
@@ -79,7 +98,7 @@ public class EditorOptions extends VBox{
                         }
                         chromosomEditor.getSiteSetter().maxY = newValue;
                     }
-                    else if(chromosomEditor.getSiteSetter().maxY > 1){
+                    else if(newValue < oldValue && chromosomEditor.getSiteSetter().maxY > 1){
                         
                         for(GridPane innerGrid : chromosomEditor.getSiteSetter().getGridList()) {
                             ArrayList<Node> nodeList = new ArrayList<>();
@@ -93,20 +112,30 @@ public class EditorOptions extends VBox{
                         }
                         chromosomEditor.getSiteSetter().maxY = newValue;
                     }
-                    
+                    //Resize the scene after adding oder deleting rows
+                    if(chromosomEditor.getSiteSetter().getGridList() != null && chromosomEditor.getSiteSetter().getCenter() != null) {
+                        if(chromosomEditor.getSiteSetter().getGridList().get(0).getHeight() * 3 > chromosomEditor.getSiteSetter().getCenter().getLayoutY()
+                                && !chromosomEditor.getChromosom().getPrimaryStage().isMaximized()) {
+                           chromosomEditor.getChromosom().getPrimaryStage().sizeToScene();
+                        }
+                    }
                 }
-            });
+            };
+            
+            rowSpinner.valueProperty().addListener(rowListener);
             
             getChildren().add(rowSpinner);
             
-            GridPane storage = new GridPane();
-//            
+            getChildren().add(new Label("Histone Reservoir:"));
+            
+            storage = new GridPane();
+
             int x = 0;
             int y = 0;
             
             for(int i = 0; i < 4; i++) {
 
-                SiteBorderPane top = new SiteBorderPane("", chromosomEditor.getSiteSetter(), storage);
+                SiteBorderPane top = new SiteBorderPane("", chromosomEditor.getSiteSetter(), getStorage());
                 top.showGrid(false);
                 
                 chromosomEditor.getSiteSetter().addDnD(top);
@@ -127,7 +156,50 @@ public class EditorOptions extends VBox{
 
             getChildren().add(storage);
             
-            setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+//            setStyle("-fx-border: 3px solid; -fx-border-color: black;");
+    }
+
+
+    /**
+     * @return the storage
+     */
+    public GridPane getStorage() {
+        return storage;
+    }
+
+    /**
+     * @param storage the storage to set
+     */
+    public void setStorage(GridPane storage) {
+        this.storage = storage;
+    }
+
+    /**
+     * @return the rowSpinner
+     */
+    public Spinner getRowSpinner() {
+        return rowSpinner;
+    }
+
+    /**
+     * @return the colSpinner
+     */
+    public Spinner getColSpinner() {
+        return colSpinner;
+    }
+
+    /**
+     * @return the colListener
+     */
+    public ChangeListener getColListener() {
+        return colListener;
+    }
+
+    /**
+     * @return the rowListener
+     */
+    public ChangeListener getRowListener() {
+        return rowListener;
     }
     
 }

@@ -6,23 +6,28 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class NukleosomReader {
 
     public static int zaehler = 0;
+    private HashMap<String, int[]> overlayMap;
 
     ChromosomProject project;
 
     public NukleosomReader(ChromosomProject project) {
         this.project = project;
+        project.setNukleosomReader(this);
     }
 
-    public void openFile(String fileName) {
-
+    public void openFile(File file) {
+        
+        String fileName = file.getName();
+        
 //            Die weiche nach dme Format in diese Methode. Der eigentlich Export in andere einzelne Methoden. Dabei die Streams alle in der Try öffnen, damit sie auch wieder geschlossen werden. 
 //                    StringBuffer benutzen anstatt von Strings.
 //            SPLIT FÜR DAS EINLESEN VERWENDEN; DA DIEs besonders schnell ist.
@@ -39,7 +44,7 @@ public class NukleosomReader {
 //            }
 //            else if ...
         if (format.equals("txt")) {
-            readTxt(new File(fileName));
+            readTxt(file);
         }
     }
 
@@ -91,7 +96,8 @@ public class NukleosomReader {
             fillDataVectors(br);
 
         } catch (IOException ex) {
-            System.err.println("Datei " + inFile.getName() + " konnte nicht gelesen werden.");
+//            ex.printStackTrace(System.err);
+            System.err.println("Can't read " + inFile.getName() + "."); 
         }
     }
 /*
@@ -228,9 +234,12 @@ public class NukleosomReader {
         try {
             //Hier muss die vordefinierte Attributmenge eingelesen werden
             HashMap<String, Integer> attributeMap;// = new HashMap<String, Integer>();
-            HashMap<String, HashMap<String, Integer>> histonMap;// = new HashMap<String, HashMap<String,Integer>>();
-            HashMap<String, HashMap<String, HashMap<String, Integer>>> nukleosomList =  new HashMap<String, HashMap<String, HashMap<String, Integer>>>();
-            HashMap<String, HashMap<String, HashMap<String, HashMap<String, Integer>>>> timeVector = new HashMap<String, HashMap<String, HashMap<String, HashMap<String, Integer>>>> ();
+            HashMap<String, HashMap<String, String>> histonMap;// = new HashMap<String, HashMap<String,Integer>>();
+            HashMap<String, HashMap<String, HashMap<String, String>>> nukleosomList =  new HashMap<>();
+            HashMap<String, HashMap<String, HashMap<String, HashMap<String, String>>>> timeVector = new HashMap<> ();
+            HashMap<String, String[]> metaInformations = new HashMap<>();
+            
+            overlayMap = new HashMap<>();
 //            HashMap<String, HashMap<String, HashMap<String, Integer>>> nukleosomList = new HashMap<>();
 //            HashMap<String, HashMap<String, HashMap<String, HashMap<String, Integer>>>> timeVector = new HashMap<>();
 
@@ -238,38 +247,87 @@ public class NukleosomReader {
             int nukleosomNumber = 0;
             String line = "";
             String stepNumberString = "";
+            
+//            LinkedHashMap<String, String[][]> histoneMap = project.getHistoneMap();
+//            for(String his : histoneMap.keySet()) {
+//               if(histoneMap.get(his) != null) {
+//                   for(int innerY = 0; innerY < histoneMap.get(his)[0].length; innerY++) {
+//                       for(int innerX = 0; innerX < histoneMap.get(his).length; innerX++) {
+//                           if(!histoneMap.get(his)[innerX][innerY].isEmpty()) {
+//                               empty_nucleosome += his + "[" + histoneMap.get(his)[innerX][innerY] + ".un]";
+//                           }
+//                       }
+//                   }
+//               }
+//           }
 
+           String empty_nucleosome = project.getEmpty_nucleosome();
+           int[] overlayArray = null;
+            
             while ((line = br.readLine()) != null) {
 //                if(project.maxTimeSteps.peek() == 0 || timeVector.size() < project.maxTimeSteps.peek()-1)
                     //Leere Zeilen abfangen
-                    if (line.equals("")) {
-                        continue;
-                    }
-
+//                    if (line.trim().equals("")) {
+////                        continue;
+//                            line = empty_nucleosome;
+//                    }
+                   
                     //Den Beginn einen neuen Zeitschritts einleiten
                     if (line.contains(">")) {
-
+                        
                         String splt[] = line.replaceAll(">", "").split(" ");
-                        stepNumberString = String.valueOf(Integer.parseInt(splt[0]) - 1);
+                        stepNumberString = String.valueOf(Integer.parseInt(splt[0])-1);
+                        
+                        String[] meta = new String[4];
+                        for(int i = 1; i < splt.length; i++) {
+                            meta[i-1] = splt[i];
+                            
+//                            System.err.print(splt[i] + " ");
+                        } 
+                        
+                        metaInformations.put(String.valueOf(Integer.parseInt(splt[0])), meta);
 
                         if (!nukleosomList.isEmpty()) {
+                            getOverlayMap().put(String.valueOf((Integer.parseInt(stepNumberString))), overlayArray);
                             timeVector.put(stepNumberString, nukleosomList); 
                         }
 
                         nukleosomList = new HashMap<>();
                         nukleosomNumber = 0;
+                        
                         continue;
                     }
 
-                    histonMap = parseLine(line);
+//                    System.err.println(line);
 
-                    nukleosomList.put(String.valueOf(nukleosomNumber), histonMap);
-                    nukleosomNumber++;
+                    if(line.contains(";")) {
+                        String[] splitLine = line.split(";");
+                        overlayArray = new int[splitLine.length];
+
+                        for(String nucleosomeString : splitLine) {
+                            String parseLine = nucleosomeString.split(":")[0].replace("{", "").replace("}", "");
+
+                            if (parseLine.trim().equals("")) {
+    //                        continue;
+                                parseLine = empty_nucleosome;
+                            }
+
+                            if(nucleosomeString.contains(":")) {
+                                int enzymeValue = Integer.parseInt(nucleosomeString.split(":")[1]);
+                                overlayArray[nukleosomNumber] = enzymeValue;
+                            }
+
+                            histonMap = parseLine(parseLine);
+                            nukleosomList.put(String.valueOf(nukleosomNumber), histonMap);
+                            nukleosomNumber++;
+                        }
+                    }
             }
             
             //Um den letzten Zeitschritt noch hinzuzufügen
             if (!nukleosomList.isEmpty()) {
-                timeVector.put(String.valueOf((Integer.parseInt(stepNumberString)+1)), nukleosomList);
+                getOverlayMap().put(String.valueOf((Integer.parseInt(stepNumberString))), overlayArray);
+                timeVector.put(String.valueOf((Integer.parseInt(stepNumberString))), nukleosomList);
             }
             project.setTimeVector(timeVector);
             
@@ -277,24 +335,51 @@ public class NukleosomReader {
                 project.maxTimeSteps.pop();
                 project.maxTimeSteps.push(timeVector.size());
             }
+            int stepSize = timeVector.size();
+            int steps = timeVector.size();
             
-            int stepSize = project.maxTimeSteps.peek() / (project.stepsToShow.peek() - 1);
+            ArrayList<Integer> testList = new ArrayList<>();
             
-            if(stepSize < 1) {
-                stepSize = 1;
+            while(stepSize > project.stepsToShow.peek()) {
+               stepSize = steps / project.stepsToShow.peek();
+               if(stepSize > 1) {
+                   testList.add(stepSize);
+               }
+               steps = stepSize;
             }
-            project.stepSize.push(stepSize); 
+            
+            testList.add(1);
+            
+            for(int i = (testList.size()-1); i >= 0; i--) {
+                project.stepSize.push(testList.get(i));
+            }
+            
+            project.setMetaInformations(metaInformations);
             
         } catch (IOException ex) {
             Logger.getLogger(NukleosomReader.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    private HashMap<String, HashMap<String, Integer>> parseLine(String line) throws NumberFormatException {
         
-        HashMap<String, HashMap<String, Integer>> histonMap = new HashMap<>();
-        HashMap<String, Integer> attributeMap;
+        
+        
+    }
+    
+//    public static  HashMap<String, HashMap<String, HashMap<String, String>>> parseCSVLine(String line) {
+//        HashMap<String, HashMap<String, HashMap<String, String>>> nukleosomList = new HashMap<>();
+//
+//        for(String nucleosomeString : line.split(";")) {
+//            
+//        }
+//
+//        return nukleosomList;
+//    }
+
+    public static HashMap<String, HashMap<String, String>> parseLine(String line)  {
+        
+        HashMap<String, HashMap<String, String>> histonMap = null;
+        HashMap<String, String> attributeMap;
         if (line.contains("H")) {
+            histonMap = new HashMap<>();
             String splitArray[] = line.split("H");
             
             attributeMap = null;
@@ -303,36 +388,47 @@ public class NukleosomReader {
                 
                 String histoneNumber = "3";
                 String attributeString = "0";
-                int value = 0;
+                String value = "";
                 
-                if (splitArray[i].contains("\\["));
-                {
-                    String split[] = splitArray[i].split("\\[");
-                    histoneNumber = split[0];
-                    
-                    if (histonMap.containsKey(histoneNumber)) {
-                        attributeMap = histonMap.get(histoneNumber);
-                    } else {
-                        attributeMap = new HashMap<>();
+                    if (splitArray[i].contains("\\["));
+                    {
+                        int openCount = line.split("\\[",-1).length-1;
+                        int closeCount = line.split("\\]",-1).length-1;
+
+                        if(openCount == closeCount) {
+
+                            String split[] = splitArray[i].split("\\[");
+                            histoneNumber = "H" + split[0];
+
+                            if (histonMap.containsKey(histoneNumber)) {
+                                attributeMap = histonMap.get(histoneNumber);
+                            } else {
+                                attributeMap = new HashMap<>();
+                            }
+
+                            String splitAttribute[] = split[1].split("\\.");
+                            attributeString = splitAttribute[0];
+                            String splitValue[] = splitAttribute[1].split("\\]");
+                            value = splitValue[0];
+
+                            attributeMap.put(attributeString, value);
+
+                            histonMap.put(histoneNumber, attributeMap);
                     }
-                    
-                    String splitAttribute[] = split[1].split("\\.");
-                    attributeString = splitAttribute[0];
-                    String splitValue[] = splitAttribute[1].split("\\]");
-                    value = Integer.parseInt(splitValue[0]);
+                    else {
+                        return null;
+                    }
                 }
-                
-                attributeMap.put(attributeString, value);
-                
-                histonMap.put(histoneNumber, attributeMap);
+               
             }
-        } else {
-            attributeMap = new HashMap<>();
-            
-            attributeMap.put("0", 0);
-            
-            histonMap.put("3", attributeMap);
         }
+//        else {
+//            attributeMap = new HashMap<>();
+//            
+//            attributeMap.put("0", "");
+//            
+//            histonMap.put("3", attributeMap);
+//        }
         
         return histonMap;
     }
@@ -342,6 +438,20 @@ public class NukleosomReader {
 //            NukleosomReader.fillDataVectors(project);
 ////            System.err.println("LOL: " + project.getTimeVector().get(1).get(1).get("3"));
 //           
+    }
+
+    /**
+     * @return the overlayMap
+     */
+    public HashMap<String, int[]> getOverlayMap() {
+        return overlayMap;
+    }
+
+    /**
+     * @param overlayMap the overlayMap to set
+     */
+    public void setOverlayMap(HashMap<String, int[]> overlayMap) {
+        this.overlayMap = overlayMap;
     }
 
 }

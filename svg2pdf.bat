@@ -1,1 +1,0 @@
-java -jar "batik-1.7\batik-rasterizer.jar" -m application/pdf -scripts text/ecmascript -onload exportHelper.svg

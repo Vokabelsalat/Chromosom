@@ -188,11 +188,6 @@ public class ChromosomExport {
                     posX = parent.getX();
                     posY = parent.getY();
                     
-//                Rand zur linken oberen Ecke draufaddieren
-//                doub += 5;
-                
-//            System.err.println("ADD: " + addX);
-//            System.err.println("MIN: " + minX + " " + (addX - minX));
                     pointString += (posX - addX);
                     pointString += ",";
                     pointString += (posY - addY);
@@ -290,7 +285,7 @@ public class ChromosomExport {
             fstream.close();
             out.close();fstream.close();
 //            System.err.println(svgString);
-            System.err.println("FERTIG");
+            System.err.println("Finished Writing");
             
             first = false;
       

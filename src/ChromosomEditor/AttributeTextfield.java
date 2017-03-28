@@ -6,7 +6,6 @@
 package ChromosomEditor;
 
 import javafx.event.EventHandler;
-import javafx.scene.Cursor;
 import javafx.scene.control.TextField;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
@@ -17,7 +16,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 
 /**
- *
+ * 
  * @author Jakob
  */
 public class AttributeTextfield extends BorderPane{
@@ -32,6 +31,7 @@ public class AttributeTextfield extends BorderPane{
         this.textField = new TextField(text);
         textField.setEditable(true);
         textField.setMinSize(70, 20);
+        textField.setMaxSize(70, 20);
         
         textField.setOnDragDetected(new EventHandler <MouseEvent>() {
             public void handle(MouseEvent event) {
@@ -131,7 +131,7 @@ public class AttributeTextfield extends BorderPane{
         this.setPrefSize(30,30);
         this.setCenter(textField);
      
-        setStyle("-fx-border: 0.5px solid; -fx-border-color: black;");
+        setStyle("-fx-border-width: 0.5px; -fx-border-color: black;");
         
     }
     

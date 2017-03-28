@@ -6,130 +6,186 @@ import java.util.ArrayList;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import application.ChromosomProject;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Vector;
 import javafx.geometry.Bounds;
-import javafx.geometry.Insets;
+import javafx.scene.CacheHint;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import test.PlusMinusLabel;
+import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.Translate;
 
-public class BigNukleosomRow extends GridPane {
+
+/**
+ * Ein Grid bestehend aus den Einzelnen Nukleosomen
+ * @author Jakob
+ */
+public class BigNukleosomRow extends GridPane { 
 
 	ChromosomProject project;
 	int height, width;
 	BigNukleosomRow scaledRow;
-        ArrayList<BigNukleosomNew> nuklList;
+        private ArrayList<BigNukleosomNew> nuklList;
+        private ArrayList<Integer> enzymeWaitingIndex;
+        private ArrayList<String> stepList;
         String y = "";
         int numberOfSteps;
+        private Button up;
+        private Button down;
+        boolean header;
+        private boolean foundFirst = false;
+        private boolean foundLast = false;
+        private boolean overlayed, firstOverlayed;
+        private Group enzymeGroup;
         
         int maxTimeSteps, stepSize;
-	
-	public BigNukleosomRow(ChromosomProject project, int width, int height, int maxTimeSteps, int stepSize) {
-		
+        
+	public BigNukleosomRow(ChromosomProject project, int width, int height, int maxTimeSteps, int stepSize, boolean header) {
+            
+            this.header = header;
+            project.count = 0;
+            project.nukList = new ArrayList<>();
+            project.copyList = new ArrayList<>();
+            stepList = new ArrayList<>();
+            this.enzymeGroup = new Group();
+            
+            
 		this.project = project;
 		this.height = height;
 		this.width = width;
                 this.nuklList = new ArrayList<BigNukleosomNew>();
-//                this.offset = offset;
                 this.maxTimeSteps = maxTimeSteps;
                 this.stepSize = stepSize;
 		
+               this.setStyle("-fx-background-color: white;");
+                
 		setAlignment(Pos.CENTER);
-		setHgap(width / (7./7.));
-		setVgap(height / (7./10.));
-		setPadding(new Insets(0,getHgap(),getVgap(),0));
-//                setStyle("-fx-border: 2px solid; -fx-border-color: red;");
+		setHgap(width / (6./3.));
+		setVgap(height / (6./1.));
+                
+		HashMap<String, HashMap<String, HashMap<String,HashMap<String,String>>>> timeVector = project.getTimeVector();
 		
-//		List<String> returnList = project.getReadedNukleosoms();
-		HashMap<String, HashMap<String, HashMap<String,HashMap<String,Integer>>>> timeVector = project.getTimeVector();
-		
-                BigNukleosomNew nukl;
+                BigNukleosomNew nukl = null;
                 numberOfSteps = 0;
-                 
-                for(int utz = 0; utz < project.maxTimeSteps.peek(); utz = utz + stepSize) {
-                    
+                
+                up = new Button("^");
+                down = new Button("v");                
+                
+                for(int utz = 0; utz <= project.maxTimeSteps.peek(); utz = utz + stepSize) {
                     y = String.valueOf(utz + project.offset.peek());
                     
                     if(timeVector.containsKey(y)) {
                         
-                        add(new PlusMinusLabel(y, project), 0, numberOfSteps);
-//                        project.getChromosom().addTreeItem(y, project.rootRow.peek());
-
-                        HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = timeVector.get(y);
+                        stepList.add(y);
+                        
+                        HashMap<String, HashMap<String,HashMap<String,String>>> nukleomList = timeVector.get(y);
                         for(String x : timeVector.get(y).keySet()) {
-                            HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
-                            for(String histoneNumber : histoneMap.keySet()) { 
-
-                                nukl = new BigNukleosomNew(project,timeVector.get(y).get(x), width, height, false);
-
-                                add(nukl, Integer.parseInt(x)+1,numberOfSteps);
+                            HashMap<String,HashMap<String,String>> histoneMap = nukleomList.get(x);
+                                nukl = new BigNukleosomNew(project,timeVector.get(y).get(x), Integer.parseInt(x), Integer.parseInt(y), width, height, false, false);
+                                nukl.setCache(true);
+                                nukl.setCacheShape(true);
+                                nukl.setCacheHint(CacheHint.SPEED);
+                                if(header)
+                                    add(nukl, Integer.parseInt(x)+1,numberOfSteps);
+                                else
+                                    add(nukl, Integer.parseInt(x),numberOfSteps);
+                                
                                 nuklList.add(nukl);
-                            }
+                                GridPane.setVgrow(nukl, Priority.ALWAYS);
+                                GridPane.setHgrow(nukl, Priority.ALWAYS);
                         } 
+                        PlusMinusLabel plusMinus = new PlusMinusLabel(y, project);
+                        if(header)
+                            add(plusMinus, 0, numberOfSteps);
+                        else
+                            add(plusMinus, timeVector.get(y).size(), numberOfSteps);
+                        
                         numberOfSteps++;
+                        
+                        
                     }
 		}
                 
-                y = String.valueOf(project.offset.peek()-1);
+                if(project.reservoirStack.size() == 0 && !stepList.contains(y)) {
+                    y = project.getLastItemInTimeMap();
+                    stepList.add(y);
+                    if(header)
+                        add(new PlusMinusLabel(y, project), 0, numberOfSteps);
+                    else
+                        add(new PlusMinusLabel(y, project), timeVector.get(y).size(), numberOfSteps);
+                   
+                    HashMap<String, HashMap<String,HashMap<String,String>>> nukleomList = timeVector.get(y);
+                    for(String x : timeVector.get(y).keySet()) {
+                        HashMap<String,HashMap<String,String>> histoneMap = nukleomList.get(x);
+                        nukl = new BigNukleosomNew(project,timeVector.get(y).get(x), Integer.parseInt(x), Integer.parseInt(y), width, height, false, false);
+                        if(header)
+                            add(nukl, Integer.parseInt(x)+1,numberOfSteps);
+                        else
+                            add(nukl, Integer.parseInt(x),numberOfSteps);
+                        nuklList.add(nukl);
+                    } 
+                    
+                    numberOfSteps++;
+                }
                 
-//                   y = String.valueOf(utz + project.offset.peek());
-//                    
-//                    if(timeVector.containsKey(y)) {
-//                        
-//                        add(new PlusMinusLabel(y, project), 0, numberOfSteps);
-//
-//                        HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = timeVector.get(y);
-//                        for(String x : timeVector.get(y).keySet()) {
-//                            HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
-//                            for(String histoneNumber : histoneMap.keySet()) { 
-//
-//        //			List<int[]> valueList = new ArrayList<int[]>();
-//        //			
-//        //			for(int u = 0; u < project.getHistoneNumber(); u++) {
-//        //				valueList.add(timeVector.get(y).get(x).get(u));
-//        //			}
-//
-//        //                        System.err.println(timeVector.size() + " " + timeVector.get(0).size());
-//        //                        System.err.println("Y: " + y);
-//                                nukl = new BigNukleosomNew(project,timeVector.get(y).get(x), width, height, false);
-//
-//                                add(nukl, Integer.parseInt(x)+1,numberOfSteps);
-//                                nuklList.add(nukl);
-//                            }
-//                        } 
                 
-//		for(int i = 0; i < number; i++) {
-//			
-////			setPrefColumns(X);
-////			setPrefRows(Y);
-//			
-//			List<int[]> valueList = new ArrayList<int[]>();
-//			
-//			for(int u = 0; u < project.getHistoneNumber(); u++) {
-//				
-//				valueList.add(timeVector.get(y).get(x).get(u));
-//				offset++;
-//			}
-//			
-//			if((x) % X == 0) {
-//				y++;
-//				x = 0;
-//			}
-//			x++;	
-//			
-//			BigNukleosom nukl = new BigNukleosom(valueList, width, height);
-//                        System.err.println("NUKLWIDTH:" + nukl.getPrefWidth());
-//                        nukl.setLayoutX((nukl.getPrefWidth()) * (x) + this.getHgap() * (x-1));
-//                        nukl.setLayoutY((nukl.getPrefHeight() ) * (y) + this.getVgap() * (y-1));
-//			add(nukl,x,y);
-//		}
+            checkFirstAndLast();                
+            this.setCache(true);
+            this.setCacheShape(true);
+            this.setCacheHint(CacheHint.SPEED);
+            
+
+	}
+        
+        public BigNukleosomRow(ChromosomProject project, HashMap<String, HashMap<String, HashMap<String,String>>> nucleosomeMap, int width, int height, int maxTimeSteps, int stepSize, boolean header) {
+            
+            this.header = header;
+//            project.count = 0;
+//            project.nukList = new ArrayList<>();
+//            project.copyList = new ArrayList<>();
+//            stepList = new ArrayList<>();
+            
+            
+//		this.project = project;
+//		this.height = height;
+//		this.width = width;
+//                this.nuklList = new ArrayList<BigNukleosomNew>();
+//                this.maxTimeSteps = maxTimeSteps;
+//                this.stepSize = stepSize;
 		
-		
-		
-//		this.setPrefWidth(Screen.getPrimary().getVisualBounds().getWidth());
-//		this.setCenter(grid);
-//		this.setGridLinesVisible(true);
+               this.setStyle("-fx-background-color: white;");
+                
+		setAlignment(Pos.CENTER);
+		setHgap(width / (6./3.));
+		setVgap(height / (6./1.));
+              
+            BigNukleosomNew nukl;
+                
+            for(String nucleosomeKey : nucleosomeMap.keySet()) {
+                    HashMap<String, HashMap<String,String>> nucleosome = nucleosomeMap.get(nucleosomeKey);
+                    nukl = new BigNukleosomNew(project, nucleosome, Integer.parseInt(nucleosomeKey), 0, width, height, false, false);
+                    nukl.setCache(true);
+                    nukl.setCacheShape(true);
+                    nukl.setCacheHint(CacheHint.SPEED);
+                    if(header)
+                        add(nukl, Integer.parseInt(nucleosomeKey)+1,numberOfSteps);
+                    else
+                        add(nukl, Integer.parseInt(nucleosomeKey),numberOfSteps);
+
+                    GridPane.setVgrow(nukl, Priority.ALWAYS);
+                    GridPane.setHgrow(nukl, Priority.ALWAYS);
+            } 
+                
+                
+            this.setCache(true);
+            this.setCacheShape(true);
+            this.setCacheHint(CacheHint.SPEED);
+            
+
 	}
         
         public ArrayList<BigNukleosomNew> getNuklList() {
@@ -152,17 +208,11 @@ public class BigNukleosomRow extends GridPane {
             
     public void goUp() {
         
-        String testY = String.valueOf(Integer.parseInt(y) - project.stepSize.peek());
-        
-        if(!project.timeVector.containsKey(testY)) {
-            return;
-        }       
-        
         int add = 10;
-//        
-//        if(Integer.parseInt(y) - add < 0) {
-//            add = Integer.parseInt(y) - add;
-//        }
+        
+        int firstRow = Integer.parseInt(getStepList().get(0));
+        
+        String testY = String.valueOf(firstRow - ((add) * project.stepSize.peek()));
         
         Vector<Node> slideVector = new Vector<>();
         
@@ -183,6 +233,14 @@ public class BigNukleosomRow extends GridPane {
             if(col > maxCol) {
                 maxCol = col;
             }
+        }
+        
+        if(Integer.parseInt(testY) <= 0) {
+            add = maxRow+1;
+            y = String.valueOf(0);
+        }
+        else {
+            y = testY;
         }
             
         for(Node node : getChildren()) {
@@ -193,6 +251,10 @@ public class BigNukleosomRow extends GridPane {
             }
         }
         
+        if(add <= 0) {
+            return;
+        }
+        
         Node[][] nodeArray = new Node[maxCol+1][maxRow+1];
             
         for(Node node : slideVector) {
@@ -201,62 +263,76 @@ public class BigNukleosomRow extends GridPane {
         
         getChildren().removeAll(getChildren());
         
-        for(row = add; row <= maxRow; row++) {
-            for(col = 0; col < maxCol; col++) {
-                this.add(nodeArray[col][row], col, row);
-            }
-        } 
+        setNuklList(new ArrayList<>());
+        setStepList(new ArrayList<>());
         
         numberOfSteps = 0;
         
-        y = String.valueOf(Integer.parseInt(y) - add);
-        
         for(int f = 0; f < add; f++) {
-            y = String.valueOf(Integer.parseInt(y) + project.stepSize.peek());
-
             if(project.timeVector.containsKey(y)) {
 
-                add(new PlusMinusLabel(y, project), 0, numberOfSteps);
+                getStepList().add(y);
+                
+                if(header)
+                    add(new PlusMinusLabel(y, project), 0, numberOfSteps);
+                else {
+                    PlusMinusLabel lab = new PlusMinusLabel(y, project);
+                    add(lab, project.timeVector.get(String.valueOf(project.offset.peek())).size(), numberOfSteps);
 
-                HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = project.timeVector.get(y);
-                for(String x : project.timeVector.get(y).keySet()) {
-                    HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
-                    for(String histoneNumber : histoneMap.keySet()) { 
+                    lab.setVisible(false);
+                    
+                    HashMap<String, HashMap<String,HashMap<String,String>>> nukleomList = project.timeVector.get(y);
+                    for(String x : project.timeVector.get(y).keySet()) {
+                        HashMap<String,HashMap<String,String>> histoneMap = nukleomList.get(x);
+                        for(String histoneNumber : histoneMap.keySet()) { 
 
-                        BigNukleosomNew nukl = new BigNukleosomNew(project,project.timeVector.get(y).get(x), width, height, false);
+                            BigNukleosomNew nukl = new BigNukleosomNew(project,project.timeVector.get(y).get(x), Integer.parseInt(x), Integer.parseInt(y), width, height, false, false);
 
-                        add(nukl, Integer.parseInt(x)+1,numberOfSteps);
-                        nuklList.add(nukl);
-                    }
-                } 
+                            if(header)
+                                add(nukl, Integer.parseInt(x)+1,numberOfSteps);
+                            else
+                                add(nukl, Integer.parseInt(x),numberOfSteps);
+
+
+                            getNuklList().add(nukl);
+                        }
+                    } 
+                }
                 numberOfSteps++;
+                y = String.valueOf(Integer.parseInt(y) + project.stepSize.peek());
             }
         }  
         
-        y = String.valueOf(Integer.parseInt(y) - add);
-        
+        for(row = add; row <= maxRow; row++) {
+            for(col = 0; col <= maxCol; col++) {
+                if(nodeArray[col][row] instanceof BigNukleosomNew) {
+                    BigNukleosomNew nukleosome = (BigNukleosomNew)nodeArray[col][row];
+                    this.add(nukleosome, col, row);
+                    getNuklList().add(nukleosome);
+                }
+                else {
+                    if(nodeArray[col][row] instanceof PlusMinusLabel) {
+                        PlusMinusLabel lab = (PlusMinusLabel)nodeArray[col][row];
+                        getStepList().add(lab.getValueString());
+                    }
+                    this.add(nodeArray[col][row], col, row);
+                }
+            }
+        } 
+        checkFirstAndLast();
     }
 
     public void goDown() {
+        int add = 10;
         
-//        System.err.println(y);
+        int testY = Integer.parseInt(getStepList().get(getStepList().size()-1)) + (add * project.stepSize.peek());
         
-        String testY = String.valueOf(Integer.parseInt(y) + project.stepSize.peek() * (project.stepsToShow.peek()+1));
-        
-//        System.err.println(testY);
-        
-//        int add = 10;
-        
-//        if(Integer.parseInt(y) + add > ) {
-//            
-//        }
-        
-        if(!project.timeVector.containsKey(testY)) {
+        if(add == 0) {
             return;
         }
         
-        y = String.valueOf(Integer.parseInt(y) + project.stepSize.peek() * (project.stepsToShow.peek()));
-
+        y = getStepList().get(getStepList().size()-1);
+        
         Vector<Node> slideVector = new Vector<>();
         
         int maxCol = 0;
@@ -277,7 +353,7 @@ public class BigNukleosomRow extends GridPane {
                 maxCol = col;
             }
 
-            if (row >= 10) {
+            if (row >= add) {
                 slideVector.add(node);
             }
         }
@@ -285,103 +361,261 @@ public class BigNukleosomRow extends GridPane {
         Node[][] nodeArray = new Node[maxCol+1][maxRow+1];
             
         for(Node node : slideVector) {
-            nodeArray[getColumnIndex(node)][getRowIndex(node)-10] = node;
+            nodeArray[getColumnIndex(node)][getRowIndex(node)-add] = node;
         }
         
         getChildren().removeAll(getChildren());
         
-        for(row = 0; row < maxRow-9; row++) {
-            for(col = 0; col < maxCol; col++) {
-                this.add(nodeArray[col][row], col, row);
+        if(testY >= Integer.parseInt(project.getLastItemInTimeMap())) {
+            add = maxRow+1;
+        }
+        
+        setNuklList(new ArrayList<>());
+        setStepList(new ArrayList<>());
+        numberOfSteps = 0;
+        
+        for(row = 0; row < maxRow-(add-1); row++) {
+            for(col = 0; col <= maxCol; col++) {
+                if(nodeArray[col][row] instanceof BigNukleosomNew) {
+                    BigNukleosomNew nukleosome = (BigNukleosomNew)nodeArray[col][row];
+                    this.add(nukleosome, col, row);
+                    getNuklList().add(nukleosome);
+                }
+                else {
+                    if(nodeArray[col][row] instanceof PlusMinusLabel) {
+                        PlusMinusLabel lab = (PlusMinusLabel)nodeArray[col][row];
+                        getStepList().add(lab.getValueString());
+                    }
+                    this.add(nodeArray[col][row], col, row);
+                }
             }
+            numberOfSteps++;
         } 
         
-        numberOfSteps = project.stepsToShow.peek();
+        if(testY >= Integer.parseInt(project.getLastItemInTimeMap())) {
+            y = String.valueOf(Integer.parseInt(project.getLastItemInTimeMap()) - add * project.stepSize.peek());
+        }
+            
         
-        for(int f = 0; f < 10; f++) {
-            y = String.valueOf(Integer.parseInt(y) + project.stepSize.peek());
+        for(int f = 0; f < add; f++) {
 
+            y = String.valueOf(Integer.parseInt(y) + project.stepSize.peek());
             if(project.timeVector.containsKey(y)) {
 
-                add(new PlusMinusLabel(y, project), 0, numberOfSteps-10);
+                getStepList().add(y);
+                
+                if(header)
+                    add(new PlusMinusLabel(y, project),0, numberOfSteps);
+                else {
+                    PlusMinusLabel lab = new PlusMinusLabel(y, project);
+                    add(lab, project.timeVector.get(y).size(), numberOfSteps);
+                    lab.setVisible(false);
+                    
+                    HashMap<String, HashMap<String,HashMap<String,String>>> nukleomList = project.timeVector.get(y);
+                    for(String x : project.timeVector.get(y).keySet()) {
+                        HashMap<String,HashMap<String,String>> histoneMap = nukleomList.get(x);
+                        for(String histoneNumber : histoneMap.keySet()) { 
 
-                HashMap<String, HashMap<String,HashMap<String,Integer>>> nukleomList = project.timeVector.get(y);
-                for(String x : project.timeVector.get(y).keySet()) {
-                    HashMap<String,HashMap<String,Integer>> histoneMap = nukleomList.get(x);
-                    for(String histoneNumber : histoneMap.keySet()) { 
+                            BigNukleosomNew nukl = new BigNukleosomNew(project,project.timeVector.get(y).get(x), Integer.parseInt(x), Integer.parseInt(y), width, height, false, false);
 
-                        BigNukleosomNew nukl = new BigNukleosomNew(project,project.timeVector.get(y).get(x), width, height, false);
+                            if(header)
+                                add(nukl, Integer.parseInt(x)+1,numberOfSteps);
+                            else
+                                add(nukl, Integer.parseInt(x),numberOfSteps);
 
-                        add(nukl, Integer.parseInt(x)+1,numberOfSteps-10);
-                        nuklList.add(nukl);
-                    }
-                } 
+                            getNuklList().add(nukl);
+                        }
+                    } 
+                }
                 numberOfSteps++;
             }
-        }     
-        
-        y = String.valueOf(Integer.parseInt(y) - project.stepSize.peek() * project.stepsToShow.peek());
-        
+        }   
+        checkFirstAndLast();
+    }
+
+    /**
+     * @param nuklList the nuklList to set
+     */
+    public void setNuklList(ArrayList<BigNukleosomNew> nuklList) {
+        this.nuklList = nuklList;
+    }
+
+    /**
+     * @return the up
+     */
+    public Button getUp() {
+        return up;
+    }
+
+    /**
+     * @param up the up to set
+     */
+    public void setUp(Button up) {
+        this.up = up;
+    }
+
+    /**
+     * @return the down
+     */
+    public Button getDown() {
+        return down;
+    }
+
+    /**
+     * @param down the down to set
+     */
+    public void setDown(Button down) {
+        this.down = down;
+    }
+
+    /**
+     * @return the foundFirst
+     */
+    public boolean isFoundFirst() {
+        return foundFirst;
+    }
+
+    /**
+     * @param foundFirst the foundFirst to set
+     */
+    public void setFoundFirst(boolean foundFirst) {
+        this.foundFirst = foundFirst;
+    }
+
+    /**
+     * @return the foundLast
+     */
+    public boolean isFoundLast() {
+        return foundLast;
+    }
+
+    /**
+     * @param foundLast the foundLast to set
+     */
+    public void setFoundLast(boolean foundLast) {
+        this.foundLast = foundLast;
     }
     
+    public void checkFirstAndLast() {
+        foundFirst = false;
+        foundLast = false;
+        for(String step : getStepList()) {
+            if(step.equals(project.getFirstItemInTimeMap())){
+                foundFirst = true;
+            }
+            if(step.equals(project.getLastItemInTimeMap())){
+                foundLast = true;
+            }
+        }
+    }
+
+    /**
+     * @return the stepList
+     */
+    public ArrayList<String> getStepList() {
+        return stepList;
+    }
+
+    /**
+     * @param stepList the stepList to set
+     */
+    public void setStepList(ArrayList<String> stepList) {
+        this.stepList = stepList;
+    }
     
-}
-//	public class BigNukleosomRow extends JPanel {
-//	
-//	public BigNukleosomRow(ChromosomProject project, int X, int Y, int height, int width) {
-//		
-//		this.setLayout(new GridLayout(X,Y));
-//		
-//		int 	maxX = X,
-//				number = maxX * Y,
-//				y = 0,  x = 0,
-//				offset = 2;
-//		
-//		List<String> returnList = project.getReadedNukleosoms();
-//		
-//		for(int i = 0; i < number; i++) {
-//			
-//			List<double[]> valueList = new ArrayList<double[]>();
-//			
-//			for(int u = 0; u < project.getHistoneNumber(); u++) {
-//				
-//				valueList.add(NukleosomReader.getValueArray(returnList.get(offset)));
-//				offset++;
-//			}
-//			
-//			this.add(new BigNukleosom(valueList, height, width));
-//		}
-//		
-//		export();
-//		
-//	}
-//	
-////	public static void main(String args[]) {
-////		JFrame frame = new JFrame("AWTTEST");
-////		
-////		JPanel pan = new JPanel();
-////		pan.setLayout(new BorderLayout());
-////		
-////		ChromosomProject project = new ChromosomProject();
-////		
-////		double array[] = {0.0,0.5,0.3,0.7,1.0,0.9,0.0,0.5,0.6};
-////		
-////		List<double[]> valueList = new ArrayList<double[]>();
-////		valueList.add(array);
-////		
-////		pan.add(new BigNukleosomRow(project,2,2,project.getNukleosomWidth(), project.getNukleosomHeight()));
-////		
-////		frame.add(pan);
-////		frame.setVisible(true);
-////		frame.setSize(new Dimension(1280,800));
-////		
-////		ExportDialog export = new ExportDialog();
-////	    export.showExportDialog( frame, "Export view as ...", frame, "export" );
-////	}
+//    public void createOverlayMap() {
+//        overlayMap = new HashMap();
+//        
+//        ArrayList<String> tempStepList = getStepList();
+//        
+//        for(String keyString : tempStepList) {
+//            HeatReader heatReader = project.getChromosom().getHeatProject().getHeatReader();
+//            heatReader.readLogFile(keyString);
 //
-//	public void export() {
-//		ExportDialog export = new ExportDialog();
-//	    export.showExportDialog( this, "Export view as ...", this, "export" );
-//	}
-//	
-//}
+//            HashMap<String, ArrayList<ArrayList<Double>>> timeMap = heatReader.getTimeMap();
+//            ArrayList<ArrayList<Double>> timeStep = timeMap.get(keyString);
+//            
+//            int[] overlayTimeStep = new int[timeStep.get(0).size()];
+//            
+//            for(int x = 0; x < timeStep.get(0).size(); x++) {
+//                overlayTimeStep[x] = 0;
+//                for(int y = 0; y < timeStep.size(); y++) {
+//                    if(y%2 != 0 && timeStep.get(y).get(x) != 0.0) {
+//                        overlayTimeStep[x] = 1;
+//                        break;
+//                    }
+//                }
+//            } 
+//            
+//            overlayMap.put(keyString, overlayTimeStep);
+//        }
+//    }
+
+    public void highlightOverlay() {
+        
+        if(isOverlayed() == false) {
+            
+            
+            if(project.getNukleosomReader().getOverlayMap() != null && !project.getNukleosomReader().getOverlayMap().isEmpty() && firstOverlayed) {
+            }
+            else {
+//                createOverlayMap();
+                
+                for(int i = 0; i < nuklList.size();i++) {
+                    BigNukleosomNew nukl = nuklList.get(i);
+                    
+                    if(project.getNukleosomReader().getOverlayMap().get(String.valueOf(nukl.getY()))[nukl.getX()] != -1) {
+                           
+                        Bounds nuklBounds = nukl.getBoundsInParent();
+                        Rectangle rect = new Rectangle(nuklBounds.getMinX(), nuklBounds.getMinY(), nuklBounds.getWidth(), nuklBounds.getHeight());
+                        rect.setFill(new Color(0.8,0.8,0,0.3));
+                        rect.setMouseTransparent(true);
+
+                        getEnzymeGroup().getChildren().add(rect);
+                        
+                    }
+                }
+                Bounds bounds = getEnzymeGroup().getBoundsInParent();
+                Translate trans = new Translate(-(bounds.getMinX()), -(bounds.getMinY())   +10 );
+                getEnzymeGroup().getTransforms().add(trans);
+            }
+
+            getEnzymeGroup().setVisible(true);
+            setOverlayed(true);
+            firstOverlayed = true;
+
+        }
+        else {
+            getEnzymeGroup().setVisible(false);
+            setOverlayed(false);   
+        }
+    }
+
+    /**
+     * @return the overlay
+     */
+    public boolean isOverlayed() {
+        return overlayed;
+    }
+
+    /**
+     * @param overlay the overlay to set
+     */
+    public void setOverlayed(boolean overlay) {
+        this.overlayed = overlay;
+    }
+
+    /**
+     * @return the enzymeGroup
+     */
+    public Group getEnzymeGroup() {
+        return enzymeGroup;
+    }
+
+    /**
+     * @param enzymeGroup the enzymeGroup to set
+     */
+    public void setEnzymeGroup(Group enzymeGroup) {
+        this.enzymeGroup = enzymeGroup;
+    }
+}

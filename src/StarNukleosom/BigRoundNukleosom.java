@@ -127,28 +127,9 @@ public class BigRoundNukleosom extends GridPane {
 				polygon.setFill(color);
 				polygon.setSmooth(true);
 				
-//				polygon.setOpacity(0.65);
-				
 				outLine = new Line(bounds.getMinX(),bounds.getMinY(), nextBounds.getMinX(), nextBounds.getMinY());
 				outLine.setStroke(color);
 				outLine.setStrokeWidth(1.4);
-				
-//					for(double netValue : netArray) {
-//						Rectangle netRect = new Rectangle(midX,(y1 - y2 * netValue),0,0); 
-//						netRect.getTransforms().add(new Rotate(angle * dimCounter, midX, midY));
-//						
-//						Rectangle helperNetRect = new Rectangle(midX,(y1 - y2 * netValue),0,0);
-//						helperNetRect.getTransforms().add(new Rotate(angle * nextDim, midX, midY));
-//						
-//						bounds = netRect.localToScene(netRect.getBoundsInLocal());
-//						nextBounds = helperNetRect.localToScene(helperNetRect.getBoundsInLocal());
-//					
-//						netLine = new Line(nextBounds.getMinX(), nextBounds.getMinY(), bounds.getMinX(),bounds.getMinY());
-//						netLine.setStrokeWidth(0.4);
-//						
-//						netGroup.getChildren().add(netLine);
-//						netLine.setStroke(Color.BLACK);
-//					}
 				
 				rectGroup.getChildren().add(rect);
 				polygonGroup.getChildren().add(polygon);
@@ -165,15 +146,9 @@ public class BigRoundNukleosom extends GridPane {
 			netGroup.getTransforms().add(trans);
 			rectGroup.getTransforms().add(trans);
 			
-//			getChildren().add(netGroup);
-			
 			getChildren().add(polygonGroup);
 			
-//			getChildren().add(outLineGroup);
-			
 			getChildren().add(rectGroup);
-			
-//			getChildren().add(axisGroup);	
 		}
 	}
 
