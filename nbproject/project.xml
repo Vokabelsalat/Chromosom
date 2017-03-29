@@ -6,6 +6,7 @@
         <data xmlns="http://www.netbeans.org/ns/j2se-project/3">
             <name>In Viso</name>
             <source-roots>
+                <root id="src.images.dir"/>
                 <root id="src.src.dir"/>
             </source-roots>
             <test-roots/>

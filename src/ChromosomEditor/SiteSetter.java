@@ -102,23 +102,42 @@ public class SiteSetter extends EditorPane{
                 if(chromosomEditor.getChromosomProject().getHistoneMap().containsKey(title)) {
                     String[][] entries = chromosomEditor.getChromosomProject().getHistoneMap().get(title);
                     
-                    if(entries.length > newMaxX) {
-                        newMaxX = entries.length;
-                    }
-                    
-                    if(entries[0].length > newMaxY) {
-                        newMaxY = entries[0].length;
-                    }
-                    
-                    SiteBorderPane innerPane = new SiteBorderPane(title, this, outerGrid, entries);
-                    addDnD(innerPane);
-                    gridList.add(innerPane.getInnerGrid());
+                    if(entries != null) {
+                        if(entries.length > newMaxX) {
+                            newMaxX = entries.length;
+                        }
 
-                    outerGrid.add(innerPane, x, y);
-                    
-                    innerPane.setX(x);
-                    innerPane.setY(y);
+                        if(entries[0].length > newMaxY) {
+                            newMaxY = entries[0].length;
+                        }
 
+                        SiteBorderPane innerPane = new SiteBorderPane(title, this, outerGrid, entries);
+                        addDnD(innerPane);
+                        gridList.add(innerPane.getInnerGrid());
+
+                        outerGrid.add(innerPane, x, y);
+
+                        innerPane.setX(x);
+                        innerPane.setY(y);
+                    }
+                    else {
+                        SiteBorderPane innerPane = new SiteBorderPane(title, this, chromosomEditor.getOptions().getStorage());
+                        addDnD(innerPane);
+                        chromosomEditor.getOptions().getStorage().add(innerPane, x, y);
+                        innerPane.showGrid(false);
+                        gridList.add(innerPane.getInnerGrid());
+
+                        innerPane.setX(x);
+                        innerPane.setY(y);
+
+                        SiteBorderPane empty = new SiteBorderPane("", this, outerGrid);
+                        empty.showGrid(false);
+                        outerGrid.add(empty, x, y);
+                        addDnD(empty);
+
+                        empty.setX(x);
+                        empty.setY(y);
+                    }
                 }
                 else {
                     SiteBorderPane innerPane = new SiteBorderPane(title, this, chromosomEditor.getOptions().getStorage());
@@ -391,7 +410,7 @@ public class SiteSetter extends EditorPane{
                             histoneMap.put(sitePane.getTitle(), entries);
                         }
                         else {
-//                            histoneMap.put(sideBorderPaneTitleList.pop(), null);
+                            histoneMap.put(sideBorderPaneTitleList.pop(), null);
                         }
                     }
                 }

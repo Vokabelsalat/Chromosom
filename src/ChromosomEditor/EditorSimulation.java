@@ -469,7 +469,7 @@ public class EditorSimulation  extends EditorPane{
             createSpecialColorsElement(doc);
             createShowEmptySites(doc, cicleCheck.isSelected());
             createModificationColorElement(doc);
-            createEmptyNucleosome(doc);
+//            createEmptyNucleosome(doc);
             createPropensityMatricesElement(doc);
             createOutputDirectoryElement(doc);
             createSimulationTimeElement(doc);

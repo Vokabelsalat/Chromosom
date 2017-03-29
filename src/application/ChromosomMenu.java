@@ -538,6 +538,7 @@ public class ChromosomMenu extends VBox{
 //            getChromosomProject().setEmpty_nucleosome(empty_nucleosome);
             
             String showEmptySites = "";
+            
             if(doc.getDocumentElement().getElementsByTagName("showEmptySites").getLength()>0) {
                 showEmptySites = getXMLValueByTag(doc.getDocumentElement(), "showEmptySites", "value");
             }
@@ -653,57 +654,40 @@ public class ChromosomMenu extends VBox{
                 String fileName = fileInDir.getName();
                 if(fileName.endsWith(".cfg")) {
                     
-                    if(fileName.contains("-hm") && histoneMapFile == null) {
-                        histoneMapFile = fileInDir;
-                        continue;
-                    }
-                    else if(fileName.contains("-rf") && ruleSetFile == null) {
-                        ruleSetFile = fileInDir;
-                        continue;
-                    }
-                    else if(fileName.contains("-sf") && parameterFile == null) {
-                        parameterFile = fileInDir;
-                        continue;
-                    }
-                    else if(fileName.contains("-pf") && parameterFile == null) {
-                        parameterFile = fileInDir;
-                        continue;
-                    }
-                    else {
-                        try {
-                            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-                            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-                            Document doc = dBuilder.parse(fileInDir);
+                    try {
+                        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                        Document doc = dBuilder.parse(fileInDir);
 
-                            doc.getDocumentElement().normalize();
+                        doc.getDocumentElement().normalize();
 
-                            NodeList histoneMapList = doc.getElementsByTagName("histoneMap");
-                            NodeList parametersList = doc.getElementsByTagName("simulationParameters");
-                            NodeList initialStateList = doc.getElementsByTagName("initialState");
-                            NodeList enzymeSetList = doc.getElementsByTagName("enzymeSet");
-                            
-                            if(histoneMapList.getLength() > 0 && histoneMapFile == null) {
-                                histoneMapFile = fileInDir;
-                                continue;
-                            }                            
-                            if(enzymeSetList.getLength() > 0 && ruleSetFile == null) {
-                                ruleSetFile = fileInDir;
-                                continue;
-                            }   
-                            if(initialStateList.getLength() > 0 && initialStateFile == null) {
-                                initialStateFile = fileInDir;
-                                continue;
-                            }
-                            if(parametersList.getLength() > 0 && parameterFile == null) {
-                                parameterFile = fileInDir;
-                            }
+                        NodeList histoneMapList = doc.getElementsByTagName("histoneMap");
+                        NodeList parametersList = doc.getElementsByTagName("simulationParameters");
+                        NodeList initialStateList = doc.getElementsByTagName("initialState");
+                        NodeList enzymeSetList = doc.getElementsByTagName("enzymeSet");
+
+                        if(histoneMapList.getLength() > 0 && histoneMapFile == null) {
+                            histoneMapFile = fileInDir;
+                            continue;
+                        }                            
+                        if(enzymeSetList.getLength() > 0 && ruleSetFile == null) {
+                            ruleSetFile = fileInDir;
+                            continue;
+                        }   
+                        if(initialStateList.getLength() > 0 && initialStateFile == null) {
+                            initialStateFile = fileInDir;
+                            continue;
                         }
-                        catch(Exception e) {
-                            e.printStackTrace();
+                        if(parametersList.getLength() > 0 && parameterFile == null) {
+                            parameterFile = fileInDir;
                         }
+                    }
+                    catch(Exception e) {
+                        e.printStackTrace();
                     }
                 }
-                else if(fileName.equals("outfile.txt")) {
+            
+                if(fileName.equals("outfile.txt")) {
                     outputFile = fileInDir;
                     continue;
                 }

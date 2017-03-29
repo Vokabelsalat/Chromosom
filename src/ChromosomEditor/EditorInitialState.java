@@ -447,10 +447,12 @@ public class EditorInitialState extends EditorPane{
     @Override
     public boolean next() {
         
-        if(getInitialStateText() == null) {
+        String startString = getInitialStateText();
+        
+        if(startString == null || startString.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("At least one nucleosome is needed.");
+            alert.setHeaderText("Startstring can't be emtpy");
             alert.setContentText("Please correct it. \n");
             alert.showAndWait();
 

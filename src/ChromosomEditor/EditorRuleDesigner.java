@@ -61,6 +61,7 @@ public class EditorRuleDesigner extends EditorPane{
         Label top = new Label(paneFullName);
         top.setFont(new Font(top.getFont().getName(), 16));
         topPane.getChildren().add(top);
+        AnchorPane.setTopAnchor(top, 7.0);
         AnchorPane.setBottomAnchor(top, 10.0);
         AnchorPane.setLeftAnchor(top, 10.0);
         setTop(topPane);
@@ -144,6 +145,11 @@ public class EditorRuleDesigner extends EditorPane{
     
     @Override
     public boolean save() {
+        
+        if(createEnzymeMap() == false) {
+            return false;
+        }
+        
         File saveFile = null;
         
         if(saveFile == null) {
@@ -250,11 +256,8 @@ public class EditorRuleDesigner extends EditorPane{
 //                String str = textArray[i];
 //            }
             
-            
             initialStateElement.setAttribute("value", text);
             initialStateElement.setAttribute("type", "custom");
-            
-            
             
             return initialStateElement;
         }

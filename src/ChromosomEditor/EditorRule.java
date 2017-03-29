@@ -6,6 +6,8 @@
 package ChromosomEditor;
 
 import static ChromosomEditor.EditorEnzyme.showTooltip;
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -69,7 +71,7 @@ public class EditorRule extends BorderPane {
 
         tagList = new ArrayList<>();
         
-        Image image = new Image("file:Pfeil.png", 50, 50, false, false);
+        Image image = new Image("Pfeil.png" ,50, 50, false, false);
         
         stackPane = new StackPane();
         stackPane.setPrefSize(60, 60);

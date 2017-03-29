@@ -17,6 +17,9 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
@@ -117,7 +120,7 @@ public class BigNukleosomNew extends StackPane {
                     GridPane sitePane = new GridPane();
                     sitePane.setHgap(0);
                     sitePane.setVgap(0);
-
+                    
                     for(int innerY = 0; innerY < attributeArray[0].length; innerY++) {
 
                         for(int innerX = 0; innerX < attributeArray.length; innerX++) {
@@ -128,7 +131,7 @@ public class BigNukleosomNew extends StackPane {
 
                                     value = histoneMap.get(histone).get(attributeArray[innerX][innerY]);
                                     histoneHit = true;
-                                    
+                                                                        
                                     String siteName = project.getHistoneMap().get(histone)[innerX][innerY];
                                     String histSite = histone + siteName;
 
@@ -202,7 +205,7 @@ public class BigNukleosomNew extends StackPane {
                                     if(showLabels == true) {
                                         Label lab;
                                         if(hover == true) {
-                                            lab = new Label(siteName);
+                                            lab = new Label(String.valueOf(value));
                                         }
                                         else {
                                             lab = new Label(histone + "\n" + siteName + "\n" + String.valueOf(value));
@@ -221,38 +224,9 @@ public class BigNukleosomNew extends StackPane {
                                     sitePane.add(rectPane, innerX, innerY);
 
                                 }
-                                else if (project.isShowEmptySites()) {
-                                    StackPane rectPane = new StackPane();
-                                    Rectangle rect = new Rectangle(width, height , Color.WHITE); 
-                                    rect.setOpacity(1);   
-
-                                    rect.setStroke(new Color(0,0,0,0.6));
-                                    rect.setStrokeWidth(0.3);
-                                    rectPane.getChildren().add(rect);
-                                    sitePane.add(rectPane, innerX, innerY);
-                                    lastRect=rect;
-
-                                    if(showLabels == true) {
-                                        String siteName = project.getHistoneMap().get(histone)[innerX][innerY];
-                                        Label lab;
-                                        if(hover == true) {
-                                            lab = new Label(siteName);
-                                        }
-                                        else {
-                                            lab = new Label(histone + "\n" + siteName + "\nun");
-                                        }
-
-                                        lab.setId("fancytext");
-
-                                        lab.setPadding(new Insets(0,2,0,2));
-
-                                        lab.setAlignment(Pos.CENTER);
-                                        rectPane.setAlignment(Pos.CENTER);
-
-                                        rectPane.getChildren().add(lab);
-                                    }
-                                }
+                                //if site is not in actual histone map
                                 else {
+                                    String siteName = histoneProperties.get(histone)[innerX][innerY];
                                     StackPane rectPane = new StackPane();
                                     Rectangle rect = new Rectangle(width, height , Color.WHITE); 
 
@@ -262,23 +236,70 @@ public class BigNukleosomNew extends StackPane {
                                     sitePane.add(rectPane, innerX, innerY);
                                     lastRect=rect;
 
-                                    if(showLabels == true) {
-                                        Label lab = new Label("un");
+                                    if(!siteName.equals("")) {
+                                        if(showLabels == true) {
+                                            Label lab;
+                                            if(hover == true) {
+                                                lab = new Label("un");
+                                            }
+                                            else {
+                                                lab = new Label(histone + "\n" + siteName + "\nun");
+                                            }
 
-                                        lab.setId("fancytext");
+                                            lab.setId("fancytext");
 
-                                        lab.setPadding(new Insets(0,2,0,2));
+                                            lab.setPadding(new Insets(0,2,0,2));
 
-                                        lab.setAlignment(Pos.CENTER);
-                                        rectPane.setAlignment(Pos.CENTER);
+                                            lab.setAlignment(Pos.CENTER);
+                                            rectPane.setAlignment(Pos.CENTER);
 
-                                        rectPane.getChildren().add(lab);
+                                            rectPane.getChildren().add(lab);
+                                        }
                                     }
                                     else {
-                                        // Damit die Rectangles nur in der Seitenansicht zu sehen sind
-                                        rect.setOpacity(0); 
+                                        rect.setOpacity(0);
                                     }
                                 }
+                            }
+                            // add emtpy histone
+                            else {
+                                    String siteName = histoneProperties.get(histone)[innerX][innerY];
+                                    StackPane rectPane = new StackPane();
+                                    Rectangle rect = new Rectangle(width, height , Color.WHITE); 
+
+                                    rect.setStroke(new Color(0,0,0,0.6));
+                                    rect.setStrokeWidth(0.3);
+                                    rectPane.getChildren().add(rect);
+                                    sitePane.add(rectPane, innerX, innerY);
+                                    lastRect=rect;
+                                    
+                                    if(!siteName.equals("")) {
+                                        if(showLabels == true) {
+                                            Label lab;
+                                            if(hover == true) {
+                                                lab = new Label("un");
+                                            }
+                                            else {
+                                                lab = new Label(histone + "\n" + siteName + "\nun");
+                                            }
+
+                                            lab.setId("fancytext");
+
+                                            lab.setPadding(new Insets(0,2,0,2));
+
+                                            lab.setAlignment(Pos.CENTER);
+                                            rectPane.setAlignment(Pos.CENTER);
+
+                                            rectPane.getChildren().add(lab);
+                                        }
+                                    }
+                                    else {
+                                        rect.setOpacity(0);
+                                    }
+                                    
+                                    if(project.isShowEmptySites() == false) {
+                                        rect.setOpacity(0);
+                                    }
                             }
                         }
 
@@ -344,7 +365,9 @@ public class BigNukleosomNew extends StackPane {
             if(hover == true) {
                 
                 hoverPopup = new Popup();
-                hoverPopup.getContent().add(new BigNukleosomNew(project, histoneMap, x, y, width * 2, height * 2, true, false));
+                BigNukleosomNew nukl = new BigNukleosomNew(project, histoneMap, x, y, width * 2, height * 2, true, false);
+                nukl.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200, 0.1), CornerRadii.EMPTY, Insets.EMPTY)));
+                hoverPopup.getContent().add(nukl);
                 
                 this.setOnMouseEntered(new EventHandler<MouseEvent>() {
                     @Override
@@ -359,7 +382,6 @@ public class BigNukleosomNew extends StackPane {
                         hoverPopup.hide();
                     }
                 });
-
             }
             
             this.heightProperty().addListener(new ChangeListener<Number>() {

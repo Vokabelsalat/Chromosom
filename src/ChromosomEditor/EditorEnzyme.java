@@ -49,6 +49,7 @@ public class EditorEnzyme extends BorderPane {
         ruleMap = new LinkedHashMap<>();
         
         minusButton = new Button("-");
+        minusButton.getStyleClass().add("buttonRemove"); 
         nameTF = new TextField();
         concentrationTF = new TextField();
         concentrationTF.setMaxWidth(70);
@@ -97,7 +98,7 @@ public class EditorEnzyme extends BorderPane {
                         editor.getRuleDesigner().getScroll().setVvalue(scrollValue + newHeight);
                         
                         //Leere Regeln abfangen
-                        if(newRule.getTarget().equals("()")) {
+                        if(newRule.getRule().equals("()") && newRule.getTarget().equals("()")) {
                             newRule = new EditorRule(editor);
                         }
                         else {

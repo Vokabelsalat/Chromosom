@@ -51,6 +51,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javax.imageio.ImageIO;
 import Nukleosom.ChromosomTree;
+import Nukleosom.PlusMinusLabel;
 import Nukleosom.ZoomableScrollPane;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -59,8 +60,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -224,6 +225,7 @@ public class Chromosom extends Application {
         
         project = null;
         
+        editorRuleList = null;
         editorRuleList = new ArrayList<>();
         
         this.start(primaryStage);
@@ -380,11 +382,7 @@ public class Chromosom extends Application {
        
         setRow(new BigNukleosomRow(getProject(), getProject().getNukleosomWidth(), getProject().getNukleosomHeight(), getProject().maxTimeSteps.peek(), getProject().stepSize.peek(), false));
         
-        for(int i = 0; i < getRowCount(getRow()); i++) {
-            RowConstraints row1 = new RowConstraints();
-            row1.setVgrow(Priority.NEVER);
-            getRow().getRowConstraints().add(row1); 
-        }
+        ArrayList<PlusMinusLabel> plusMinusList = new ArrayList<>();
         
         for(Node nod : getRow().getChildren()) {
             if(GridPane.getColumnIndex(nod) == getProject().getTimeVector().get(String.valueOf(getProject().offset.peek())).size()) {
@@ -392,6 +390,8 @@ public class Chromosom extends Application {
                 nod.setVisible(false);
                 nod.maxWidth(4.0);
                 nod.setScaleX(0.3);
+                
+                plusMinusList.add((PlusMinusLabel)nod);
             }
         }
         
@@ -469,8 +469,23 @@ public class Chromosom extends Application {
         for(int i = 0; i < getRowCount(secondRow); i++) {
             RowConstraints row1 = new RowConstraints();
             row1.setVgrow(Priority.NEVER);
-            row1.setMinHeight(high);
+            plusMinusList.get(i).heightProperty().addListener(new ChangeListener<Number>() {
+                public void changed(ObservableValue<? extends Number> ov,
+                    Number old_val, Number new_val) {
+                        if(new_val.doubleValue() > project.minNuclHeight) {
+                            project.minNuclHeight = new_val.doubleValue();
+                        }
+                        row1.setMinHeight(project.minNuclHeight);
+                }
+              });
             secondRow.getRowConstraints().add(row1); 
+        }
+        
+        for(int i = 0; i < getRowCount(getRow()); i++) {
+            RowConstraints row1 = new RowConstraints();
+            row1.setVgrow(Priority.NEVER);
+            row1.setMinHeight(project.minNuclHeight);
+            getRow().getRowConstraints().add(row1);
         }
 
         ArrayList nodeList = new ArrayList<>();
@@ -492,15 +507,18 @@ public class Chromosom extends Application {
         border.setCenter(stack);
         border.setStyle("-fx-background-color: white;");
         
+        border.setPadding(new Insets(5,5,5,5));
+        
         scroll = new ZoomableScrollPane(border);
         
-        getRow().setPadding(new Insets(10,0,10,0));
+//        getRow().setPadding(new Insets(10,5,10,10));
 
         BorderPane plusMinusBorder = new BorderPane();
         plusMinusBorder.setCenter(secondRow);
+        plusMinusBorder.setPadding(new Insets(5,5,5,5));
         setPlusMinusScroll(new ZoomableScrollPane(plusMinusBorder));
         
-        getPlusMinusScroll().setPadding(new Insets(10,5,10,10));
+//        getPlusMinusScroll().setPadding(new Insets(10,5,10,10));
         
         plusMinusScroll.setId("address");
 
@@ -537,9 +555,9 @@ public class Chromosom extends Application {
         }
         
         plusMinusBorderPane.setCenter(getPlusMinusScroll());
-        plusMinusBorderPane.setPadding(new Insets(10,0,10,0));
+//        plusMinusBorderPane.setPadding(new Insets(10,0,10,0));
         nuklBorder.setCenter(scroll);
-        nuklBorder.setPadding(new Insets(10,0,10,0));
+//        nuklBorder.setPadding(new Insets(10,0,10,0));
         
         nukleosomBorderPane.setLeft(plusMinusBorderPane);
         nukleosomBorderPane.setCenter(nuklBorder);
@@ -625,7 +643,7 @@ public class Chromosom extends Application {
     
     private void initGUI(Stage primaryStage) {
         this.rootLayout = new BorderPane();
-        primaryStage.setTitle("In Viso");
+        primaryStage.setTitle("In Viso 2");
         screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
         screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
         tabPane = new TabPane();

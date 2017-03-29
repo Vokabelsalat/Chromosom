@@ -123,7 +123,6 @@ public class ModificationTable extends BorderPane{
                 
                 //Solange noch Einträge vorhanden sind, sollen diese in die Liste aufgenommen werden
                 while((line = fileReader.readLine()) != null){
-                    
                     if(line.equals("")) {
                         continue;
                     }
@@ -136,20 +135,26 @@ public class ModificationTable extends BorderPane{
                             }
                         }
                     }
-                    
+                         
                     String site;
                     String modString;
                     
-                    if(line.contains("\\{")) {
+                    if(line.contains("{")) {
+                        
                         String splitArray[] = line.split("\\{");
                         site = splitArray[0];
                         modString = splitArray[1].replaceAll("\\}", "");
-                        String modSplit[] = modString.split(";");
                         
                         ModificationList mod = new ModificationList();
                         
-                        for(String modification : modSplit) {
-                            mod.addRow(modification);
+                        if(modString.contains(";")) {
+                        String modSplit[] = modString.split(";");
+                            for(String modification : modSplit) {
+                                mod.addRow(modification);
+                            }
+                        }
+                        else {
+                             mod.addRow(modString);
                         }
                         
                         if(histone != null) {

@@ -42,6 +42,8 @@ public class ChromosomProject {
         
         public double maxNuclWidth, maxNuclHeight = 0;
         
+        public double minNuclHeight = 0;
+        
         private String initialStateText;
         
         private HashMap<String, HashMap<String, HashMap<String, String>>> specialColorMap;
